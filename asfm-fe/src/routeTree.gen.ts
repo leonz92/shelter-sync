@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as MedicalLogsRouteImport } from './routes/medical-logs'
 import { Route as AdminPortalRouteImport } from './routes/admin-portal'
+import { Route as SignInRouteImport } from './routes/SignIn'
 import { Route as IndexRouteImport } from './routes/index'
 
 const MedicalLogsRoute = MedicalLogsRouteImport.update({
@@ -23,6 +24,11 @@ const AdminPortalRoute = AdminPortalRouteImport.update({
   path: '/admin-portal',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SignInRoute = SignInRouteImport.update({
+  id: '/SignIn',
+  path: '/SignIn',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -31,30 +37,34 @@ const IndexRoute = IndexRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/SignIn': typeof SignInRoute
   '/admin-portal': typeof AdminPortalRoute
   '/medical-logs': typeof MedicalLogsRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/SignIn': typeof SignInRoute
   '/admin-portal': typeof AdminPortalRoute
   '/medical-logs': typeof MedicalLogsRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/SignIn': typeof SignInRoute
   '/admin-portal': typeof AdminPortalRoute
   '/medical-logs': typeof MedicalLogsRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin-portal' | '/medical-logs'
+  fullPaths: '/' | '/SignIn' | '/admin-portal' | '/medical-logs'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin-portal' | '/medical-logs'
-  id: '__root__' | '/' | '/admin-portal' | '/medical-logs'
+  to: '/' | '/SignIn' | '/admin-portal' | '/medical-logs'
+  id: '__root__' | '/' | '/SignIn' | '/admin-portal' | '/medical-logs'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  SignInRoute: typeof SignInRoute
   AdminPortalRoute: typeof AdminPortalRoute
   MedicalLogsRoute: typeof MedicalLogsRoute
 }
@@ -75,6 +85,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminPortalRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/SignIn': {
+      id: '/SignIn'
+      path: '/SignIn'
+      fullPath: '/SignIn'
+      preLoaderRoute: typeof SignInRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -87,6 +104,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  SignInRoute: SignInRoute,
   AdminPortalRoute: AdminPortalRoute,
   MedicalLogsRoute: MedicalLogsRoute,
 }
