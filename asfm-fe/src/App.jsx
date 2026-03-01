@@ -7,9 +7,12 @@ import DashboardCard from './components/custom/DashboardCard'
 import { ModalDialog } from './components/ModalDialog';
 import ConfirmationDialog from './components/confirmationDialog';
 import { useState } from 'react';
+import { useNavigate } from '@tanstack/react-router';
 
 function App() {
  // src/features/loaned-items/loanedItemsColumns.js
+ const navigate = useNavigate();
+
  const loanedItemsColumns = [
     {
       accessorKey: "itemDescription",
@@ -58,6 +61,7 @@ function App() {
           <Button variant="ghost">Ghost button</Button>
           <Button variant="link">Link button</Button>
         </div>
+        <Button onClick={() => navigate({ to: '/single-animal' })}>Go to single animal</Button>
         <FilterSelect
           selectTriggerClassName="w-[300px]"
           selectItems={['approved', 'pending', 'denied']}
