@@ -129,7 +129,7 @@ export function AnimalView({ isEditing, viewAnimal }) {
       <div className="pt-10 grid grid-cols-[60%_40%] gap-x-5">
         <Card className={'p-4'}>
           <CardDescription>
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className="grid md:grid-cols-3 gap-x-4 gap-y-6">
               <AnimalInputGroup
                 isEditing={isEditing}
                 viewAnimal={viewAnimal}
@@ -178,7 +178,13 @@ export function AnimalView({ isEditing, viewAnimal }) {
             </div>
           </CardDescription>
         </Card>
-        <Card></Card>
+        <Card className="p-0">
+            <div className="relative w-full h-full max-h-[250px] bg-cover bg-center bg-[url(https://phillypaws.org/wp-content/uploads/2025/03/54324037913_4b1fe29a33_c.jpg)]  rounded-xl"
+>
+            <div className='absolute backdrop-blur-sm inset-0 rounded-xl'></div>
+            <img src="https://phillypaws.org/wp-content/uploads/2025/03/54324037913_4b1fe29a33_c.jpg" className='absolute w-full h-full object-cover max-w-[200px] blur-none top-[50%] left-[50%] -translate-x-1/2 -translate-y-1/2' />
+            </div>
+        </Card>
       </div>
     </>
   );
