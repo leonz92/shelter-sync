@@ -83,3 +83,21 @@ exports.createAnimal = async (body) => {
     throw err;
   }
 };
+
+exports.assignAnimal = async (idBodyAndRelations) => {
+  try {
+    const { body, relations } = idBodyAndRelations;
+    const animalAssignment = await prisma.animalAssignment.create({
+      data: {
+        ...body,
+        animal: { connect: { id: relations.animal } },
+        foster_user: { connect: { id: relations.foster_user } },
+        assigned_by_staff: { connect: { id: relations.assigned_by_staff } },
+      },
+    });
+    return animalAssignment;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};

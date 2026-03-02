@@ -66,3 +66,27 @@ exports.createAnimal = async (body) => {
     throw err;
   }
 };
+
+exports.assignAnimal = async (req) => {
+  try {
+    const body = req.body;
+    const parsedBody = {};
+    const relations = {};
+    for (const [prop, val] of Object.entries(body)) {
+      if (prop === 'foster_user' || prop === 'assigned_by_staff') {
+        relations[prop] = val;
+      } else parsedBody[prop] = prop === 'end_date' ? new Date(val) : val;
+    }
+    parsedBody.created_at = new Date();
+    parsedBody.start_date = body.start_date ? new Date(body.start_date) : new Date();
+    relations.animal = req.params.id;
+    const animalAssignment = await animalRepository.assignAnimal({
+      body: parsedBody,
+      relations,
+    });
+    return animalAssignment;
+  } catch (err) {
+    console.log(err);
+    throw err;
+  }
+};
