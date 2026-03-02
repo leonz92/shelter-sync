@@ -4,6 +4,7 @@ import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card';
 import { useForm } from '@tanstack/react-form';
 import * as z from 'zod';
+import { useBoundStore } from '@/store';
 
 const formSchema = z.object({
   email: z.email({
@@ -13,6 +14,7 @@ const formSchema = z.object({
 });
 
 function SignInForm() {
+  const signIn = useBoundStore((state) => state.signIn);
   const form = useForm({
     defaultValues: {
       email: '',
@@ -22,8 +24,7 @@ function SignInForm() {
       onSubmit: formSchema,
     },
     onSubmit: async ({ value }) => {
-      console.log(value);
-      form.reset();
+      await signIn(value.email, value.password);
     },
   });
 
