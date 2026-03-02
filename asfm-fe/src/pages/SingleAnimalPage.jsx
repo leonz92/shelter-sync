@@ -13,49 +13,47 @@ export default function SingleAnimalPage() {
   const [viewAnimal, setViewAnimal] = useState('');
   const [animalLogs, setAnimalLogs] = useState([]);
 
-  const url = "http://localhost:3005"; // <-- placeholder
+  const url = 'http://localhost:3005'; // <-- placeholder
 
   async function fetchAnimal(id) {
     try {
       const response = await fetch(`${url}/animals?id=${id}`);
       if (!response.ok) {
-        throw new Error(`Fetch request error status: ${response.status}`)
+        throw new Error(`Fetch request error status: ${response.status}`);
       }
       const data = await response.json();
-  
-      console.log(data)
-      setViewAnimal(data[0])
-      return data[0]
+
+      setViewAnimal(data[0]);
+      return data[0];
     } catch (err) {
-      console.error('Failed to fetch animal', err)
-      throw err
+      console.error('Failed to fetch animal', err);
+      throw err;
     }
   }
 
   async function fetchAnimalMedicalLogs(id) {
     try {
-      const response = await fetch(`${url}/medical-logs?animal_id=${id}`)
+      const response = await fetch(`${url}/medical-logs?animal_id=${id}`);
       if (!response.ok) {
-        throw new Error (`Failed to find the animal's medical logs ${response.status}`)
+        throw new Error(`Failed to find the animal's medical logs ${response.status}`);
       }
       const data = await response.json();
-      console.log('medical logs', data)
-      setAnimalLogs(data)
-      return data
+      setAnimalLogs(data);
+      return data;
     } catch (err) {
-      console.error('Failed to fetch animal medical logs', err )
-      throw err
+      console.error('Failed to fetch animal medical logs', err);
+      throw err;
     }
   }
 
   async function fetchAllAnimalRecords(id) {
-      const animalBase = await fetchAnimal(id);
-      const animalLogs = await fetchAnimalMedicalLogs(id);
-      return {animalBase, animalLogs}
+    const animalBase = await fetchAnimal(id);
+    const animalLogs = await fetchAnimalMedicalLogs(id);
+    return { animalBase, animalLogs };
   }
 
   useEffect(() => {
-    fetchAllAnimalRecords('550e8400-e29b-41d4-a716-446655550001')
+    fetchAllAnimalRecords('550e8400-e29b-41d4-a716-446655550001');
 
     // if (viewAnimal.dob) {
     //   setViewAnimal({
@@ -84,10 +82,9 @@ export default function SingleAnimalPage() {
           <Card className="mt-10">
             <CardTitle className="pl-5">Medical Logs</CardTitle>
             <CardDescription className="px-5 flex flex-col gap-y-5">
-              {animalLogs.map((log) => (
-                <MedicalLogCard log={log} />
+              {animalLogs.map((log, index) => (
+                <MedicalLogCard key={index} log={log} />
               ))}
-              {/* <MedicalLogCard /> */}
             </CardDescription>
           </Card>
         </article>

@@ -1,6 +1,48 @@
 import CustomBadge from '@/components/custom/CustomBadge';
+import { useEffect } from 'react';
+import { useState } from 'react';
 
 export default function MedicalLogCard({log}) {
+
+    const [medication, setMedication] = useState('');
+    const [item, setItem] = useState('');
+
+    const url = "http://localhost:3005"; // <-- placeholder
+
+    async function fetchMedication() {
+        const response = await fetch(`${url}/medication?id=${log.medication_id}`);
+        if (!response.ok) {
+            throw new Error(`Fetch request error status: ${response.status}`)
+        }
+        const data = await response.json();
+        if (data.length === 0) {
+            return null
+        }
+        console.log(data[0])
+        setMedication(data[0])
+        return data[0]
+    }
+
+    async function fetchMedicationItem(itemId) {
+        const response = await fetch(`${url}/items?id=${itemId}`);
+        if (!response.ok) {
+            throw new Error(`Fetch request error status: ${response.status}`)
+        }
+        const data = await response.json();
+        setItem(data[0])
+    }
+
+    async function fetchMedicationInfo() {
+        const results = await fetchMedication()
+        if (!results) {
+            return setItem(null)
+        }
+        await fetchMedicationItem(results.item_id)
+    }
+
+    useEffect(() => {
+        fetchMedicationInfo(log.medicationId)
+    }, [])
 
     return (
         <div className='ring-1 p-2 rounded-lg'>
@@ -16,33 +58,14 @@ export default function MedicalLogCard({log}) {
                 </div>
                 <div className='pt-5'>
                   <span className='text-lg font-semibold'>Medications:</span>
-                  <span className='block pt-2'>Amoxicillin - 50mg - 7 days</span>
+                  {item ?
+                    <span className='block pt-2'>{item.name} {log.dose && `- Dosage: ${log.dose} dose`} {log.prescription && `- Prescription: ${log.prescription}`} {medication && `- Administration Route: ${medication.administration_route}`}</span>
+                    :
+                    <span> None</span>
+                }
                 </div>
               </div>
     )
 
 }
 
-
-// export default function MedicalLogCard() {
-
-//     return (
-//         <div className='ring-1 p-2 rounded-lg'>
-//                 <span className="text-lg font-semibold">[January 20, 2025 01:34:48] </span>
-//                 <CustomBadge text="BEHAVIORAL" badgeClassName="ml-5 px-2 py-1" />
-//                 <div className='pt-5'>
-//                   <span className='text-lg font-semibold'>General Notes:</span>
-//                   <span className='block pt-2'>he's a good boy</span>
-//                 </div>
-//                 <div className='pt-5'>
-//                   <span className='text-lg font-semibold'>Behavioral Notes:</span>
-//                   <span className='block pt-2'>refer to the general notes</span>
-//                 </div>
-//                 <div className='pt-5'>
-//                   <span className='text-lg font-semibold'>Medications:</span>
-//                   <span className='block pt-2'>Amoxicillin - 50mg - 7 days</span>
-//                 </div>
-//               </div>
-//     )
-
-// }

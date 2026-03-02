@@ -36,7 +36,7 @@ export function AnimalGeneralInfo({ isEditing, viewAnimal }) {
                   viewAnimal={viewAnimal}
                   htmlForLabel="age"
                   labelTitle="Age"
-                  prop="dob"
+                  prop="age"
                   unit="yrs"
                 />
                 <AnimalInputGroup

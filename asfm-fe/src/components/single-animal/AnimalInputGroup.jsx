@@ -19,7 +19,7 @@ export default function AnimalInputGroup({
           id={htmlForLabel}
           className={`${isEditing ? ' ' : 'focus-visible:border-none focus-visible:ring-0 bg-gray-100 cursor-text'}`}
           readOnly={!isEditing}
-          value={viewAnimal[prop]}
+          value={viewAnimal[prop] ?? ""}
           onChange={(e) => handleChange(e, viewAnimal, prop)}
         />
         {unit && (
