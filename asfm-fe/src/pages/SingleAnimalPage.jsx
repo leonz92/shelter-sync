@@ -6,7 +6,7 @@ import { useEffect } from 'react';
 import MedicalLogCard from '@/components/single-animal/MedicalLogCard';
 import { AnimalGeneralInfo } from '@/components/single-animal/AnimalGeneralInfo';
 
-export default function SingleAnimalPage() {
+export default function SingleAnimalPage({id}) {
   // state to be replaced with global state and actions once ready
   const [isStaff, setIsStaff] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
@@ -60,7 +60,7 @@ export default function SingleAnimalPage() {
   }
 
   useEffect(() => {
-    fetchAllAnimalRecords('550e8400-e29b-41d4-a716-446655550001');
+    fetchAllAnimalRecords(id)
   }, []);
 
   return (

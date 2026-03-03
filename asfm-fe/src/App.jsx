@@ -10,6 +10,7 @@ import { useState } from 'react';
 import { useNavigate } from '@tanstack/react-router';
 import CustomBadge from './components/custom/CustomBadge';
 import { useBoundStore } from './store';
+import { Link } from '@tanstack/react-router';
 
 function App() {
  // src/features/loaned-items/loanedItemsColumns.js
@@ -51,6 +52,11 @@ function App() {
   return (
     <>
       <div id="examples" className="flex flex-col items-center h-auto gap-4 mt-17.5">
+        <div>
+          <Link to="/single-animal/$id" params={{id: '550e8400-e29b-41d4-a716-446655550001'}}>
+          Go to animal 550e8400-e29b-41d4-a716-446655550001
+          </Link>
+        </div>
         <div>
           <div className='text-center'>Global State Test</div>
           <div>

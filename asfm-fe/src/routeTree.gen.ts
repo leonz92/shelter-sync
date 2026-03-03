@@ -9,16 +9,11 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as SingleAnimalRouteImport } from './routes/single-animal'
 import { Route as MedicalLogsRouteImport } from './routes/medical-logs'
 import { Route as AdminPortalRouteImport } from './routes/admin-portal'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as SingleAnimalIdRouteImport } from './routes/single-animal.$id'
 
-const SingleAnimalRoute = SingleAnimalRouteImport.update({
-  id: '/single-animal',
-  path: '/single-animal',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const MedicalLogsRoute = MedicalLogsRouteImport.update({
   id: '/medical-logs',
   path: '/medical-logs',
@@ -34,50 +29,53 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SingleAnimalIdRoute = SingleAnimalIdRouteImport.update({
+  id: '/single-animal/$id',
+  path: '/single-animal/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin-portal': typeof AdminPortalRoute
   '/medical-logs': typeof MedicalLogsRoute
-  '/single-animal': typeof SingleAnimalRoute
+  '/single-animal/$id': typeof SingleAnimalIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin-portal': typeof AdminPortalRoute
   '/medical-logs': typeof MedicalLogsRoute
-  '/single-animal': typeof SingleAnimalRoute
+  '/single-animal/$id': typeof SingleAnimalIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin-portal': typeof AdminPortalRoute
   '/medical-logs': typeof MedicalLogsRoute
-  '/single-animal': typeof SingleAnimalRoute
+  '/single-animal/$id': typeof SingleAnimalIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin-portal' | '/medical-logs' | '/single-animal'
+  fullPaths: '/' | '/admin-portal' | '/medical-logs' | '/single-animal/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin-portal' | '/medical-logs' | '/single-animal'
-  id: '__root__' | '/' | '/admin-portal' | '/medical-logs' | '/single-animal'
+  to: '/' | '/admin-portal' | '/medical-logs' | '/single-animal/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/admin-portal'
+    | '/medical-logs'
+    | '/single-animal/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminPortalRoute: typeof AdminPortalRoute
   MedicalLogsRoute: typeof MedicalLogsRoute
-  SingleAnimalRoute: typeof SingleAnimalRoute
+  SingleAnimalIdRoute: typeof SingleAnimalIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/single-animal': {
-      id: '/single-animal'
-      path: '/single-animal'
-      fullPath: '/single-animal'
-      preLoaderRoute: typeof SingleAnimalRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/medical-logs': {
       id: '/medical-logs'
       path: '/medical-logs'
@@ -99,6 +97,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/single-animal/$id': {
+      id: '/single-animal/$id'
+      path: '/single-animal/$id'
+      fullPath: '/single-animal/$id'
+      preLoaderRoute: typeof SingleAnimalIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -106,7 +111,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminPortalRoute: AdminPortalRoute,
   MedicalLogsRoute: MedicalLogsRoute,
-  SingleAnimalRoute: SingleAnimalRoute,
+  SingleAnimalIdRoute: SingleAnimalIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
