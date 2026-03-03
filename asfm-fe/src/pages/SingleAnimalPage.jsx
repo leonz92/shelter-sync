@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardDescription, CardTitle } from '@/components/ui/card';
+import { Spinner } from '@/components/ui/spinner';
 import getBirthdayYear from '@/utils/getBirthday';
 import { useEffect } from 'react';
 import MedicalLogCard from '@/components/single-animal/MedicalLogCard';
@@ -12,6 +13,7 @@ export default function SingleAnimalPage({id}) {
   const [isEditing, setIsEditing] = useState(false);
   const [viewAnimal, setViewAnimal] = useState('');
   const [animalLogs, setAnimalLogs] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const url = 'http://localhost:3005'; // <-- placeholder
 
@@ -56,12 +58,20 @@ export default function SingleAnimalPage({id}) {
   async function fetchAllAnimalRecords(id) {
     const animalBase = await fetchAnimal(id);
     const animalLogs = await fetchAnimalMedicalLogs(id);
+    setIsLoading(false)
     return { animalBase, animalLogs };
   }
 
   useEffect(() => {
     fetchAllAnimalRecords(id)
   }, []);
+
+  if (isLoading) return (
+    <div className='flex justify-center pt-10'>
+      <Spinner className="size-12 text-primary" />
+    </div>
+
+)
 
   return (
     <>
