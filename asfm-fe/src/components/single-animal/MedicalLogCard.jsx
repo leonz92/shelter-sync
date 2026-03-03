@@ -15,11 +15,12 @@ export default function MedicalLogCard({log}) {
             throw new Error(`Fetch request error status: ${response.status}`)
         }
         const data = await response.json();
-        if (data.length === 0) {
+        console.log('medication data', data)
+        if (Object.keys(data).length === 0) {
             return null
         }
-        setMedication(data[0])
-        return data[0]
+        setMedication(data)
+        return data
     }
 
     async function fetchMedicationItem(itemId) {
@@ -28,6 +29,7 @@ export default function MedicalLogCard({log}) {
             throw new Error(`Fetch request error status: ${response.status}`)
         }
         const data = await response.json();
+        console.log(data)
         setItem(data[0])
     }
 

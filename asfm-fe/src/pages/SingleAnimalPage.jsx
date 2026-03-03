@@ -9,8 +9,6 @@ import { AnimalGeneralInfo } from '@/components/single-animal/AnimalGeneralInfo'
 
 export default function SingleAnimalPage({ id }) {
   // state to be replaced with global state and actions once ready
-  const [isStaff, setIsStaff] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
   const [viewAnimal, setViewAnimal] = useState('');
   const [animalLogs, setAnimalLogs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -39,7 +37,6 @@ export default function SingleAnimalPage({ id }) {
         age: animal.dob ? getBirthdayYear(animal.dob) : null,
         altered: animal.altered ? 'Fixed' : 'Not Fixed',
       };
-      console.log(updatedAnimal);
       setViewAnimal(updatedAnimal);
       return data[0];
     } catch (err) {
@@ -70,8 +67,8 @@ export default function SingleAnimalPage({ id }) {
 
   async function fetchAllAnimalRecords(id) {
     const animalBase = await fetchAnimal(id);
-    if (animalBase.animal) {
-      const animalLogs = await fetchAnimalMedicalLogs(id);
+    if (animalBase) {
+      await fetchAnimalMedicalLogs(id);
       setIsLoading(false);
     }
 
@@ -89,36 +86,21 @@ export default function SingleAnimalPage({ id }) {
       </div>
     );
 
-    if (isError) {
-      return (
-        <div className="flex flex-col items-center justify-center h-screen text-center px-4">
-          <h2 className="text-2xl font-semibold mb-4">Oops!</h2>
-          <p className="text-lg text-gray-700">
-            That animal doesn't seem to be available right now.
-          </p>
-          <p className="mt-2 text-gray-500">
-            Please try searching again or check back later.
-          </p>
-        </div>
-      )
-    }
+  if (isError) {
+    return (
+      <div className="flex flex-col items-center justify-center h-screen text-center px-4">
+        <h2 className="text-2xl font-semibold mb-4">Oops!</h2>
+        <p className="text-lg text-gray-700">That animal doesn't seem to be available right now.</p>
+        <p className="mt-2 text-gray-500">Please try searching again or check back later.</p>
+      </div>
+    );
+  }
 
   return (
     <>
       <div className="max-w-7xl mx-auto py-20 px-4 sm:px-6 lg:px-8">
         <article>
-          {isStaff && (
-            <div className="flex justify-end">
-              <Button className={'rounded-lg'} onClick={() => setIsEditing(!isEditing)}>
-                Edit Animal Info
-              </Button>
-            </div>
-          )}
-          {isEditing ? (
-            <AnimalEditForm isEditing={isEditing} viewAnimal={viewAnimal} />
-          ) : (
-            <AnimalGeneralInfo viewAnimal={viewAnimal} />
-          )}
+          <AnimalGeneralInfo viewAnimal={viewAnimal} />
           <Card className="mt-10">
             <CardTitle className="pl-5">Medical Logs</CardTitle>
             <CardDescription className="px-5 flex flex-col gap-y-5">
