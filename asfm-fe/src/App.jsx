@@ -56,6 +56,9 @@ function App() {
           <Link to="/single-animal/$id" params={{id: '550e8400-e29b-41d4-a716-446655550001'}}>
           Go to animal 550e8400-e29b-41d4-a716-446655550001
           </Link>
+          <Link to="/my-animals/$id" className="block" params={{id: '550e8400-e29b-41d4-a716-446655440101'}}>
+          Go to user (John Doe) 550e8400-e29b-41d4-a716-446655440101
+          </Link>
         </div>
         <div>
           <div className='text-center'>Global State Test</div>

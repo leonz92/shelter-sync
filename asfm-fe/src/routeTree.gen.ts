@@ -13,6 +13,7 @@ import { Route as MedicalLogsRouteImport } from './routes/medical-logs'
 import { Route as AdminPortalRouteImport } from './routes/admin-portal'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SingleAnimalIdRouteImport } from './routes/single-animal.$id'
+import { Route as MyAnimalsIdRouteImport } from './routes/my-animals.$id'
 
 const MedicalLogsRoute = MedicalLogsRouteImport.update({
   id: '/medical-logs',
@@ -34,17 +35,24 @@ const SingleAnimalIdRoute = SingleAnimalIdRouteImport.update({
   path: '/single-animal/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MyAnimalsIdRoute = MyAnimalsIdRouteImport.update({
+  id: '/my-animals/$id',
+  path: '/my-animals/$id',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin-portal': typeof AdminPortalRoute
   '/medical-logs': typeof MedicalLogsRoute
+  '/my-animals/$id': typeof MyAnimalsIdRoute
   '/single-animal/$id': typeof SingleAnimalIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin-portal': typeof AdminPortalRoute
   '/medical-logs': typeof MedicalLogsRoute
+  '/my-animals/$id': typeof MyAnimalsIdRoute
   '/single-animal/$id': typeof SingleAnimalIdRoute
 }
 export interface FileRoutesById {
@@ -52,18 +60,30 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/admin-portal': typeof AdminPortalRoute
   '/medical-logs': typeof MedicalLogsRoute
+  '/my-animals/$id': typeof MyAnimalsIdRoute
   '/single-animal/$id': typeof SingleAnimalIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin-portal' | '/medical-logs' | '/single-animal/$id'
+  fullPaths:
+    | '/'
+    | '/admin-portal'
+    | '/medical-logs'
+    | '/my-animals/$id'
+    | '/single-animal/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin-portal' | '/medical-logs' | '/single-animal/$id'
+  to:
+    | '/'
+    | '/admin-portal'
+    | '/medical-logs'
+    | '/my-animals/$id'
+    | '/single-animal/$id'
   id:
     | '__root__'
     | '/'
     | '/admin-portal'
     | '/medical-logs'
+    | '/my-animals/$id'
     | '/single-animal/$id'
   fileRoutesById: FileRoutesById
 }
@@ -71,6 +91,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminPortalRoute: typeof AdminPortalRoute
   MedicalLogsRoute: typeof MedicalLogsRoute
+  MyAnimalsIdRoute: typeof MyAnimalsIdRoute
   SingleAnimalIdRoute: typeof SingleAnimalIdRoute
 }
 
@@ -104,6 +125,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SingleAnimalIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/my-animals/$id': {
+      id: '/my-animals/$id'
+      path: '/my-animals/$id'
+      fullPath: '/my-animals/$id'
+      preLoaderRoute: typeof MyAnimalsIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -111,6 +139,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminPortalRoute: AdminPortalRoute,
   MedicalLogsRoute: MedicalLogsRoute,
+  MyAnimalsIdRoute: MyAnimalsIdRoute,
   SingleAnimalIdRoute: SingleAnimalIdRoute,
 }
 export const routeTree = rootRouteImport
