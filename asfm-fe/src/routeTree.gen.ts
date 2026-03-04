@@ -9,7 +9,9 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as MySuppliesRouteImport } from './routes/my-supplies'
 import { Route as MedicalLogsRouteImport } from './routes/medical-logs'
+import { Route as LoansRouteImport } from './routes/loans'
 import { Route as InventoryRouteImport } from './routes/inventory'
 import { Route as ProtectedRouteImport } from './routes/_protected'
 import { Route as SignInRouteImport } from './routes/SignIn'
@@ -19,9 +21,19 @@ import { Route as AnimalsAddRouteImport } from './routes/animals/add'
 import { Route as AnimalsAnimalIdRouteImport } from './routes/animals/$animalId'
 import { Route as ProtectedAdminPortalRouteImport } from './routes/_protected/admin-portal'
 
+const MySuppliesRoute = MySuppliesRouteImport.update({
+  id: '/my-supplies',
+  path: '/my-supplies',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const MedicalLogsRoute = MedicalLogsRouteImport.update({
   id: '/medical-logs',
   path: '/medical-logs',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoansRoute = LoansRouteImport.update({
+  id: '/loans',
+  path: '/loans',
   getParentRoute: () => rootRouteImport,
 } as any)
 const InventoryRoute = InventoryRouteImport.update({
@@ -68,7 +80,9 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/SignIn': typeof SignInRoute
   '/inventory': typeof InventoryRoute
+  '/loans': typeof LoansRoute
   '/medical-logs': typeof MedicalLogsRoute
+  '/my-supplies': typeof MySuppliesRoute
   '/admin-portal': typeof ProtectedAdminPortalRoute
   '/animals/$animalId': typeof AnimalsAnimalIdRoute
   '/animals/add': typeof AnimalsAddRoute
@@ -78,7 +92,9 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/SignIn': typeof SignInRoute
   '/inventory': typeof InventoryRoute
+  '/loans': typeof LoansRoute
   '/medical-logs': typeof MedicalLogsRoute
+  '/my-supplies': typeof MySuppliesRoute
   '/admin-portal': typeof ProtectedAdminPortalRoute
   '/animals/$animalId': typeof AnimalsAnimalIdRoute
   '/animals/add': typeof AnimalsAddRoute
@@ -90,7 +106,9 @@ export interface FileRoutesById {
   '/SignIn': typeof SignInRoute
   '/_protected': typeof ProtectedRouteWithChildren
   '/inventory': typeof InventoryRoute
+  '/loans': typeof LoansRoute
   '/medical-logs': typeof MedicalLogsRoute
+  '/my-supplies': typeof MySuppliesRoute
   '/_protected/admin-portal': typeof ProtectedAdminPortalRoute
   '/animals/$animalId': typeof AnimalsAnimalIdRoute
   '/animals/add': typeof AnimalsAddRoute
@@ -102,7 +120,9 @@ export interface FileRouteTypes {
     | '/'
     | '/SignIn'
     | '/inventory'
+    | '/loans'
     | '/medical-logs'
+    | '/my-supplies'
     | '/admin-portal'
     | '/animals/$animalId'
     | '/animals/add'
@@ -112,7 +132,9 @@ export interface FileRouteTypes {
     | '/'
     | '/SignIn'
     | '/inventory'
+    | '/loans'
     | '/medical-logs'
+    | '/my-supplies'
     | '/admin-portal'
     | '/animals/$animalId'
     | '/animals/add'
@@ -123,7 +145,9 @@ export interface FileRouteTypes {
     | '/SignIn'
     | '/_protected'
     | '/inventory'
+    | '/loans'
     | '/medical-logs'
+    | '/my-supplies'
     | '/_protected/admin-portal'
     | '/animals/$animalId'
     | '/animals/add'
@@ -135,7 +159,9 @@ export interface RootRouteChildren {
   SignInRoute: typeof SignInRoute
   ProtectedRoute: typeof ProtectedRouteWithChildren
   InventoryRoute: typeof InventoryRoute
+  LoansRoute: typeof LoansRoute
   MedicalLogsRoute: typeof MedicalLogsRoute
+  MySuppliesRoute: typeof MySuppliesRoute
   AnimalsAnimalIdRoute: typeof AnimalsAnimalIdRoute
   AnimalsAddRoute: typeof AnimalsAddRoute
   AnimalsIndexRoute: typeof AnimalsIndexRoute
@@ -143,11 +169,25 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/my-supplies': {
+      id: '/my-supplies'
+      path: '/my-supplies'
+      fullPath: '/my-supplies'
+      preLoaderRoute: typeof MySuppliesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/medical-logs': {
       id: '/medical-logs'
       path: '/medical-logs'
       fullPath: '/medical-logs'
       preLoaderRoute: typeof MedicalLogsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/loans': {
+      id: '/loans'
+      path: '/loans'
+      fullPath: '/loans'
+      preLoaderRoute: typeof LoansRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/inventory': {
@@ -226,7 +266,9 @@ const rootRouteChildren: RootRouteChildren = {
   SignInRoute: SignInRoute,
   ProtectedRoute: ProtectedRouteWithChildren,
   InventoryRoute: InventoryRoute,
+  LoansRoute: LoansRoute,
   MedicalLogsRoute: MedicalLogsRoute,
+  MySuppliesRoute: MySuppliesRoute,
   AnimalsAnimalIdRoute: AnimalsAnimalIdRoute,
   AnimalsAddRoute: AnimalsAddRoute,
   AnimalsIndexRoute: AnimalsIndexRoute,

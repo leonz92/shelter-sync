@@ -43,8 +43,8 @@ export function ReusableTable({
             : data.map((row, rowIndex) => (
                 <ShadcnTableRow key={rowIndex} className={`${tablebodyRowClassName} `}>
                   {columns.map((column) => (
-                    <TableCell key={column.accessorKey} className={column.cellClassName}>
-                      {row[column.accessorKey]}
+                    <TableCell key={column.accessorKey || column.id} className={column.cellClassName}>
+                      {column.cell ? column.cell({ row: { original: row } }) : row[column.accessorKey]}
                     </TableCell>
                   ))}
                 </ShadcnTableRow>

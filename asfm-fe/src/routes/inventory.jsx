@@ -6,6 +6,7 @@ import { ReusableTable } from '../components/table_components'
 import { useEffect, useState } from 'react'
 import apiClient from '../lib/axios';
 import FilterSelect from '@/components/custom/FilterSelect';
+import { Edit, Trash2 } from 'lucide-react';
 
 export const Route = createFileRoute('/inventory')({
   component: RouteComponent,
@@ -69,6 +70,16 @@ function RouteComponent() {
     setInventory(filtered)
   }, [filters, allInventory])
 
+  const handleEdit = (inventoryItem) => {
+    // TODO: Implement edit functionality
+    console.log('Edit:', inventoryItem)
+  }
+
+  const handleDelete = (inventoryItem) => {
+    // TODO: Implement delete functionality
+    console.log('Delete:', inventoryItem)
+  }
+
   const inventoryColumns = [
     {
       accessorKey: "item_name",
@@ -94,6 +105,28 @@ function RouteComponent() {
       textSize: "sm",
       headClassName: "min-w-[150px]",
     },
+    {
+      id: "actions",
+      header: "Actions",
+      cell: ({ row }) => (
+        <div className="flex gap-2">
+          <button
+            onClick={() => handleEdit(row.original)}
+            className="p-1 hover:bg-blue-100 rounded"
+            title="Edit"
+          >
+            <Edit size={18} className="text-blue-600" />
+          </button>
+          <button
+            onClick={() => handleDelete(row.original)}
+            className="p-1 hover:bg-red-100 rounded"
+            title="Delete"
+          >
+            <Trash2 size={18} className="text-red-600" />
+          </button>
+        </div>
+      ),
+    },
   ]
 
   if (error) return <div className="flex justify-center pt-8 text-red-500">{error}</div>
@@ -103,15 +136,6 @@ function RouteComponent() {
       <div className='flex justify-center pt-2'>
         Inventory
       </div>
-      <SearchBar
-        value={filters.search}
-        onChange={(value) => setFilters({ ...filters, search: value })}
-      />
-      <FilterSelect
-        selectTriggerClassName="w-[300px]"
-        selectItems={categories}
-        onValueChange={(value) => setFilters({ ...filters, category: value })}
-      />
       {!loading && inventory.length === 0 && (
         <div className="flex justify-center pt-8 text-gray-500">No inventory items found.</div>
       )}
