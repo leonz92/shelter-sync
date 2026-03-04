@@ -45,7 +45,7 @@ function NavBar() {
           <div className="flex items-center gap-4 ml-auto">
             <div>
               <div className="bg-gray-200 px-4 py-2 rounded-2xl">
-                {user.user_metadata.first_name}
+                {userRole}
               </div>
             </div>
             <Button variant="outline" onClick={handleSignOut}>
