@@ -70,7 +70,7 @@ const getStaffUserToken = async () => {
         'Content-Type': 'application/json',
         apikey: process.env.SUPABASE_PUBLISHABLE_KEY,
       },
-      body: JSON.stringify({ email: 'another@test.com', password: 'password123' }),
+      body: JSON.stringify({ email: 'staff@user.com', password: 'staffpassword' }),
     },
   );
   const data = await response.json();
@@ -86,7 +86,7 @@ const getRegularUserToken = async () => {
         'Content-Type': 'application/json',
         apikey: process.env.SUPABASE_PUBLISHABLE_KEY,
       },
-      body: JSON.stringify({ email: 'testing@gmail.com', password: 'password123' }),
+      body: JSON.stringify({ email: 'regular@user.com', password: 'regularpassword' }),
     },
   );
   const data = await response.json();
