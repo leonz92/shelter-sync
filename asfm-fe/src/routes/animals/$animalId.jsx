@@ -8,8 +8,8 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ModalDialog } from '@/components/ModalDialog';
 import ConfirmationDialog from '@/components/confirmationDialog';
 import CustomBadge from '@/components/custom/CustomBadge';
-import AnimalForm from '@/@/components/animals/AnimalForm';
-import { useBoundStore } from '@/@/store';
+import AnimalForm from '@/components/animals/AnimalForm';
+import { useBoundStore } from '@/store';
 import { STATUS_COLORS, formatStatus, formatSpecies, formatSex } from '@/constants/animalConstants';
 
 // TODO: Replace with actual API call to backend
