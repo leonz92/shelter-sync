@@ -12,7 +12,6 @@ export function useDashboardSummary() {
                 setIsLoading(true);
                     setTimeout(() => {
                     setIsLoading(false);
-                    setOpen(false);
                     }, 2000);
             }
             catch (error) {
