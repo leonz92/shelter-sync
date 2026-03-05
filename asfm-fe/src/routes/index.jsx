@@ -1,6 +1,4 @@
-import App from '@/App';
 import { createFileRoute } from '@tanstack/react-router';
-import Layout from '@/components/Layout';
 import { useBoundStore } from '@/store';
 
 export const Route = createFileRoute('/')({
@@ -10,7 +8,7 @@ export const Route = createFileRoute('/')({
 function RouteComponent() {
   const loading = useBoundStore((state) => state.loading);
   return (
-    <Layout>
+    <>
       {loading ? (
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
@@ -19,8 +17,8 @@ function RouteComponent() {
           </div>
         </div>
       ) : (
-        <App />
+        <div>Homepage</div>
       )}
-    </Layout>
+    </>
   );
 }
