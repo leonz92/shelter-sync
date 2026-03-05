@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { Button } from '@/components/ui/button';
 import { Card, CardDescription, CardTitle } from '@/components/ui/card';
 import { Spinner } from '@/components/ui/spinner';
 import getBirthdayYear from '@/utils/getBirthday';
@@ -8,13 +7,11 @@ import MedicalLogCard from '@/components/single-animal/MedicalLogCard';
 import { AnimalGeneralInfo } from '@/components/single-animal/AnimalGeneralInfo';
 
 export default function SingleAnimalPage({ id }) {
-  // state to be replaced with global state and actions once ready
+
   const [viewAnimal, setViewAnimal] = useState('');
   const [animalLogs, setAnimalLogs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
-
-  // remove and create error state
 
   const url = 'http://localhost:3005'; // <-- placeholder
 
