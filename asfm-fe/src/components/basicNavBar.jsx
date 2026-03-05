@@ -4,7 +4,7 @@ import { useNavigate, useRouter } from '@tanstack/react-router';
 import logo from '../assets/logo.png';
 
 function BasicNavBar() {
-  const { isAuthenticated, login, logout } = useAuthStore();
+  const { isAuthenticated, role, login, logout } = useAuthStore();
   const navigate = useNavigate();
   const router = useRouter();
 
@@ -19,7 +19,6 @@ function BasicNavBar() {
     navigate({ to: '/animals' });
   };
 
-  // Debug: Log all routes
   return (
     <nav className="bg-secondary p-4 flex justify-between">
       <div className="flex items-center gap-4">
@@ -39,6 +38,21 @@ function BasicNavBar() {
         <Button variant="outline" onClick={handleMedicalLog}>
           Med Log
         </Button>
+        {role === 'STAFF' && (
+          <Button variant="outline" onClick={() => navigate({ to: '/medical-logs/admin' })}>
+            Admin Logs
+          </Button>
+        )}
+        {role === 'USER' && (
+          <Button variant="outline" onClick={() => navigate({ to: '/medical-logs/foster' })}>
+            Foster Logs
+          </Button>
+        )}
+        {role === 'USER' && (
+          <Button variant="outline" onClick={() => navigate({ to: '/medical-logs/my-animals' })}>
+            My Animals Logs
+          </Button>
+        )}
       </div>
       <div className="flex end gap-4">
         <div className="flex items-center gap-4">
