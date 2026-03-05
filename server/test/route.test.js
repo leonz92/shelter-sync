@@ -99,7 +99,15 @@ const runTests = async () => {
     const USER_TOKEN = await getRegularUserToken();
     const staffUser = await getRandomStaffUser();
     const regularUser = await getRandomRegularUser();
-    const inventory = await getRandomInventory();
+    const inventory = await prisma.inventory.findFirst({
+      where: {
+        inventory_transactions: { some: {} },
+      },
+      include: {
+        inventory_transactions: { take: 1 },
+      },
+    });
+    const transaction = inventory.inventory_transactions[0];
     const item = await getRandomItem();
     const animal = await getRandomAnimal();
     const PATH = `inventory/${inventory.id}`;
@@ -112,14 +120,14 @@ const runTests = async () => {
         Authorization: `Bearer ${STAFF_TOKEN}`,
       },
       body: JSON.stringify({
-        quantity: 12,
+        quantity: 47835623,
         expiration_date: '2026-12-30',
         item_id: item.id,
         foster_user: regularUser.id,
-        staff_user: staffUser.id,
         type: 'INTAKE',
         status: 'COMPLETE',
         notes: 'transaction complete, paid in full',
+        transaction_id: transaction.id,
       }),
     });
     const data = await response.json();
