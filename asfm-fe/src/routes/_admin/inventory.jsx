@@ -1,9 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router'
 import Layout from '@/components/Layout';
 import BasicNavBar from '@/components/basicNavBar'
-import { ReusableTable } from '../components/table_components'
+import { ReusableTable } from '../../components/table_components'
 import { useEffect, useMemo, useState } from 'react'
-import apiClient from '../lib/axios';
+import apiClient from '../../lib/axios';
 import FilterBar from '@/components/FilterBar'
 import FilterSelect from '@/components/custom/FilterSelect';
 import InputGroupForSearch from '@/components/InputGroupForSearch'
@@ -22,7 +22,7 @@ const formatDate = (dateString) => {
   return `${month}/${day}/${year}`
 }
 
-export const Route = createFileRoute('/inventory')({
+export const Route = createFileRoute('/_admin/inventory')({
   component: RouteComponent,
 })
 
@@ -139,7 +139,11 @@ function RouteComponent() {
       sortable: true,
       textSize: "sm",
       headClassName: "min-w-[150px]",
-      cell: ({ row }) => formatDate(row.original.expiration_date),
+      cell: ({ row }) => {
+        const isCrate = row.original.category === 'CRATE'
+        if (!isCrate) return <span className="invisible">{formatDate(row.original.expiration_date)}</span>
+        return formatDate(row.original.expiration_date)
+      },
     },
     {
       id: "actions",

@@ -1,11 +1,12 @@
 import { createFileRoute } from '@tanstack/react-router'
 import Layout from '@/components/Layout'
 import BasicNavBar from '@/components/basicNavBar'
-import { ReusableTable } from '../components/table_components'
-import { useState } from 'react'
-import { mockLoanedItems } from '../features/mockLoanedItems'
+import { ReusableTable } from '../../components/table_components'
+import { useMemo } from 'react'
+import { mockLoanedItems } from '../../features/mockLoanedItems'
 import { Badge } from '@/components/ui/badge'
 import { ShoppingBag } from 'lucide-react'
+import { useBoundStore } from '@/store'
 
 const formatDate = (dateString) => {
   const date = new Date(dateString)
@@ -15,22 +16,18 @@ const formatDate = (dateString) => {
   return `${month}/${day}/${year}`
 }
 
-export const Route = createFileRoute('/my-supplies')({
+export const Route = createFileRoute('/_user/my-supplies')({
   component: RouteComponent,
 })
 
 function RouteComponent() {
-  // TODO: replace with real auth — const { user } = useAuthStore()
-  const mockUser = { role: 'USER', userId: 'U-1024' }
-  // To test access denied, change to: const mockUser = { role: 'STAFF', userId: 'U-1024' }
+  const { user } = useBoundStore()
 
-  const [supplies] = useState(
-    mockUser.role === 'USER'
-      ? mockLoanedItems.filter((item) => item.userId === mockUser.userId)
-      : []
+  const supplies = useMemo(
+    () => mockLoanedItems.filter((item) => item.userId === user?.id || item.userId === 'U-1024'),
+    [user?.id]
   )
-  const [loading] = useState(false)
-  const [error] = useState(null)
+
   const suppliesColumns = [
     {
       accessorKey: 'itemDescription',
@@ -67,14 +64,11 @@ function RouteComponent() {
       sortable: true,
       textSize: 'sm',
       headClassName: 'min-w-[180px]',
-      cell: ({ row }) => formatDate(row.original.expectedReturnDate),
-    },
-    {
-      accessorKey: 'loanType',
-      header: 'Loan Type',
-      sortable: true,
-      textSize: 'sm',
-      headClassName: 'min-w-[120px]',
+      cell: ({ row }) => {
+        const isCrate = row.original.itemDescription.toLowerCase().includes('crate')
+        if (!isCrate) return <span className="invisible">{formatDate(row.original.expectedReturnDate)}</span>
+        return formatDate(row.original.expectedReturnDate)
+      },
     },
     {
       accessorKey: 'loanStatus',
@@ -92,21 +86,8 @@ function RouteComponent() {
     },
   ]
 
-  if (mockUser.role !== 'USER') {
-    return (
-      <Layout navBar={<BasicNavBar />}>
-        <div className="flex justify-center items-center h-64 text-red-500 text-lg font-semibold">
-          Access Denied
-        </div>
-      </Layout>
-    )
-  }
-
-  if (error)
-    return <div className="flex justify-center pt-8 text-red-500">{error}</div>
-
   const activeCount = supplies.filter(s => s.loanStatus === 'Active').length
-  const returnedCount = supplies.filter(s => s.loanStatus === 'Returned').length
+  const returnedCount = supplies.filter(s => s.loanStatus === 'Complete').length
 
   return (
     <Layout navBar={<BasicNavBar />}>
@@ -120,7 +101,7 @@ function RouteComponent() {
               My Supplies
             </h1>
             <p className="text-muted-foreground mt-1 text-sm sm:text-base">
-              User ID: {mockUser.userId} — supplies assigned to your foster animals.
+              User ID: {user?.id} — supplies assigned to your foster animals.
             </p>
             <div className="flex items-center gap-3 mt-3 flex-wrap">
               <Badge variant="secondary" className="font-medium">{supplies.length} total</Badge>
@@ -128,14 +109,14 @@ function RouteComponent() {
                 <Badge variant="outline" className="font-medium border-emerald-500/30 text-emerald-600 bg-emerald-500/5">{activeCount} active</Badge>
               )}
               {returnedCount > 0 && (
-                <Badge variant="outline" className="font-medium border-blue-500/30 text-blue-600 bg-blue-500/5">{returnedCount} returned</Badge>
+                <Badge variant="outline" className="font-medium border-blue-500/30 text-blue-600 bg-blue-500/5">{returnedCount} complete</Badge>
               )}
             </div>
           </div>
         </div>
       </div>
 
-      {!loading && supplies.length === 0 && (
+      {supplies.length === 0 && (
         <div className="flex justify-center pt-8 text-gray-500">
           No supplies currently assigned to you.
         </div>
@@ -143,7 +124,7 @@ function RouteComponent() {
       <ReusableTable
         columns={suppliesColumns}
         data={supplies}
-        isLoading={loading}
+        isLoading={false}
         headerClassName="bg-secondary text-primary-foreground"
         tablebodyRowClassName="bg-white hover:bg-secondary/20"
         containerClassName="overflow-auto max-h-150 rounded-lg border border-pale-sky shadow-sm relative w-full"

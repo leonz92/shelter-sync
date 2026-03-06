@@ -17,8 +17,9 @@ export function ReusableTable({
   containerClassName = '',
   isLoading,
   numberOfRowForSkelton = 10,
+  initialSort = null,
 }) {
-  const [sortConfig, setSortConfig] = useState({ key: null, direction: 'asc' })
+  const [sortConfig, setSortConfig] = useState(initialSort || { key: null, direction: 'asc' })
 
   const handleSort = (key) => {
     setSortConfig((prev) => ({
