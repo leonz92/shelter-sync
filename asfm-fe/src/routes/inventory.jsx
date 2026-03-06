@@ -222,12 +222,6 @@ function RouteComponent() {
             <p className="text-muted-foreground mt-1 text-sm sm:text-base">
               Browse and manage shelter supply stock.
             </p>
-            <div className="flex items-center gap-3 mt-3 flex-wrap">
-              <Badge variant="secondary" className="font-medium">{totalItems} items</Badge>
-              {categoryCount > 0 && (
-                <Badge variant="outline" className="font-medium border-blue-500/30 text-blue-600 bg-blue-500/5">{categoryCount} categories</Badge>
-              )}
-            </div>
           </div>
         </div>
       </div>
