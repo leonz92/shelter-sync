@@ -3,19 +3,19 @@ import { useBoundStore } from '@/store';
 import { Button } from '@/components/ui/button';
 import { ShieldAlert } from 'lucide-react';
 
-export default function RoleGuard({ allowedRoles, children }) {
+export default function RoleGuard({ allowedRoles, children, redirectTo = '/medical-logs', message = "You don't have permission to view this page." }) {
   const navigate = useNavigate();
-  const { role } = useBoundStore((state) => state.user);
+  const userRole = useBoundStore((state) => state.userRole);
 
-  if (!allowedRoles.includes(role)) {
+  if (!userRole || !allowedRoles.includes(userRole)) {
     return (
       <div className="flex flex-col items-center justify-center py-24 gap-4">
         <ShieldAlert className="size-12 text-muted-foreground" />
         <p className="text-xl text-muted-foreground">
-          You don't have permission to view this page.
+          {message}
         </p>
-        <Button variant="outline" onClick={() => navigate({ to: '/medical-logs' })}>
-          ← Back to Medical Logs
+        <Button variant="outline" onClick={() => navigate({ to: redirectTo })}>
+          ← Go Back
         </Button>
       </div>
     );
