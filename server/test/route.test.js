@@ -533,7 +533,7 @@ const runAddTransactionPostTests = async () => {
       }),
     });
     data = await res.json();
-    if (res.status === 400)
+    if (res.status === 409)
       console.log('test 9 passed: rejects when quantity exceeds all inventory count');
     else console.log('test 9 failed: should reject when quantity exceeds all inventory count');
 
