@@ -117,7 +117,7 @@ exports.createDistributeTransaction = async ({
       const err = new Error(
         `Insufficient inventory: ${quantity - totalAvailable} more units required than available`,
       );
-      err.statusCode = 400;
+      err.statusCode = 409;
       throw err;
     }
 
