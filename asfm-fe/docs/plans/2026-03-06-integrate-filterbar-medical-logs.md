@@ -1,12 +1,26 @@
-# Medical Log Filter Bar Integration Implementation Plan
+# Medical Log Filter Bar Integration Implementation Plan (Modified)
 
 > **For Hermes:** Use subagent-driven-development skill to implement this plan task-by-task.
 
-**Goal:** Replace the vertical Sheet-based MedicalLogFilterDrawer with a horizontal FilterBar component across all three medical log pages (admin, foster, and index), using existing reusable filter components where possible.
+**Goal:** Replace the vertical Sheet-based MedicalLogFilterDrawer with a horizontal FilterBar component across all three medical log pages (admin, foster, and index), using a priority-based layout to avoid visual clutter.
 
-**Architecture:** Create specialized filter components (DateRangePicker, MultiSelect) that integrate with the existing FilterBar pattern. Maintain current filter functionality (search, date range, log types, created by) but present it in a horizontal layout with Filter Search, Clear, and Add Log buttons.
+**Architecture:** Create a two-tier filter system where primary filters (search + log types) are always visible in the FilterBar, and secondary filters (date range, created by) are behind an "Advanced Filters" popover. This keeps the horizontal layout clean while preserving all filtering capabilities.
 
 **Tech Stack:** React, existing FilterBar/SearchBar/FilterSelect components, react-day-picker (already installed), date-fns (already installed), Tailwind CSS
+
+---
+
+## Design Decision: Priority-Based Layout
+
+**Primary Filters (always visible):**
+- SearchBar - animal name search (most frequently used)
+- MultiSelect - log types (Medical, Behavioral, Veterinary) (second most common)
+
+**Secondary Filters (behind "Advanced" button):**
+- DateRangePicker - from/to dates
+- FilterSelect - created by (admin only)
+
+This approach reduces visual clutter by showing only 2 components in the horizontal FilterBar instead of 4, while still providing quick access to all filtering options.
 
 ---
 
@@ -203,9 +217,104 @@ git commit -m "feat: add MultiSelect component for log type filtering"
 
 ---
 
-## Task 3: Create MedicalLogFilterBar Component
+## Task 3: Create AdvancedFiltersPopover Component
 
-**Objective:** Build a specialized filter bar for medical logs that combines FilterBar with SearchBar, DateRangePicker, MultiSelect, and FilterSelect components.
+**Objective:** Build a popover component that contains the secondary filters (date range and created by) to reduce clutter in the main FilterBar.
+
+**Files:**
+- Create: `asfm-fe/src/components/ui/advanced-filters-popover.jsx`
+
+**Step 1: Write the component**
+
+```jsx
+import * as React from 'react';
+import { SlidersHorizontal } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { DateRangePicker } from './date-range-picker';
+import FilterSelect from '../custom/FilterSelect';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from './popover';
+
+export function AdvancedFiltersPopover({
+  dateRange,
+  onDateRangeChange,
+  createdBy,
+  onCreatedByChange,
+  showCreatedBy = true,
+}) {
+  const [isOpen, setIsOpen] = React.useState(false);
+
+  const hasActiveFilters =
+    (dateRange?.from || dateRange?.to) ||
+    (showCreatedBy && createdBy !== 'all');
+
+  return (
+    <Popover open={isOpen} onOpenChange={setIsOpen}>
+      <PopoverTrigger asChild>
+        <Button
+          variant={hasActiveFilters ? 'default' : 'outline'}
+          size="sm"
+          className="gap-2"
+        >
+          <SlidersHorizontal className="size-4" />
+          Advanced
+          {hasActiveFilters && <span className="w-1.5 h-1.5 rounded-full bg-current" />}
+        </Button>
+      </PopoverTrigger>
+      <PopoverContent className="w-80" align="start">
+        <div className="space-y-4">
+          <div>
+            <h4 className="text-sm font-medium mb-2">Date Range</h4>
+            <DateRangePicker
+              value={dateRange}
+              onChange={onDateRangeChange}
+              className="w-full"
+            />
+          </div>
+          {showCreatedBy && (
+            <div>
+              <h4 className="text-sm font-medium mb-2">Created By</h4>
+              <FilterSelect
+                value={createdBy}
+                onChange={onCreatedByChange}
+                selectTriggerClassName="w-full"
+                selectItems={['all', 'admin', 'foster']}
+                selectItemsMap={{
+                  all: 'All Users',
+                  admin: 'Admin/Staff',
+                  foster: 'Foster',
+                }}
+              />
+            </div>
+          )}
+        </div>
+      </PopoverContent>
+    </Popover>
+  );
+}
+```
+
+**Step 2: Verify no syntax errors**
+
+Run: `cd asfm-fe && npm run build`
+Expected: Build succeeds without errors
+
+**Step 3: Commit**
+
+```bash
+cd asfm-fe
+git add src/components/MedicalLogFilterBar.jsx
+git commit -m "feat: add MedicalLogFilterBar component with horizontal layout"
+```
+
+---
+
+## Task 4: Create MedicalLogFilterBar Component
+
+**Objective:** Build a specialized filter bar for medical logs that shows only primary filters (search + log types) in the horizontal layout, with secondary filters in the Advanced popover.
 
 **Files:**
 - Create: `asfm-fe/src/components/MedicalLogFilterBar.jsx`
@@ -216,9 +325,8 @@ git commit -m "feat: add MultiSelect component for log type filtering"
 import { useState } from 'react';
 import FilterBar from './FilterBar';
 import SearchBar from './SearchBar';
-import { DateRangePicker } from './ui/date-range-picker';
 import { MultiSelect } from './ui/multi-select';
-import FilterSelect from './custom/FilterSelect';
+import { AdvancedFiltersPopover } from './ui/advanced-filters-popover';
 import { LOG_TYPE_OPTIONS } from '@/constants/medicalLogConstants';
 
 export function MedicalLogFilterBar({
@@ -250,6 +358,10 @@ export function MedicalLogFilterBar({
     setTempFilters({ ...tempFilters, search: value });
   };
 
+  const handleLogTypesChange = (types) => {
+    setTempFilters({ ...tempFilters, logTypes: types });
+  };
+
   const handleDateRangeChange = (range) => {
     setTempFilters({
       ...tempFilters,
@@ -258,10 +370,6 @@ export function MedicalLogFilterBar({
         to: range?.to || null,
       },
     });
-  };
-
-  const handleLogTypesChange = (types) => {
-    setTempFilters({ ...tempFilters, logTypes: types });
   };
 
   const handleCreatedByChange = (value) => {
@@ -281,29 +389,19 @@ export function MedicalLogFilterBar({
         onChange={handleSearchChange}
         placeholder="Search by animal name"
       />
-      <DateRangePicker
-        value={tempFilters.dateRange}
-        onChange={handleDateRangeChange}
-      />
       <MultiSelect
         options={LOG_TYPE_OPTIONS}
         value={tempFilters.logTypes}
         onChange={handleLogTypesChange}
         placeholder="Log types"
       />
-      {showCreatedBy && (
-        <FilterSelect
-          value={tempFilters.createdBy}
-          onChange={handleCreatedByChange}
-          selectTriggerClassName="w-[180px]"
-          selectItems={['all', 'admin', 'foster']}
-          selectItemsMap={{
-            all: 'All Users',
-            admin: 'Admin/Staff',
-            foster: 'Foster',
-          }}
-        />
-      )}
+      <AdvancedFiltersPopover
+        dateRange={tempFilters.dateRange}
+        onDateRangeChange={handleDateRangeChange}
+        createdBy={tempFilters.createdBy}
+        onCreatedByChange={handleCreatedByChange}
+        showCreatedBy={showCreatedBy}
+      />
     </FilterBar>
   );
 }
@@ -319,12 +417,12 @@ Expected: Build succeeds without errors
 ```bash
 cd asfm-fe
 git add src/components/MedicalLogFilterBar.jsx
-git commit -m "feat: add MedicalLogFilterBar component with horizontal layout"
+git commit -m "feat: add MedicalLogFilterBar component with priority-based layout"
 ```
 
 ---
 
-## Task 4: Update FilterSelect to Support Display Map
+## Task 5: Update FilterSelect to Support Display Map
 
 **Objective:** Enhance FilterSelect component to support a display map for option values.
 
@@ -377,7 +475,7 @@ git commit -m "feat: add selectItemsMap prop to FilterSelect for custom display"
 
 ---
 
-## Task 5: Update Admin Medical Log Page
+## Task 6: Update Admin Medical Log Page
 
 **Objective:** Replace MedicalLogFilterDrawer with MedicalLogFilterBar in the admin medical logs page.
 
@@ -431,7 +529,7 @@ git commit -m "refactor: replace MedicalLogFilterDrawer with MedicalLogFilterBar
 
 ---
 
-## Task 6: Update Foster Medical Log Page
+## Task 7: Update Foster Medical Log Page
 
 **Objective:** Replace MedicalLogFilterDrawer with MedicalLogFilterBar in the foster medical logs page.
 
@@ -485,7 +583,7 @@ git commit -m "refactor: replace MedicalLogFilterDrawer with MedicalLogFilterBar
 
 ---
 
-## Task 7: Update Index Medical Log Page
+## Task 8: Update Index Medical Log Page
 
 **Objective:** Replace MedicalLogFilterDrawer with MedicalLogFilterBar in the main medical logs list page.
 
@@ -539,7 +637,7 @@ git commit -m "refactor: replace MedicalLogFilterDrawer with MedicalLogFilterBar
 
 ---
 
-## Task 8: Test Integration and Clean Up
+## Task 9: Test Integration and Clean Up
 
 **Objective:** Verify the filter bar works correctly across all pages and clean up unused imports.
 
@@ -616,7 +714,7 @@ git commit -m "refactor: clean up unused imports after filter bar integration"
 
 ---
 
-## Task 9: Optional - Archive MedicalLogFilterDrawer
+## Task 10: Optional - Archive MedicalLogFilterDrawer
 
 **Objective:** Remove the old MedicalLogFilterDrawer component if no longer needed.
 
@@ -652,33 +750,40 @@ git commit -m "refactor: remove unused MedicalLogFilterDrawer component"
 After completing all tasks, verify:
 
 1. ✅ All three medical log pages use horizontal FilterBar layout
-2. ✅ Search filter works (animal name)
-3. ✅ Date range picker works (from/to dates)
-4. ✅ Log type multi-select works (Medical, Behavioral, Veterinary)
-5. ✅ Created by dropdown works (admin page only)
-6. ✅ Filter Search button applies filters
-7. ✅ Clear button resets all filters
-8. ✅ Add New/Log button navigates to add page
-9. ✅ Result count displays correctly
-10. ✅ No console errors
-11. ✅ Build succeeds without errors
-12. ✅ All components follow existing patterns
+2. ✅ Only 2 primary filters visible (Search + Log Types) - reduced clutter
+3. ✅ Advanced button shows visual indicator when secondary filters are active
+4. ✅ Search filter works (animal name)
+5. ✅ Log type multi-select works (Medical, Behavioral, Veterinary)
+6. ✅ Advanced popover opens and contains Date Range and Created By filters
+7. ✅ Date range picker works (from/to dates)
+8. ✅ Created by dropdown works (admin page only)
+9. ✅ Filter Search button applies all filters
+10. ✅ Clear button resets all filters
+11. ✅ Add New/Log button navigates to add page
+12. ✅ Result count displays correctly
+13. ✅ No console errors
+14. ✅ Build succeeds without errors
+15. ✅ All components follow existing patterns
 
 ---
 
 ## Component Architecture
 
 ```
-FilterBar (horizontal container)
+FilterBar (horizontal container - always visible)
 ├── SearchBar (animal name search)
-├── DateRangePicker (from/to date selection)
 ├── MultiSelect (log type checkboxes)
-└── FilterSelect (created by dropdown - admin only)
+└── AdvancedFiltersPopover (button triggering popover)
+    └── PopoverContent
+        ├── DateRangePicker (from/to date selection)
+        └── FilterSelect (created by dropdown - admin only)
 ```
 
 **Props Flow:**
 - Parent pages manage `filters` state
 - `MedicalLogFilterBar` manages temporary filter state
+- Primary filters (Search, Log Types) update temp state immediately
+- Advanced popover provides access to secondary filters
 - Filter Search applies temp filters to parent state
 - Clear resets both temp and parent filters
 
@@ -688,6 +793,7 @@ FilterBar (horizontal container)
 - FilterSelect: existing component (enhanced with display map)
 - DateRangePicker: new component (reuses Calendar, Popover, Button)
 - MultiSelect: new component (reuses Select, Checkbox)
+- AdvancedFiltersPopover: new component (reuses Popover, Button)
 - Calendar: existing component from react-day-picker
 - Popover: existing component from radix-ui
 
