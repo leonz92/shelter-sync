@@ -7,7 +7,7 @@ const RootLayout = () => (
   <AuthProvider>
     <Layout>
       <Outlet />
-      <TanStackRouterDevtools />
+      {/* <TanStackRouterDevtools /> */}
     </Layout>
   </AuthProvider>
 );
