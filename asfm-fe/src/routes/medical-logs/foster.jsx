@@ -10,7 +10,7 @@ import { FeatureSelector } from '@/components/FeatureSelector';
 import RoleGuard from '@/components/RoleGuard';
 import { useBoundStore } from '@/store';
 import { LOG_TYPE_OPTIONS, LOG_TYPE_COLORS, formatLogType } from '@/constants/medicalLogConstants';
-import { MedicalLogFilterBar } from '@/components/MedicalLogFilterBar';
+import { CompactMedicalLogFilterBar } from '@/components/CompactMedicalLogFilterBar';
 
 export const Route = createFileRoute('/medical-logs/foster')({
   component: FosterLogsPage,
@@ -192,16 +192,12 @@ function FosterLogsPage() {
             </div>
           </div>
 
-          <MedicalLogFilterBar
+          <CompactMedicalLogFilterBar
             filters={filters}
             onFiltersChange={setFilters}
             showCreatedBy={false}
-            onAddNew={() => navigate({ to: '/medical-logs/add' })}
-            addNewButtonLabel="Add Medical Log"
+            showAddNew={false}
           />
-          <p className="text-sm text-muted-foreground mt-2">
-            Showing {filtered.length} of {fosterLogs.length} logs
-          </p>
 
           {!medicalLogsLoading && filtered.length === 0 ? (
             <p className="text-muted-foreground text-center py-12">
