@@ -7,7 +7,6 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import CustomBadge from '@/components/custom/CustomBadge';
-import { MedicalLogFilterBar } from '@/components/MedicalLogFilterBar';
 import { useBoundStore } from '@/store';
 import { LOG_TYPE_OPTIONS, LOG_TYPE_COLORS, formatLogType } from '@/constants/medicalLogConstants';
 import { ClipboardList, Plus } from 'lucide-react';

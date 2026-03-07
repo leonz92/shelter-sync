@@ -17,7 +17,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { ReusableTable } from '@/components/table_components';
 import CustomBadge from '@/components/custom/CustomBadge';
 import { FeatureSelector } from '@/components/FeatureSelector';
-import { MedicalLogFilterBar } from '@/components/MedicalLogFilterBar';
 import RoleGuard from '@/components/RoleGuard';
 import { useBoundStore } from '@/store';
 import { LOG_TYPE_OPTIONS, LOG_TYPE_COLORS, formatLogType } from '@/constants/medicalLogConstants';
