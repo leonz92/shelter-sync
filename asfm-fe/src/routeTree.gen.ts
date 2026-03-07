@@ -15,7 +15,6 @@ import { Route as SignInRouteImport } from './routes/SignIn'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as MedicalLogsIndexRouteImport } from './routes/medical-logs/index'
 import { Route as AnimalsIndexRouteImport } from './routes/animals/index'
-import { Route as MedicalLogsMyAnimalsRouteImport } from './routes/medical-logs/my-animals'
 import { Route as MedicalLogsFosterRouteImport } from './routes/medical-logs/foster'
 import { Route as MedicalLogsAdminRouteImport } from './routes/medical-logs/admin'
 import { Route as MedicalLogsAddRouteImport } from './routes/medical-logs/add'
@@ -51,11 +50,6 @@ const AnimalsIndexRoute = AnimalsIndexRouteImport.update({
   id: '/animals/',
   path: '/animals/',
   getParentRoute: () => rootRouteImport,
-} as any)
-const MedicalLogsMyAnimalsRoute = MedicalLogsMyAnimalsRouteImport.update({
-  id: '/my-animals',
-  path: '/my-animals',
-  getParentRoute: () => MedicalLogsRoute,
 } as any)
 const MedicalLogsFosterRoute = MedicalLogsFosterRouteImport.update({
   id: '/foster',
@@ -98,7 +92,6 @@ export interface FileRoutesByFullPath {
   '/medical-logs/add': typeof MedicalLogsAddRoute
   '/medical-logs/admin': typeof MedicalLogsAdminRoute
   '/medical-logs/foster': typeof MedicalLogsFosterRoute
-  '/medical-logs/my-animals': typeof MedicalLogsMyAnimalsRoute
   '/animals/': typeof AnimalsIndexRoute
   '/medical-logs/': typeof MedicalLogsIndexRoute
 }
@@ -111,7 +104,6 @@ export interface FileRoutesByTo {
   '/medical-logs/add': typeof MedicalLogsAddRoute
   '/medical-logs/admin': typeof MedicalLogsAdminRoute
   '/medical-logs/foster': typeof MedicalLogsFosterRoute
-  '/medical-logs/my-animals': typeof MedicalLogsMyAnimalsRoute
   '/animals': typeof AnimalsIndexRoute
   '/medical-logs': typeof MedicalLogsIndexRoute
 }
@@ -127,7 +119,6 @@ export interface FileRoutesById {
   '/medical-logs/add': typeof MedicalLogsAddRoute
   '/medical-logs/admin': typeof MedicalLogsAdminRoute
   '/medical-logs/foster': typeof MedicalLogsFosterRoute
-  '/medical-logs/my-animals': typeof MedicalLogsMyAnimalsRoute
   '/animals/': typeof AnimalsIndexRoute
   '/medical-logs/': typeof MedicalLogsIndexRoute
 }
@@ -143,7 +134,6 @@ export interface FileRouteTypes {
     | '/medical-logs/add'
     | '/medical-logs/admin'
     | '/medical-logs/foster'
-    | '/medical-logs/my-animals'
     | '/animals/'
     | '/medical-logs/'
   fileRoutesByTo: FileRoutesByTo
@@ -156,7 +146,6 @@ export interface FileRouteTypes {
     | '/medical-logs/add'
     | '/medical-logs/admin'
     | '/medical-logs/foster'
-    | '/medical-logs/my-animals'
     | '/animals'
     | '/medical-logs'
   id:
@@ -171,7 +160,6 @@ export interface FileRouteTypes {
     | '/medical-logs/add'
     | '/medical-logs/admin'
     | '/medical-logs/foster'
-    | '/medical-logs/my-animals'
     | '/animals/'
     | '/medical-logs/'
   fileRoutesById: FileRoutesById
@@ -229,13 +217,6 @@ declare module '@tanstack/react-router' {
       fullPath: '/animals/'
       preLoaderRoute: typeof AnimalsIndexRouteImport
       parentRoute: typeof rootRouteImport
-    }
-    '/medical-logs/my-animals': {
-      id: '/medical-logs/my-animals'
-      path: '/my-animals'
-      fullPath: '/medical-logs/my-animals'
-      preLoaderRoute: typeof MedicalLogsMyAnimalsRouteImport
-      parentRoute: typeof MedicalLogsRoute
     }
     '/medical-logs/foster': {
       id: '/medical-logs/foster'
@@ -298,7 +279,6 @@ interface MedicalLogsRouteChildren {
   MedicalLogsAddRoute: typeof MedicalLogsAddRoute
   MedicalLogsAdminRoute: typeof MedicalLogsAdminRoute
   MedicalLogsFosterRoute: typeof MedicalLogsFosterRoute
-  MedicalLogsMyAnimalsRoute: typeof MedicalLogsMyAnimalsRoute
   MedicalLogsIndexRoute: typeof MedicalLogsIndexRoute
 }
 
@@ -306,7 +286,6 @@ const MedicalLogsRouteChildren: MedicalLogsRouteChildren = {
   MedicalLogsAddRoute: MedicalLogsAddRoute,
   MedicalLogsAdminRoute: MedicalLogsAdminRoute,
   MedicalLogsFosterRoute: MedicalLogsFosterRoute,
-  MedicalLogsMyAnimalsRoute: MedicalLogsMyAnimalsRoute,
   MedicalLogsIndexRoute: MedicalLogsIndexRoute,
 }
 

@@ -14,6 +14,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { ClipboardPlus, Plus, Edit, Trash2, Eye, ChevronDown, ChevronRight } from 'lucide-react';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { ReusableTable } from '@/components/table_components';
 import CustomBadge from '@/components/custom/CustomBadge';
 import RoleGuard from '@/components/RoleGuard';
 import { useBoundStore } from '@/store';
@@ -242,7 +243,11 @@ function AdminLogsPage() {
               isLoading={medicalLogsLoading}
               headerClassName="bg-secondary text-primary-foreground"
               tablebodyRowClassName="bg-white hover:bg-secondary/20"
-              containerClassName="overflow-auto flex-1 rounded-lg border border-pale-sky shadow-sm relative w-full"
+              containerClassName="rounded-lg border border-gray-200 shadow-sm relative w-full"
+              enablePagination={true}
+              enableColumnVisibility={true}
+              pageSize={15}
+              defaultVisibleColumns={['animal_name', 'logTypeBadge', 'administeredAtDisplay', 'fosterUser', 'loggedAtDisplay', 'generalNotes', 'doseDisplay']}
             />
           )}
         </div>
