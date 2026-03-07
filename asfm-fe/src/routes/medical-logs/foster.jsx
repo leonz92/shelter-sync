@@ -2,7 +2,8 @@ import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useState, useMemo, useEffect } from 'react';
 import Layout from '@/components/Layout';
 import { Badge } from '@/components/ui/badge';
-import { ClipboardPlus } from 'lucide-react';
+import { Button } from '@/components/ui/button';
+import { ClipboardPlus, Plus } from 'lucide-react';
 import { ReusableTable } from '@/components/table_components';
 import CustomBadge from '@/components/custom/CustomBadge';
 import { FeatureSelector } from '@/components/FeatureSelector';
@@ -183,6 +184,10 @@ function FosterLogsPage() {
                   </div>
                 </div>
               </div>
+              <Button onClick={() => navigate({ to: '/medical-logs/add' })} size="lg" className="shrink-0 sm:self-start gap-2">
+                <Plus className="size-5" />
+                Add Medical Log
+              </Button>
             </div>
           </div>
 
