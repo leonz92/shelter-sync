@@ -19,6 +19,14 @@ function BasicNavBar() {
     navigate({ to: '/animals' });
   };
 
+  const handleInventory = () => {
+    navigate({ to: '/inventory' });
+  };
+
+  const handleLoans = () => {
+    navigate({ to: '/loans' });
+  };
+
   // Debug: Log all routes
   return (
     <nav className="bg-secondary p-4 flex justify-between">
@@ -34,8 +42,8 @@ function BasicNavBar() {
         <Button variant="outline" onClick={handleAnimals}>
           Animals
         </Button>
-        <Button variant="outline">Inventory</Button>
-        <Button variant="outline">Loans</Button>
+        <Button variant="outline" onClick={handleInventory}>Inventory</Button>
+        <Button variant="outline" onClick={handleLoans}>Loans</Button>
         <Button variant="outline" onClick={handleMedicalLog}>
           Med Log
         </Button>
