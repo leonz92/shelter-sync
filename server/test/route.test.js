@@ -99,15 +99,36 @@ const runTests = async () => {
     const USER_TOKEN = await getRegularUserToken();
     const staffUser = await getRandomStaffUser();
     const regularUser = await getRandomRegularUser();
+    const inventory = await prisma.inventory.findFirst({
+      where: {
+        inventory_transactions: { some: {} },
+      },
+      include: {
+        inventory_transactions: { take: 1 },
+      },
+    });
+    const transaction = inventory.inventory_transactions[0];
+    const item = await getRandomItem();
     const animal = await getRandomAnimal();
-    const PATH = `inventory`;
-    const METHOD = 'GET';
+    const PATH = `inventory/${inventory.id}`;
+    const METHOD = 'PATCH';
 
     const response = await fetch(`http://localhost:8080/api/${PATH}`, {
       method: METHOD,
       headers: {
+        'Content-Type': 'application/json',
         Authorization: `Bearer ${STAFF_TOKEN}`,
       },
+      body: JSON.stringify({
+        quantity: 47835623,
+        expiration_date: '2026-12-30',
+        item_id: item.id,
+        foster_user: regularUser.id,
+        type: 'INTAKE',
+        status: 'COMPLETE',
+        notes: 'transaction complete, paid in full',
+        transaction_id: transaction.id,
+      }),
     });
     const data = await response.json();
     console.log({ data });
@@ -280,6 +301,96 @@ const testGetAnimalsInvalidQuery = async () => {
   }
 };
 
+const testGetMedicalLogsNoToken = async () => {
+  try {
+    console.log('\n=== TEST: GET /api/medical-logs without token ===');
+    const response = await fetch('http://localhost:8080/api/medical-logs', {
+      method: 'GET',
+    });
+    const data = await response.json();
+    console.log(`Status: ${response.status}`);
+    console.log(`Response: ${JSON.stringify(data, null, 2)}`);
+    if (response.status === 401) {
+      console.log('✓ 401 returned for missing token');
+    } else {
+      console.log('✗ Expected 401 status');
+    }
+  } catch (error) {
+    console.log({ error });
+  }
+};
+
+const testGetMedicalLogsInvalidQuery = async () => {
+  try {
+    const STAFF_TOKEN = await getStaffUserToken();
+    console.log('\n=== TEST: GET /api/medical-logs with invalid query ===');
+    const response = await fetch('http://localhost:8080/api/medical-logs?foo=bar', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${STAFF_TOKEN}`,
+      },
+    });
+    const data = await response.json();
+    console.log(`Status: ${response.status}`);
+    console.log(`Response: ${JSON.stringify(data, null, 2)}`);
+    if (response.status === 400) {
+      console.log('✓ 400 returned for invalid query');
+    } else {
+      console.log('✗ Expected 400 status');
+    }
+  } catch (error) {
+    console.log({ error });
+  }
+};
+
+const testGetMedicalLogsAsStaff = async () => {
+  try {
+    const STAFF_TOKEN = await getStaffUserToken();
+    console.log('\n=== TEST: GET /api/medical-logs as STAFF ===');
+    const response = await fetch('http://localhost:8080/api/medical-logs', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${STAFF_TOKEN}`,
+      },
+    });
+    const data = await response.json();
+    console.log(`Status: ${response.status}`);
+    console.log(`Number of logs returned: ${data.length}`);
+    console.log(`Response: ${JSON.stringify(data, null, 2)}`);
+    if (response.status === 200 && Array.isArray(data)) {
+      console.log('✓ STAFF can fetch all medical logs');
+    } else {
+      console.log('✗ STAFF fetch failed');
+    }
+  } catch (error) {
+    console.log({ error });
+  }
+};
+
+const testGetMedicalLogsAsUser = async () => {
+  try {
+    const USER_TOKEN = await getRegularUserToken();
+    console.log('\n=== TEST: GET /api/medical-logs as USER ===');
+    const response = await fetch('http://localhost:8080/api/medical-logs', {
+      method: 'GET',
+      headers: {
+        Authorization: `Bearer ${USER_TOKEN}`,
+      },
+    });
+    const data = await response.json();
+    console.log(`Status: ${response.status}`);
+    console.log(`Number of logs returned: ${data.length}`);
+    console.log(`Response: ${JSON.stringify(data, null, 2)}`);
+    if (response.status === 200 && Array.isArray(data)) {
+      console.log('✓ USER can fetch their medical logs');
+    } else {
+      console.log('✗ USER fetch failed');
+    }
+  } catch (error) {
+    console.log({ error });
+  }
+};
+
 const runAllTests = async () => {
   console.log('Starting route tests...\n');
   await testGetAnimalsNoToken();
@@ -289,6 +400,10 @@ const runAllTests = async () => {
   await testGetAnimalsWithFilters();
   await testGetAnimalsWithSearch();
   await testGetAnimalsWithPagination();
+  await testGetMedicalLogsNoToken();
+  await testGetMedicalLogsInvalidQuery();
+  await testGetMedicalLogsAsStaff();
+  await testGetMedicalLogsAsUser();
   console.log('\n=== All tests completed ===');
 };
 
