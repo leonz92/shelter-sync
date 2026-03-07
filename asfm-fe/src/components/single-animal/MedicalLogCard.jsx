@@ -10,7 +10,6 @@ export default function MedicalLogCard({ log }) {
   useEffect(() => {
     async function load() {
       const result = await fetchMedication(log.medication_id);
-      console.log(result);
       if (!result) return setMedication(null);
       setMedication(result);
       const itemData = await fetchMedicationItem(result.item_id);

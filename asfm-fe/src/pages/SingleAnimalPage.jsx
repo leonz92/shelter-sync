@@ -1,10 +1,10 @@
 import { useState } from 'react';
 import { Card, CardDescription, CardTitle } from '@/components/ui/card';
 import { Spinner } from '@/components/ui/spinner';
-import getBirthdayYear from '@/utils/getBirthday';
 import { useEffect } from 'react';
 import MedicalLogCard from '@/components/single-animal/MedicalLogCard';
 import { AnimalGeneralInfo } from '@/components/single-animal/AnimalGeneralInfo';
+import { fetchAnimal, fetchAnimalMedicalLogs } from '@/services/singleAnimalPageService';
 
 export default function SingleAnimalPage({ id }) {
   const [viewAnimal, setViewAnimal] = useState('');
@@ -12,68 +12,30 @@ export default function SingleAnimalPage({ id }) {
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
 
-  const url = 'http://localhost:3005'; // <-- placeholder
-
-  async function fetchAnimal(id) {
-    try {
-      const response = await fetch(`${url}/animals?id=${id}`);
-      if (!response.ok) {
-        throw new Error(`Fetch request error status: ${response.status}`);
-      }
-      const data = await response.json();
-      if (data.length === 0) {
+  useEffect(() => {
+    async function load() {
+      const animalResults = await fetchAnimal(id)
+      if (!animalResults) {
         setIsError(true);
         setViewAnimal(null);
-        return { error: true, animal: null };
+        setIsLoading(false)
+        return 
       }
-      const animal = data[0];
+      setViewAnimal(animalResults)
 
-      const updatedAnimal = {
-        ...animal,
-        age: animal.dob ? getBirthdayYear(animal.dob) : null,
-        altered: animal.altered ? 'Fixed' : 'Not Fixed',
-      };
-      setViewAnimal(updatedAnimal);
-      return data[0];
-    } catch (err) {
-      console.error('Failed to fetch animal', err);
-      throw err;
-    }
-  }
+      const animalLogsResults = await fetchAnimalMedicalLogs(id)
 
-  async function fetchAnimalMedicalLogs(id) {
-    try {
-      const response = await fetch(`${url}/medical-logs?animal_id=${id}`);
-      if (!response.ok) {
-        throw new Error(`Failed to find the animal's medical logs ${response.status}`);
+      if (!animalLogsResults) {
+        setAnimalLogs(null)
+        setIsLoading(false)
+        return 
       }
-      const data = await response.json();
-      sortMedicalLogs(data);
-      setAnimalLogs(data);
-      return data;
-    } catch (err) {
-      console.error('Failed to fetch animal medical logs', err);
-      throw err;
-    }
-  }
-
-  function sortMedicalLogs(logs) {
-    logs.sort((a, b) => new Date(b.logged_at) - new Date(a.logged_at));
-  }
-
-  async function fetchAllAnimalRecords(id) {
-    const animalBase = await fetchAnimal(id);
-    if (animalBase) {
-      await fetchAnimalMedicalLogs(id);
-      setIsLoading(false);
+      setAnimalLogs(animalLogsResults)
+      setIsLoading(false)
     }
 
-    setIsLoading(false);
-  }
-
-  useEffect(() => {
-    fetchAllAnimalRecords(id);
-  }, []);
+    load()
+  }, [id]);
 
   if (isLoading)
     return (
