@@ -1,5 +1,5 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Layout from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -22,6 +22,8 @@ function AddMedicalLogPage() {
   const addMedicalLog = useBoundStore((state) => state.addMedicalLog);
   const animals = useBoundStore((state) => state.animals);
   const fetchAnimals = useBoundStore((state) => state.fetchAnimals);
+  const userRole = useBoundStore((state) => state.userRole);
+  const user = useBoundStore((state) => state.user);
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
@@ -30,6 +32,16 @@ function AddMedicalLogPage() {
   useEffect(() => {
     fetchAnimals();
   }, [fetchAnimals]);
+
+  // Filter animals based on user role
+  // For foster users (USER role), only show animals with foster_status = 'FOSTERED'
+  // For staff users (STAFF role), show all animals
+  const filteredAnimals = useMemo(() => {
+    if (userRole === 'USER') {
+      return animals.filter((a) => a.foster_status === 'FOSTERED');
+    }
+    return animals;
+  }, [animals, userRole]);
 
   const handleSubmit = (formData) => {
     setSubmitError('');
@@ -49,7 +61,9 @@ function AddMedicalLogPage() {
           administered_at: formData.administered_at
             ? new Date(formData.administered_at).toISOString()
             : null,
-          foster_user_id: null,
+          // Set foster_user_id for foster users, null for staff
+          foster_user_id: userRole === 'USER' ? user?.id : null,
+          // assignment_id would be set from animal_assignments in real implementation
           assignment_id: null,
           medication_id: null,
           documents: null,
@@ -69,9 +83,9 @@ function AddMedicalLogPage() {
 
   return (
     <Layout>
-      <RoleGuard allowedRoles={['STAFF']}>
+      <RoleGuard allowedRoles={['STAFF', 'USER']}>
         <div className="max-w-4xl mx-auto px-4 py-6 space-y-4">
-          <Button variant="ghost" className="-ml-2" onClick={() => navigate({ to: '/medical-logs' })}>
+          <Button variant="ghost" className="-ml-2" onClick={() => navigate({ to: userRole === 'USER' ? '/medical-logs/foster' : '/medical-logs' })}>
             ← Back to Medical Logs
           </Button>
 
@@ -84,12 +98,13 @@ function AddMedicalLogPage() {
                 <MedicalLogForm
                   formId="add-medical-log-form"
                   onSubmit={handleSubmit}
+                  animals={filteredAnimals}
                 />
                 {submitError && (
                   <p className="text-sm text-red-500 mt-2">{submitError}</p>
                 )}
                 <div className="flex justify-end gap-3 mt-6">
-                  <Button variant="outline" onClick={() => navigate({ to: '/medical-logs' })}>
+                  <Button variant="outline" onClick={() => navigate({ to: userRole === 'USER' ? '/medical-logs/foster' : '/medical-logs' })}>
                     Cancel
                   </Button>
                   <Button type="submit" form="add-medical-log-form" disabled={isSubmitting}>
@@ -106,7 +121,7 @@ function AddMedicalLogPage() {
           <ConfirmationDialog
             {...confirmation}
             button="Done"
-            onClose={() => navigate({ to: '/medical-logs' })}
+            onClose={() => navigate({ to: userRole === 'USER' ? '/medical-logs/foster' : '/medical-logs' })}
           />
         )}
       </RoleGuard>

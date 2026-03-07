@@ -16,6 +16,7 @@ import { ClipboardPlus, Plus, Edit, Trash2, Eye, ChevronDown, ChevronRight } fro
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ReusableTable } from '@/components/table_components';
 import CustomBadge from '@/components/custom/CustomBadge';
+import { FeatureSelector } from '@/components/FeatureSelector';
 import RoleGuard from '@/components/RoleGuard';
 import { useBoundStore } from '@/store';
 import { LOG_TYPE_OPTIONS, LOG_TYPE_COLORS, formatLogType } from '@/constants/medicalLogConstants';
@@ -60,7 +61,7 @@ function AdminLogsPage() {
 
   const navigate = useNavigate();
   const [search, setSearch] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [selectedCategories, setSelectedCategories] = useState([]);
   const [sortBy, setSortBy] = useState('date-desc');
 
   useEffect(() => {
@@ -71,7 +72,7 @@ function AdminLogsPage() {
     return medicalLogs
       .filter((log) => {
         const matchesSearch = log.animal_name.toLowerCase().includes(search.toLowerCase());
-        const matchesCategory = categoryFilter === 'all' || log.category === categoryFilter;
+        const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(log.category);
         return matchesSearch && matchesCategory;
       })
       .sort((a, b) => {
@@ -87,7 +88,7 @@ function AdminLogsPage() {
             return new Date(b.logged_at) - new Date(a.logged_at);
         }
       });
-  }, [medicalLogs, search, categoryFilter, sortBy]);
+  }, [medicalLogs, search, selectedCategories, sortBy]);
 
   // Stats for header
   const totalLogs = medicalLogs.length;
@@ -206,19 +207,13 @@ function AdminLogsPage() {
               onChange={(e) => setSearch(e.target.value)}
               className="max-w-60"
             />
-            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger className="w-44">
-                <SelectValue placeholder="Log Type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                {LOG_TYPE_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <FeatureSelector
+              options={LOG_TYPE_OPTIONS}
+              selectedIds={selectedCategories}
+              onChange={setSelectedCategories}
+              label="Filter by Log Type"
+              className="w-auto"
+            />
             <Select value={sortBy} onValueChange={setSortBy}>
               <SelectTrigger className="w-52">
                 <SelectValue placeholder="Sort by" />

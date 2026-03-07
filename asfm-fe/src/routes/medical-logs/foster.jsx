@@ -1,12 +1,13 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useState, useMemo, useEffect } from 'react';
 import Layout from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent } from '@/components/ui/card';
-import { Skeleton } from '@/components/ui/skeleton';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Badge } from '@/components/ui/badge';
+import { ClipboardPlus, Plus } from 'lucide-react';
+import { ReusableTable } from '@/components/table_components';
 import CustomBadge from '@/components/custom/CustomBadge';
+import { FeatureSelector } from '@/components/FeatureSelector';
 import RoleGuard from '@/components/RoleGuard';
 import { useBoundStore } from '@/store';
 import { LOG_TYPE_OPTIONS, LOG_TYPE_COLORS, formatLogType } from '@/constants/medicalLogConstants';
@@ -15,30 +16,99 @@ export const Route = createFileRoute('/medical-logs/foster')({
   component: FosterLogsPage,
 });
 
+function ExpandableText({ text }) {
+  const [expanded, setExpanded] = useState(false);
+
+  if (!text || text === '—') return <span className="text-muted-foreground">—</span>;
+
+  const isLong = text.length > 50;
+
+  if (!isLong) return <span className="whitespace-nowrap">{text}</span>;
+
+  return (
+    <button
+      type="button"
+      onClick={() => setExpanded((prev) => !prev)}
+      className={`text-left cursor-pointer hover:bg-muted/50 rounded px-1 -mx-1 transition-colors ${
+        expanded ? 'whitespace-nowrap' : ''
+      }`}
+    >
+      {expanded ? (
+        <span>{text} <span className="text-xs text-primary underline">less</span></span>
+      ) : (
+        <span className="whitespace-nowrap">{text.slice(0, 50)}… <span className="text-xs text-primary underline">more</span></span>
+      )}
+    </button>
+  );
+}
+
 function FosterLogsPage() {
+  const navigate = useNavigate();
   const medicalLogs = useBoundStore((state) => state.medicalLogs);
   const medicalLogsLoading = useBoundStore((state) => state.medicalLogsLoading);
   const medicalLogsError = useBoundStore((state) => state.medicalLogsError);
   const fetchMedicalLogs = useBoundStore((state) => state.fetchMedicalLogs);
 
   const [search, setSearch] = useState('');
-  const [categoryFilter, setCategoryFilter] = useState('all');
+  const [selectedCategories, setSelectedCategories] = useState([]);
 
   useEffect(() => {
     fetchMedicalLogs();
   }, [fetchMedicalLogs]);
 
-  // Only show logs that have a foster_user_id (foster-permitted)
+  // Filter to only foster-permitted logs, then apply search/category
   const filtered = useMemo(() => {
-    return medicalLogs
-      .filter((log) => {
-        if (!log.foster_user_id) return false;
-        const matchesSearch = log.animal_name.toLowerCase().includes(search.toLowerCase());
-        const matchesCategory = categoryFilter === 'all' || log.category === categoryFilter;
-        return matchesSearch && matchesCategory;
-      })
-      .sort((a, b) => new Date(b.logged_at) - new Date(a.logged_at));
-  }, [medicalLogs, search, categoryFilter]);
+    return medicalLogs.filter((log) => {
+      if (!log.foster_user_id) return false;
+      const matchesSearch = log.animal_name.toLowerCase().includes(search.toLowerCase());
+      const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(log.category);
+      return matchesSearch && matchesCategory;
+    });
+  }, [medicalLogs, search, selectedCategories]);
+
+  // Stats for header - foster-permitted logs only
+  const fosterLogs = medicalLogs.filter((log) => log.foster_user_id);
+  const totalLogs = fosterLogs.length;
+  const medicalCount = fosterLogs.filter((l) => l.category === 'MEDICAL').length;
+  const behavioralCount = fosterLogs.filter((l) => l.category === 'BEHAVIORAL').length;
+  const veterinaryCount = fosterLogs.filter((l) => l.category === 'VETERINARY').length;
+
+  // Columns for foster table (similar to admin but focused on foster needs)
+  const columns = [
+    { accessorKey: 'animal_name', header: 'Animal' },
+    {
+      accessorKey: 'logTypeBadge',
+      header: 'Log Type',
+      headClassName: 'text-center',
+      cellClassName: 'text-center',
+    },
+    { accessorKey: 'doseDisplay', header: 'Dose' },
+    { accessorKey: 'qtyDisplay', header: 'Qty' },
+    { accessorKey: 'administeredAtDisplay', header: 'Administered At' },
+    { accessorKey: 'loggedAtDisplay', header: 'Logged At' },
+    { accessorKey: 'prescriptionDisplay', header: 'Prescription' },
+    { accessorKey: 'generalNotes', header: 'General Notes' },
+    { accessorKey: 'behaviorNotes', header: 'Behavior Notes' },
+  ];
+
+  const tableData = filtered.map((log) => ({
+    ...log,
+    logTypeBadge: (
+      <CustomBadge
+        text={formatLogType(log.category)}
+        badgeClassName={LOG_TYPE_COLORS[log.category]}
+      />
+    ),
+    generalNotes: log.general_notes || '—',
+    behaviorNotes: <ExpandableText text={log.behavior_notes} />,
+    doseDisplay: log.dose || '—',
+    qtyDisplay: log.qty_administered != null ? log.qty_administered : '—',
+    administeredAtDisplay: log.administered_at
+      ? new Date(log.administered_at).toLocaleString()
+      : '—',
+    prescriptionDisplay: log.prescription || '—',
+    loggedAtDisplay: new Date(log.logged_at).toLocaleString(),
+  }));
 
   if (medicalLogsError) {
     return (
@@ -58,12 +128,48 @@ function FosterLogsPage() {
   return (
     <Layout>
       <RoleGuard allowedRoles={['USER']}>
-        <div className="space-y-6">
-          <div>
-            <h1 className="text-2xl font-bold tracking-tight">My Foster Logs</h1>
-            <p className="text-muted-foreground text-sm mt-1">
-              Medical log entries for your fostered animals.
-            </p>
+        <div className="flex flex-col gap-6 h-full">
+          {/* Dashboard Header Card */}
+          <div className="relative overflow-hidden rounded-xl border bg-card p-6 sm:p-8">
+            <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-start gap-4">
+                <div className="flex items-center justify-center size-12 sm:size-14 rounded-xl bg-secondary/20 shrink-0">
+                  <ClipboardPlus className="size-6 sm:size-7 text-primary" />
+                </div>
+                <div>
+                  <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground text-balance">
+                    My Foster Logs
+                  </h1>
+                  <p className="text-muted-foreground mt-1 text-sm sm:text-base">
+                    Medical log entries for your fostered animals.
+                  </p>
+                  <div className="flex items-center gap-3 mt-3 flex-wrap">
+                    <Badge variant="secondary" className="font-medium">
+                      {totalLogs} total logs
+                    </Badge>
+                    {medicalCount > 0 && (
+                      <Badge variant="outline" className="font-medium border-emerald-500/30 text-emerald-600 bg-emerald-500/5">
+                        {medicalCount} medical
+                      </Badge>
+                    )}
+                    {behavioralCount > 0 && (
+                      <Badge variant="outline" className="font-medium border-blue-500/30 text-blue-600 bg-blue-500/5">
+                        {behavioralCount} behavioral
+                      </Badge>
+                    )}
+                    {veterinaryCount > 0 && (
+                      <Badge variant="outline" className="font-medium border-purple-500/30 text-purple-600 bg-purple-500/5">
+                        {veterinaryCount} veterinary
+                      </Badge>
+                    )}
+                  </div>
+                </div>
+              </div>
+              <Button onClick={() => navigate({ to: '/medical-logs/add' })} size="lg" className="shrink-0 sm:self-start gap-2">
+                <Plus className="size-5" />
+                Add Medical Log
+              </Button>
+            </div>
           </div>
 
           <div className="flex flex-wrap gap-3">
@@ -73,76 +179,32 @@ function FosterLogsPage() {
               onChange={(e) => setSearch(e.target.value)}
               className="max-w-60"
             />
-            <Select value={categoryFilter} onValueChange={setCategoryFilter}>
-              <SelectTrigger className="w-44">
-                <SelectValue placeholder="Log Type" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Types</SelectItem>
-                {LOG_TYPE_OPTIONS.map((option) => (
-                  <SelectItem key={option.value} value={option.value}>
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <FeatureSelector
+              options={LOG_TYPE_OPTIONS}
+              selectedIds={selectedCategories}
+              onChange={setSelectedCategories}
+              label="Filter by Log Type"
+              className="w-auto"
+            />
           </div>
 
-          {medicalLogsLoading ? (
-            <div className="space-y-4">
-              {Array.from({ length: 3 }).map((_, i) => (
-                <Card key={i}>
-                  <CardContent className="p-5 space-y-3">
-                    <Skeleton className="h-4 w-32" />
-                    <Skeleton className="h-3 w-48" />
-                    <Skeleton className="h-3 w-full" />
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          ) : filtered.length === 0 ? (
+          {!medicalLogsLoading && filtered.length === 0 ? (
             <p className="text-muted-foreground text-center py-12">
               No foster medical logs found.
             </p>
           ) : (
-            <div className="relative space-y-4">
-              <div className="absolute left-4 top-0 bottom-0 w-px bg-border hidden sm:block" />
-
-              {filtered.map((log) => (
-                <Card key={log.id} className="sm:ml-10 relative">
-                  <div className="absolute -left-10 top-5 size-3 rounded-full bg-primary border-2 border-background hidden sm:block" />
-                  <CardContent className="p-5">
-                    <div className="flex flex-wrap items-center gap-2 mb-2">
-                      <CustomBadge
-                        text={formatLogType(log.category)}
-                        badgeClassName={LOG_TYPE_COLORS[log.category]}
-                      />
-                      <span className="text-sm font-semibold">{log.animal_name}</span>
-                      <span className="text-xs text-muted-foreground ml-auto">
-                        {new Date(log.logged_at).toLocaleDateString()} {new Date(log.logged_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                    </div>
-                    {log.general_notes && (
-                      <p className="text-sm text-foreground">{log.general_notes}</p>
-                    )}
-                    {log.behavior_notes && (
-                      <p className="text-sm text-muted-foreground mt-1">{log.behavior_notes}</p>
-                    )}
-                    {log.prescription && (
-                      <p className="text-xs text-muted-foreground mt-2">
-                        <span className="font-medium">Rx:</span> {log.prescription}
-                      </p>
-                    )}
-                    {log.dose && (
-                      <p className="text-xs text-muted-foreground">
-                        <span className="font-medium">Dose:</span> {log.dose}
-                        {log.qty_administered != null && ` × ${log.qty_administered}`}
-                      </p>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
+            <ReusableTable
+              columns={columns}
+              data={tableData}
+              isLoading={medicalLogsLoading}
+              headerClassName="bg-secondary text-primary-foreground"
+              tablebodyRowClassName="bg-white hover:bg-secondary/20"
+              containerClassName="rounded-lg border border-gray-200 shadow-sm relative w-full"
+              enablePagination={true}
+              enableColumnVisibility={true}
+              pageSize={15}
+              defaultVisibleColumns={['animal_name', 'logTypeBadge', 'administeredAtDisplay', 'loggedAtDisplay', 'generalNotes', 'doseDisplay']}
+            />
           )}
         </div>
       </RoleGuard>

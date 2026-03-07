@@ -19,7 +19,7 @@ const EMPTY_DEFAULTS = {
 const required = (label) => ({ value }) =>
   !value || !value.toString().trim() ? `${label} is required.` : undefined;
 
-export default function MedicalLogForm({ formId, onSubmit, initialValues = {} }) {
+export default function MedicalLogForm({ formId, onSubmit, initialValues = {}, animals = [] }) {
   const form = useForm({
     defaultValues: { ...EMPTY_DEFAULTS, ...initialValues },
     onSubmit: async ({ value }) => {
@@ -50,14 +50,35 @@ export default function MedicalLogForm({ formId, onSubmit, initialValues = {} })
             <label className="text-sm font-medium">
               Animal <span className="text-red-500">*</span>
             </label>
-            <Textarea
-              className={`w-full ${field.state.meta.errors.length ? 'border-red-500' : ''}`}
-              value={field.state.value}
-              onBlur={field.handleBlur}
-              onChange={(e) => field.handleChange(e.target.value)}
-              placeholder="Enter animal name or ID..."
-              rows={1}
-            />
+            {animals.length > 0 ? (
+              <Select
+                value={field.state.value}
+                onValueChange={(val) => field.handleChange(val)}
+              >
+                <SelectTrigger
+                  className={`w-full ${field.state.meta.errors.length ? 'border-red-500' : ''}`}
+                  onBlur={field.handleBlur}
+                >
+                  <SelectValue placeholder="Select an animal" />
+                </SelectTrigger>
+                <SelectContent>
+                  {animals.map((animal) => (
+                    <SelectItem key={animal.id} value={animal.id}>
+                      {animal.name} ({animal.species})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            ) : (
+              <Textarea
+                className={`w-full ${field.state.meta.errors.length ? 'border-red-500' : ''}`}
+                value={field.state.value}
+                onBlur={field.handleBlur}
+                onChange={(e) => field.handleChange(e.target.value)}
+                placeholder="Enter animal name or ID..."
+                rows={1}
+              />
+            )}
             {field.state.meta.errors.length > 0 && (
               <p className="text-xs text-red-500">{field.state.meta.errors.join(', ')}</p>
             )}
