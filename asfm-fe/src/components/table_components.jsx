@@ -1,4 +1,4 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useMemo, useLayoutEffect, useRef } from 'react';
 import {
   Table,
   TableBody,
@@ -17,7 +17,13 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Settings, ChevronLeft, ChevronRight } from 'lucide-react';
 
 export function ReusableTable({
@@ -42,45 +48,66 @@ export function ReusableTable({
   const getColumnKey = (col) => col.accessorKey || col.id;
 
   // Initialize sortConfig with initialSort if provided
-  const initialSortConfig = initialSort ? {
-    key: initialSort.key,
-    direction: initialSort.direction,
-    columnIndex: columns.findIndex(col => getColumnKey(col) === initialSort.key)
-  } : { key: null, direction: 'asc' };
+  const initialSortConfig = initialSort
+    ? {
+        key: initialSort.key,
+        direction: initialSort.direction,
+        columnIndex: columns.findIndex((col) => getColumnKey(col) === initialSort.key),
+      }
+    : { key: null, direction: 'asc' };
 
   const [sortConfig, setSortConfig] = useState(initialSortConfig);
+
+  // Track previous columns and defaultVisibleColumns to detect changes
+  const prevColumnsRef = useRef(columns);
+  const prevDefaultColumnsRef = useRef(defaultVisibleColumns);
 
   // Initialize with defaultVisibleColumns if provided, otherwise all columns
   const [visibleColumns, setVisibleColumns] = useState(() => {
     if (defaultVisibleColumns && defaultVisibleColumns.length > 0) {
-      // Ensure all default columns exist in the actual columns
-      return defaultVisibleColumns.filter(colKey =>
-        columns.some(col => getColumnKey(col) === colKey)
+      return defaultVisibleColumns.filter((colKey) =>
+        columns.some((col) => getColumnKey(col) === colKey),
       );
     }
-    return columns.map(col => getColumnKey(col));
+    return columns.map((col) => getColumnKey(col));
   });
 
-  // Update visible columns when columns prop changes
-  useEffect(() => {
-    if (defaultVisibleColumns && defaultVisibleColumns.length > 0) {
-      setVisibleColumns(defaultVisibleColumns.filter(colKey =>
-        columns.some(col => getColumnKey(col) === colKey)
-      ));
-    } else {
-      setVisibleColumns(columns.map(col => getColumnKey(col)));
+  // Sync visible columns when defaultVisibleColumns or columns change
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useLayoutEffect(() => {
+    const columnsChanged = prevColumnsRef.current !== columns;
+    const defaultColumnsChanged =
+      JSON.stringify(prevDefaultColumnsRef.current) !== JSON.stringify(defaultVisibleColumns);
+
+    if (columnsChanged || defaultColumnsChanged) {
+      if (defaultVisibleColumns && defaultVisibleColumns.length > 0) {
+        setVisibleColumns(
+          defaultVisibleColumns.filter((colKey) =>
+            columns.some((col) => getColumnKey(col) === colKey),
+          ),
+        );
+      } else {
+        setVisibleColumns(columns.map((col) => getColumnKey(col)));
+      }
+      prevColumnsRef.current = columns;
+      prevDefaultColumnsRef.current = defaultVisibleColumns;
     }
   }, [columns, defaultVisibleColumns]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // Reset to page 1 when data or filters change
-  useEffect(() => {
-    setCurrentPage(1);
+  const prevDataRef = useRef(data);
+  /* eslint-disable react-hooks/set-state-in-effect */
+  useLayoutEffect(() => {
+    if (prevDataRef.current !== data) {
+      setCurrentPage(1);
+      prevDataRef.current = data;
+    }
   }, [data]);
+  /* eslint-enable react-hooks/set-state-in-effect */
 
   // Filter columns based on visibility
-  const visibleColumnDefs = columns.filter(col =>
-    visibleColumns.includes(getColumnKey(col))
-  );
+  const visibleColumnDefs = columns.filter((col) => visibleColumns.includes(getColumnKey(col)));
 
   // Handle sorting
   const sortedData = useMemo(() => {
@@ -106,30 +133,24 @@ export function ReusableTable({
 
       // Default string/number comparison
       if (typeof aVal === 'string' && typeof bVal === 'string') {
-        return sortConfig.direction === 'asc'
-          ? aVal.localeCompare(bVal)
-          : bVal.localeCompare(aVal);
+        return sortConfig.direction === 'asc' ? aVal.localeCompare(bVal) : bVal.localeCompare(aVal);
       }
       return sortConfig.direction === 'asc' ? aVal - bVal : bVal - aVal;
     });
   }, [data, sortConfig, visibleColumnDefs]);
 
   // Calculate pagination
-  const totalPages = enablePagination
-    ? Math.ceil(sortedData.length / itemsPerPage)
-    : 1;
+  const totalPages = enablePagination ? Math.ceil(sortedData.length / itemsPerPage) : 1;
 
   const startIndex = (currentPage - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const paginatedData = enablePagination
-    ? sortedData.slice(startIndex, endIndex)
-    : sortedData;
+  const paginatedData = enablePagination ? sortedData.slice(startIndex, endIndex) : sortedData;
 
   // Handle column visibility toggle
   const toggleColumn = (columnKey) => {
-    setVisibleColumns(prev => {
+    setVisibleColumns((prev) => {
       const newVisible = prev.includes(columnKey)
-        ? prev.filter(k => k !== columnKey)
+        ? prev.filter((k) => k !== columnKey)
         : [...prev, columnKey];
 
       // Ensure at least one column remains visible
@@ -185,9 +206,7 @@ export function ReusableTable({
                         type="button"
                       >
                         {column.header}
-                        {indicator && (
-                          <span className="text-xs text-primary">{indicator}</span>
-                        )}
+                        {indicator && <span className="text-xs text-primary">{indicator}</span>}
                       </button>
                     ) : (
                       column.header
@@ -214,10 +233,12 @@ export function ReusableTable({
                           key={columnKey}
                           checked={visibleColumns.includes(columnKey)}
                           onCheckedChange={() => toggleColumn(columnKey)}
-                          disabled={visibleColumns.length === 1 && visibleColumns.includes(columnKey)}
-                      >
-                        {column.header}
-                      </DropdownMenuCheckboxItem>
+                          disabled={
+                            visibleColumns.length === 1 && visibleColumns.includes(columnKey)
+                          }
+                        >
+                          {column.header}
+                        </DropdownMenuCheckboxItem>
                       );
                     })}
                   </DropdownMenuContent>
@@ -242,7 +263,11 @@ export function ReusableTable({
                       const columnKey = getColumnKey(column);
                       return (
                         <TableCell key={columnKey} className={column.cellClassName}>
-                          {column.cell ? column.cell({ row: { original: row } }) : (column.accessorKey ? row[column.accessorKey] : null)}
+                          {column.cell
+                            ? column.cell({ row: { original: row } })
+                            : column.accessorKey
+                              ? row[column.accessorKey]
+                              : null}
                         </TableCell>
                       );
                     })}
@@ -275,9 +300,7 @@ export function ReusableTable({
                 ))}
               </SelectContent>
             </Select>
-            <span>
-              of {sortedData.length} entries
-            </span>
+            <span>of {sortedData.length} entries</span>
           </div>
 
           <div className="flex items-center gap-1">
@@ -308,9 +331,7 @@ export function ReusableTable({
 
       {/* Empty state */}
       {!isLoading && data.length === 0 && (
-        <div className="text-center py-12 text-muted-foreground">
-          No data available
-        </div>
+        <div className="text-center py-12 text-muted-foreground">No data available</div>
       )}
     </div>
   );
