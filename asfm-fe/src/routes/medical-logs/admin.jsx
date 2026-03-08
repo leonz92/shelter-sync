@@ -1,13 +1,5 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useState, useMemo, useEffect } from 'react';
-import {
-  useReactTable,
-  getCoreRowModel,
-  getSortedRowModel,
-  getFilteredRowModel,
-  flexRender,
-  createColumnHelper,
-} from '@tanstack/react-table';
 import Layout from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -20,8 +12,6 @@ import RoleGuard from '@/components/RoleGuard';
 import { useBoundStore } from '@/store';
 import { LOG_TYPE_OPTIONS, LOG_TYPE_COLORS, formatLogType } from '@/constants/medicalLogConstants';
 import { CompactMedicalLogFilterBar } from '@/components/CompactMedicalLogFilterBar';
-
-const columnHelper = createColumnHelper();
 
 function ExpandableText({ text }) {
   const [expanded, setExpanded] = useState(false);
@@ -66,7 +56,7 @@ function AdminLogsPage() {
     logTypes: [],
     createdBy: 'all',
   });
-  const [sortBy, setSortBy] = useState('date-desc');
+  const sortBy = 'date-desc';
 
   useEffect(() => {
     fetchMedicalLogs();
