@@ -96,7 +96,6 @@ function AnimalListPage() {
   const shelteredCount = animals.filter((a) => a.foster_status === 'SHELTERED').length;
   const fosteredCount = animals.filter((a) => a.foster_status === 'FOSTERED').length;
   const adoptedCount = animals.filter((a) => a.foster_status === 'ADOPTED').length;
-  const speciesCount = [...new Set(animals.map((a) => a.species))].length;
 
   if (animalsError) {
     return (

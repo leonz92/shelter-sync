@@ -1,4 +1,4 @@
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useBoundStore } from '@/store';
 import heroImage from '@/assets/asfm-hero.jpeg';
 import checkoutImage from '@/assets/checkout.jpeg';
@@ -13,6 +13,7 @@ export const Route = createFileRoute('/')({
 
 function RouteComponent() {
   const loading = useBoundStore((state) => state.loading);
+  const navigate = useNavigate();
 
   if (loading) {
     return (
@@ -31,27 +32,27 @@ function RouteComponent() {
       <section className="min-h-[75vh] flex items-center">
         <div className="bg-secondary/50 min-h-content w-full flex flex-col-reverse md:flex-row items-center justify-between rounded-2xl">
           <div className="flex flex-col max-w-[90vw] 2xl:max-w-[75vw] gap-3 md:gap-6 p-3 md:p-5 lg:p-7 md:max-w-[50vw] md:w-auto">
-            <h1 className="text-2xl md:text-h1 text-primary">
+            <h2 className="text-2xl md:text-h1 text-primary">
               Foster care made simple and accountable
-            </h1>
+            </h2>
             <p>
               ShelterSync tracks every foster supply, medical update, and animal profile so shelters
               stay organized and animals stay healthy.
             </p>
-            <Button variant="outline" className="w-fit">
+            <Button variant="outline" className="w-fit" onClick={() => navigate({ to: '/signin' })}>
               Start Tracking Foster Care
             </Button>
           </div>
           <img
             src={heroImage}
             className="h-auto w-3xl aspect-square max-w-[90vw] md:max-w-[50vw] md:w-auto"
-            alt='woman sitting in chair with tablet adn petting a dog'
+            alt="woman sitting in chair with tablet adn petting a dog"
           />
         </div>
       </section>
       {/* Features */}
       <section className="min-h-[50vh] flex flex-col items-center gap-3 md:gap-6 my-[10%]">
-        <h1 className="text-2xl md:text-h1 text-primary">Product Features</h1>
+        <h2 className="text-2xl md:text-h1 text-primary">Product Features</h2>
         <p className="text-center">
           Stop losing thousands in supplies and reduce medical liability
         </p>
@@ -76,8 +77,8 @@ function RouteComponent() {
       {/* How it works */}
       <section className="min-h-[50vh]">
         <div className="flex flex-col items-center">
-          <h1 className="text-h1 text-primary">How it works</h1>
-          <div className="flex flex-col md:flex-row gap-3">
+          <h2 className="text-h1 text-primary">How it works</h2>
+          <div className="flex flex-col md:flex-row gap-3 mt-[10%]">
             <div className="relative inline-block">
               <img
                 src={checkoutImage}
@@ -85,8 +86,8 @@ function RouteComponent() {
                 className="block w-[90%] md:w-full h-auto m-auto rounded-2xl"
                 loading="lazy"
               />
-              <div className="absolute bg-white/90 top-[50%] w-[90%] md:w-full min-h-40 px-2.5 py-5 left-[50%] md:left-0 translate-x-[-50%] md:translate-none">
-                <h2 className="text-xl md:text-h2">1. Foster parent checks out supplies</h2>
+              <div className="absolute bg-white/90 top-[50%] w-[90%] md:w-full min-h-50 px-2.5 py-5 left-[50%] md:left-0 translate-x-[-50%] md:translate-none">
+                <h3 className="text-xl md:text-h2">1. Foster parent checks out supplies</h3>
                 <p className="text-sm md:text-md">
                   Crates, food, and medications are logged with animal's name
                 </p>
@@ -99,8 +100,8 @@ function RouteComponent() {
                 className="block w-[90%] md:w-full h-auto m-auto rounded-2xl"
                 loading="lazy"
               />
-              <div className="absolute bg-white/90 top-[50%] w-[90%] md:w-full min-h-40 px-2.5 py-5 left-[50%] md:left-0 translate-x-[-50%] md:translate-none">
-                <h2 className="text-xl md:text-h2">2. Medical care gets recorded daily</h2>
+              <div className="absolute bg-white/90 top-[50%] w-[90%] md:w-full min-h-50 px-2.5 py-5 left-[50%] md:left-0 translate-x-[-50%] md:translate-none">
+                <h3 className="text-xl md:text-h2">2. Medical care gets recorded daily</h3>
                 <p className="text-sm md:text-md">
                   Foster parents log medications and behavior changes as they happen
                 </p>
@@ -113,8 +114,8 @@ function RouteComponent() {
                 className="block w-[90%] md:w-full h-auto m-auto rounded-2xl"
                 loading="lazy"
               />
-              <div className="absolute bg-white/90 top-[50%] w-[90%] md:w-full min-h-40 px-2.5 py-5 left-[50%] md:left-0 translate-x-[-50%] md:translate-none">
-                <h2 className="text-xl md:text-h2">3. Animal returns with complete history</h2>
+              <div className="absolute bg-white/90 top-[50%] w-[90%] md:w-full min-h-50 px-2.5 py-5 left-[50%] md:left-0 translate-x-[-50%] md:translate-none">
+                <h3 className="text-xl md:text-h2">3. Animal returns with complete history</h3>
                 <p className="text-sm md:text-md">
                   The shelter has every detail needed to continue care without gaps
                 </p>
