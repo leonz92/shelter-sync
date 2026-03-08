@@ -1,6 +1,12 @@
 import { useState } from 'react';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { SPECIES_OPTIONS, SEX_OPTIONS, STATUS_OPTIONS } from '@/constants/animalConstants';
 
 const EMPTY_FORM = {
@@ -159,7 +165,9 @@ export default function AnimalForm({ formId, onSubmit, initialValues = {}, error
             Status <span className="text-red-500">*</span>
           </label>
           <Select value={form.foster_status} onValueChange={set('foster_status')}>
-            <SelectTrigger className={`w-full ${fieldErrors.foster_status ? 'border-red-500' : ''}`}>
+            <SelectTrigger
+              className={`w-full ${fieldErrors.foster_status ? 'border-red-500' : ''}`}
+            >
               <SelectValue placeholder="Select status" />
             </SelectTrigger>
             <SelectContent>
@@ -170,7 +178,9 @@ export default function AnimalForm({ formId, onSubmit, initialValues = {}, error
               ))}
             </SelectContent>
           </Select>
-          {fieldErrors.foster_status && <p className="text-xs text-red-500">{fieldErrors.foster_status}</p>}
+          {fieldErrors.foster_status && (
+            <p className="text-xs text-red-500">{fieldErrors.foster_status}</p>
+          )}
         </div>
 
         <div className="flex flex-col gap-1">
@@ -187,9 +197,7 @@ export default function AnimalForm({ formId, onSubmit, initialValues = {}, error
         </div>
 
         <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium">
-            Weight (lbs)
-          </label>
+          <label className="text-sm font-medium">Weight (lbs)</label>
           <Input
             type="number"
             step="0.1"

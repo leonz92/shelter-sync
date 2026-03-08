@@ -58,11 +58,7 @@ function AddAnimalPage() {
           </CardHeader>
           <CardContent className="pt-6">
             <div className="mx-auto w-full">
-              <AnimalForm
-                formId="add-animal-form"
-                onSubmit={handleSubmit}
-                error={submitError}
-              />
+              <AnimalForm formId="add-animal-form" onSubmit={handleSubmit} error={submitError} />
               <div className="flex justify-end gap-3 mt-6">
                 <Button variant="outline" onClick={() => navigate({ to: '/animals' })}>
                   Cancel

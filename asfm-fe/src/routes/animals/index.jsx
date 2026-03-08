@@ -4,7 +4,13 @@ import Layout from '@/components/Layout';
 import { ReusableTable } from '@/components/table_components';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Badge } from '@/components/ui/badge';
 import CustomBadge from '@/components/custom/CustomBadge';
 import { useBoundStore } from '@/store';
@@ -88,10 +94,10 @@ function AnimalListPage() {
 
   // Calculate stats for dashboard using server schema statuses
   const totalAnimals = animals.length;
-  const shelteredCount = animals.filter(a => a.foster_status === 'SHELTERED').length;
-  const fosteredCount = animals.filter(a => a.foster_status === 'FOSTERED').length;
-  const adoptedCount = animals.filter(a => a.foster_status === 'ADOPTED').length;
-  const speciesCount = [...new Set(animals.map(a => a.species))].length;
+  const shelteredCount = animals.filter((a) => a.foster_status === 'SHELTERED').length;
+  const fosteredCount = animals.filter((a) => a.foster_status === 'FOSTERED').length;
+  const adoptedCount = animals.filter((a) => a.foster_status === 'ADOPTED').length;
+  const speciesCount = [...new Set(animals.map((a) => a.species))].length;
 
   if (animalsError) {
     return (
@@ -128,24 +134,37 @@ function AnimalListPage() {
                     {totalAnimals} animals tracked
                   </Badge>
                   {shelteredCount > 0 && (
-                    <Badge variant="outline" className="font-medium border-emerald-500/30 text-emerald-600 bg-emerald-500/5">
+                    <Badge
+                      variant="outline"
+                      className="font-medium border-emerald-500/30 text-emerald-600 bg-emerald-500/5"
+                    >
                       {shelteredCount} sheltered
                     </Badge>
                   )}
                   {fosteredCount > 0 && (
-                    <Badge variant="outline" className="font-medium border-blue-500/30 text-blue-600 bg-blue-500/5">
+                    <Badge
+                      variant="outline"
+                      className="font-medium border-blue-500/30 text-blue-600 bg-blue-500/5"
+                    >
                       {fosteredCount} fostered
                     </Badge>
                   )}
                   {adoptedCount > 0 && (
-                    <Badge variant="outline" className="font-medium border-purple-500/30 text-purple-600 bg-purple-500/5">
+                    <Badge
+                      variant="outline"
+                      className="font-medium border-purple-500/30 text-purple-600 bg-purple-500/5"
+                    >
                       {adoptedCount} adopted
                     </Badge>
                   )}
                 </div>
               </div>
             </div>
-            <Button onClick={() => navigate({ to: '/animals/add' })} size="lg" className="shrink-0 sm:self-start gap-2">
+            <Button
+              onClick={() => navigate({ to: '/animals/add' })}
+              size="lg"
+              className="shrink-0 sm:self-start gap-2"
+            >
               <Plus className="size-5" />
               Add Animal
             </Button>
