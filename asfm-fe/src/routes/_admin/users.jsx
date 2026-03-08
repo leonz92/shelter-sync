@@ -1,8 +1,9 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { ReusableTable } from '../../components/table_components';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo } from 'react';
 import apiClient from '../../lib/axios';
-import { Users as UsersIcon } from 'lucide-react';
+import { Users as UsersIcon, Search } from 'lucide-react';
+import { Input } from '../../components/ui/input';
 
 export const Route = createFileRoute('/_admin/users')({
   component: RouteComponent,
@@ -12,6 +13,18 @@ function RouteComponent() {
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [search, setSearch] = useState('');
+
+  const filteredUsers = useMemo(() => {
+    if (!search.trim()) return users;
+    const searchLower = search.toLowerCase();
+    return users.filter(
+      (user) =>
+        `${user.first_name} ${user.last_name}`.toLowerCase().includes(searchLower) ||
+        user.email?.toLowerCase().includes(searchLower) ||
+        user.address?.toLowerCase().includes(searchLower)
+    );
+  }, [users, search]);
 
   useEffect(() => {
     const fetchUsers = async () => {
@@ -109,12 +122,24 @@ function RouteComponent() {
         </div>
       </div>
 
-      {!loading && users.length === 0 && (
+      <div className="mb-4">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Search by name, email, or address..."
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            className="pl-10 w-full"
+          />
+        </div>
+      </div>
+
+      {!loading && filteredUsers.length === 0 && (
         <div className="flex justify-center pt-8 text-gray-500">No users found.</div>
       )}
       <ReusableTable
         columns={userColumns}
-        data={users}
+        data={filteredUsers}
         isLoading={loading}
         headerClassName="bg-secondary text-primary-foreground"
         tablebodyRowClassName="bg-white hover:bg-secondary/20"
