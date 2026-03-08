@@ -12,6 +12,7 @@ import AnimalForm from '@/components/animals/AnimalForm';
 import { useBoundStore } from '@/store';
 import { STATUS_COLORS, formatStatus, formatSpecies, formatSex } from '@/constants/animalConstants';
 import apiClient from '@/lib/axios';
+import { supabase } from '@/lib/supabaseClient';
 
 export const Route = createFileRoute('/animals/$animalId')({
   component: AnimalDetailPage,
@@ -42,7 +43,17 @@ function AnimalDetailPage() {
     setIsSubmitting(true);
 
     try {
-      await apiClient.put(`/animals/${animal.id}`, formData);
+      const { data: { session } } = await supabase.auth.getSession();
+      const userId = session?.user?.id;
+
+      // Exclude fields that shouldn't be sent to backend
+      const { id, created_at, ...updateData } = formData;
+
+      await apiClient.patch(`/animals/${animal.id}`, {
+        ...updateData,
+        last_modified: new Date().toISOString(),
+        modified_by: userId,
+      });
       updateAnimal({ ...animal, ...formData });
       setIsSubmitting(false);
       setEditOpen(false);

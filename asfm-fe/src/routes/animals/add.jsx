@@ -9,6 +9,7 @@ import AnimalForm from '@/components/animals/AnimalForm';
 import { useBoundStore } from '@/store';
 import { Loader2 } from 'lucide-react';
 import apiClient from '@/lib/axios';
+import { supabase } from '@/lib/supabaseClient';
 
 export const Route = createFileRoute('/animals/add')({
   component: AddAnimalPage,
@@ -27,7 +28,14 @@ function AddAnimalPage() {
     setIsSubmitting(true);
 
     try {
-      const response = await apiClient.post('/animals', formData);
+      const { data: { session } } = await supabase.auth.getSession();
+      const userId = session?.user?.id;
+
+      const response = await apiClient.post('/animals/create', {
+        ...formData,
+        last_modified: new Date().toISOString(),
+        modified_by: userId,
+      });
       addAnimal(response.data);
       setIsSubmitting(false);
       setConfirmation({
