@@ -85,7 +85,13 @@ function AddMedicalLogPage() {
     <Layout>
       <RoleGuard allowedRoles={['STAFF', 'USER']}>
         <div className="max-w-4xl mx-auto px-4 py-6 space-y-4">
-          <Button variant="ghost" className="-ml-2" onClick={() => navigate({ to: userRole === 'USER' ? '/medical-logs/foster' : '/medical-logs' })}>
+          <Button
+            variant="ghost"
+            className="-ml-2"
+            onClick={() =>
+              navigate({ to: userRole === 'USER' ? '/medical-logs/foster' : '/medical-logs' })
+            }
+          >
             ← Back to Medical Logs
           </Button>
 
@@ -100,11 +106,16 @@ function AddMedicalLogPage() {
                   onSubmit={handleSubmit}
                   animals={filteredAnimals}
                 />
-                {submitError && (
-                  <p className="text-sm text-red-500 mt-2">{submitError}</p>
-                )}
+                {submitError && <p className="text-sm text-red-500 mt-2">{submitError}</p>}
                 <div className="flex justify-end gap-3 mt-6">
-                  <Button variant="outline" onClick={() => navigate({ to: userRole === 'USER' ? '/medical-logs/foster' : '/medical-logs' })}>
+                  <Button
+                    variant="outline"
+                    onClick={() =>
+                      navigate({
+                        to: userRole === 'USER' ? '/medical-logs/foster' : '/medical-logs',
+                      })
+                    }
+                  >
                     Cancel
                   </Button>
                   <Button type="submit" form="add-medical-log-form" disabled={isSubmitting}>
@@ -121,7 +132,9 @@ function AddMedicalLogPage() {
           <ConfirmationDialog
             {...confirmation}
             button="Done"
-            onClose={() => navigate({ to: userRole === 'USER' ? '/medical-logs/foster' : '/medical-logs' })}
+            onClose={() =>
+              navigate({ to: userRole === 'USER' ? '/medical-logs/foster' : '/medical-logs' })
+            }
           />
         )}
       </RoleGuard>

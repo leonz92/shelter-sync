@@ -5,16 +5,20 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import CustomBadge from '@/components/custom/CustomBadge';
 import { useBoundStore } from '@/store';
 import { LOG_TYPE_OPTIONS, LOG_TYPE_COLORS, formatLogType } from '@/constants/medicalLogConstants';
 import { ClipboardList, Plus } from 'lucide-react';
 import { CompactMedicalLogFilterBar } from '@/components/CompactMedicalLogFilterBar';
 
-export const Route = createFileRoute('/medical-logs/')(
-  { component: MedicalLogListPage },
-);
+export const Route = createFileRoute('/medical-logs/')({ component: MedicalLogListPage });
 
 function MedicalLogListPage() {
   const navigate = useNavigate();
@@ -52,7 +56,8 @@ function MedicalLogListPage() {
         }
 
         // Log type filter
-        const matchesLogTypes = filters.logTypes.length === 0 || filters.logTypes.includes(log.category);
+        const matchesLogTypes =
+          filters.logTypes.length === 0 || filters.logTypes.includes(log.category);
 
         // Created by filter
         let matchesCreatedBy = true;
@@ -105,6 +110,7 @@ function MedicalLogListPage() {
               className="shrink-0 sm:self-start gap-2"
             >
               <Plus className="size-5" />
+              Add Medical Log
             </Button>
           </div>
         </div>
@@ -152,7 +158,11 @@ function MedicalLogListPage() {
                     />
                     <span className="text-sm font-semibold">{log.animal_name}</span>
                     <span className="text-xs text-muted-foreground ml-auto">
-                      {new Date(log.logged_at).toLocaleDateString()} {new Date(log.logged_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      {new Date(log.logged_at).toLocaleDateString()}{' '}
+                      {new Date(log.logged_at).toLocaleTimeString([], {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                      })}
                     </span>
                   </div>
                   {log.general_notes && (

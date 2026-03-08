@@ -33,9 +33,13 @@ function ExpandableText({ text }) {
       }`}
     >
       {expanded ? (
-        <span>{text} <span className="text-xs text-primary underline">less</span></span>
+        <span>
+          {text} <span className="text-xs text-primary underline">less</span>
+        </span>
       ) : (
-        <span className="whitespace-nowrap">{text.slice(0, 50)}… <span className="text-xs text-primary underline">more</span></span>
+        <span className="whitespace-nowrap">
+          {text.slice(0, 50)}… <span className="text-xs text-primary underline">more</span>
+        </span>
       )}
     </button>
   );
@@ -79,7 +83,8 @@ function FosterLogsPage() {
       }
 
       // Log type filter
-      const matchesLogTypes = filters.logTypes.length === 0 || filters.logTypes.includes(log.category);
+      const matchesLogTypes =
+        filters.logTypes.length === 0 || filters.logTypes.includes(log.category);
 
       return matchesSearch && matchesDateRange && matchesLogTypes;
     });
@@ -167,24 +172,37 @@ function FosterLogsPage() {
                       {totalLogs} total logs
                     </Badge>
                     {medicalCount > 0 && (
-                      <Badge variant="outline" className="font-medium border-emerald-500/30 text-emerald-600 bg-emerald-500/5">
+                      <Badge
+                        variant="outline"
+                        className="font-medium border-emerald-500/30 text-emerald-600 bg-emerald-500/5"
+                      >
                         {medicalCount} medical
                       </Badge>
                     )}
                     {behavioralCount > 0 && (
-                      <Badge variant="outline" className="font-medium border-blue-500/30 text-blue-600 bg-blue-500/5">
+                      <Badge
+                        variant="outline"
+                        className="font-medium border-blue-500/30 text-blue-600 bg-blue-500/5"
+                      >
                         {behavioralCount} behavioral
                       </Badge>
                     )}
                     {veterinaryCount > 0 && (
-                      <Badge variant="outline" className="font-medium border-purple-500/30 text-purple-600 bg-purple-500/5">
+                      <Badge
+                        variant="outline"
+                        className="font-medium border-purple-500/30 text-purple-600 bg-purple-500/5"
+                      >
                         {veterinaryCount} veterinary
                       </Badge>
                     )}
                   </div>
                 </div>
               </div>
-              <Button onClick={() => navigate({ to: '/medical-logs/add' })} size="lg" className="shrink-0 sm:self-start gap-2">
+              <Button
+                onClick={() => navigate({ to: '/medical-logs/add' })}
+                size="lg"
+                className="shrink-0 sm:self-start gap-2"
+              >
                 <Plus className="size-5" />
                 Add Medical Log
               </Button>
@@ -199,9 +217,7 @@ function FosterLogsPage() {
           />
 
           {!medicalLogsLoading && filtered.length === 0 ? (
-            <p className="text-muted-foreground text-center py-12">
-              No foster medical logs found.
-            </p>
+            <p className="text-muted-foreground text-center py-12">No foster medical logs found.</p>
           ) : (
             <ReusableTable
               columns={columns}
@@ -213,7 +229,14 @@ function FosterLogsPage() {
               enablePagination={true}
               enableColumnVisibility={true}
               pageSize={15}
-              defaultVisibleColumns={['animal_name', 'logTypeBadge', 'administeredAtDisplay', 'loggedAtDisplay', 'generalNotes', 'doseDisplay']}
+              defaultVisibleColumns={[
+                'animal_name',
+                'logTypeBadge',
+                'administeredAtDisplay',
+                'loggedAtDisplay',
+                'generalNotes',
+                'doseDisplay',
+              ]}
             />
           )}
         </div>

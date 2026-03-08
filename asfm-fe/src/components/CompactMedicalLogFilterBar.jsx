@@ -35,9 +35,7 @@ export function CompactMedicalLogFilterBar({
         <Input
           placeholder="Search by animal name"
           value={filters.search}
-          onChange={(e) =>
-            onFiltersChange({ ...filters, search: e.target.value })
-          }
+          onChange={(e) => onFiltersChange({ ...filters, search: e.target.value })}
           className="pl-8 h-8 text-sm w-full"
         />
       </div>

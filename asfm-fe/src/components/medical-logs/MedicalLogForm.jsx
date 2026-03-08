@@ -1,7 +1,13 @@
 import { useForm } from '@tanstack/react-form';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { LOG_TYPE_OPTIONS } from '@/constants/medicalLogConstants';
 
 const EMPTY_DEFAULTS = {
@@ -16,8 +22,10 @@ const EMPTY_DEFAULTS = {
   prescription: '',
 };
 
-const required = (label) => ({ value }) =>
-  !value || !value.toString().trim() ? `${label} is required.` : undefined;
+const required =
+  (label) =>
+  ({ value }) =>
+    !value || !value.toString().trim() ? `${label} is required.` : undefined;
 
 export default function MedicalLogForm({ formId, onSubmit, initialValues = {}, animals = [] }) {
   const form = useForm({
@@ -41,20 +49,14 @@ export default function MedicalLogForm({ formId, onSubmit, initialValues = {}, a
       className="flex flex-col gap-4 w-full min-w-0"
     >
       {/* Animal */}
-      <form.Field
-        name="animal_id"
-        validators={{ onChange: required('Animal') }}
-      >
+      <form.Field name="animal_id" validators={{ onChange: required('Animal') }}>
         {(field) => (
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium">
               Animal <span className="text-red-500">*</span>
             </label>
             {animals.length > 0 ? (
-              <Select
-                value={field.state.value}
-                onValueChange={(val) => field.handleChange(val)}
-              >
+              <Select value={field.state.value} onValueChange={(val) => field.handleChange(val)}>
                 <SelectTrigger
                   className={`w-full ${field.state.meta.errors.length ? 'border-red-500' : ''}`}
                   onBlur={field.handleBlur}
@@ -88,19 +90,13 @@ export default function MedicalLogForm({ formId, onSubmit, initialValues = {}, a
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Log type select */}
-        <form.Field
-          name="category"
-          validators={{ onChange: required('Log Type') }}
-        >
+        <form.Field name="category" validators={{ onChange: required('Log Type') }}>
           {(field) => (
             <div className="flex flex-col gap-1">
               <label className="text-sm font-medium">
                 Log Type <span className="text-red-500">*</span>
               </label>
-              <Select
-                value={field.state.value}
-                onValueChange={(val) => field.handleChange(val)}
-              >
+              <Select value={field.state.value} onValueChange={(val) => field.handleChange(val)}>
                 <SelectTrigger
                   className={`w-full ${field.state.meta.errors.length ? 'border-red-500' : ''}`}
                   onBlur={field.handleBlur}
@@ -123,10 +119,7 @@ export default function MedicalLogForm({ formId, onSubmit, initialValues = {}, a
         </form.Field>
 
         {/* Date */}
-        <form.Field
-          name="logged_at"
-          validators={{ onChange: required('Date') }}
-        >
+        <form.Field name="logged_at" validators={{ onChange: required('Date') }}>
           {(field) => (
             <div className="flex flex-col gap-1">
               <label className="text-sm font-medium">
@@ -148,10 +141,7 @@ export default function MedicalLogForm({ formId, onSubmit, initialValues = {}, a
       </div>
 
       {/* General notes */}
-      <form.Field
-        name="general_notes"
-        validators={{ onChange: required('General Notes') }}
-      >
+      <form.Field name="general_notes" validators={{ onChange: required('General Notes') }}>
         {(field) => (
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium">

@@ -5,7 +5,13 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { ClipboardPlus, Plus, Edit, Trash2, Eye, ChevronDown, ChevronRight } from 'lucide-react';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { ReusableTable } from '@/components/table_components';
 import CustomBadge from '@/components/custom/CustomBadge';
 import RoleGuard from '@/components/RoleGuard';
@@ -31,9 +37,13 @@ function ExpandableText({ text }) {
       }`}
     >
       {expanded ? (
-        <span>{text} <span className="text-xs text-primary underline">less</span></span>
+        <span>
+          {text} <span className="text-xs text-primary underline">less</span>
+        </span>
       ) : (
-        <span className="whitespace-nowrap">{text.slice(0, 50)}… <span className="text-xs text-primary underline">more</span></span>
+        <span className="whitespace-nowrap">
+          {text.slice(0, 50)}… <span className="text-xs text-primary underline">more</span>
+        </span>
       )}
     </button>
   );
@@ -78,7 +88,8 @@ function AdminLogsPage() {
         }
 
         // Log type filter
-        const matchesLogTypes = filters.logTypes.length === 0 || filters.logTypes.includes(log.category);
+        const matchesLogTypes =
+          filters.logTypes.length === 0 || filters.logTypes.includes(log.category);
 
         // Created by filter
         let matchesCreatedBy = true;
@@ -95,9 +106,9 @@ function AdminLogsPage() {
           case 'date-asc':
             return new Date(a.logged_at) - new Date(b.logged_at);
           case 'administered-desc':
-            return (new Date(b.administered_at || 0)) - (new Date(a.administered_at || 0));
+            return new Date(b.administered_at || 0) - new Date(a.administered_at || 0);
           case 'administered-asc':
-            return (new Date(a.administered_at || 0)) - (new Date(b.administered_at || 0));
+            return new Date(a.administered_at || 0) - new Date(b.administered_at || 0);
           case 'date-desc':
           default:
             return new Date(b.logged_at) - new Date(a.logged_at);
@@ -191,24 +202,37 @@ function AdminLogsPage() {
                       {totalLogs} total logs
                     </Badge>
                     {medicalCount > 0 && (
-                      <Badge variant="outline" className="font-medium border-emerald-500/30 text-emerald-600 bg-emerald-500/5">
+                      <Badge
+                        variant="outline"
+                        className="font-medium border-emerald-500/30 text-emerald-600 bg-emerald-500/5"
+                      >
                         {medicalCount} medical
                       </Badge>
                     )}
                     {behavioralCount > 0 && (
-                      <Badge variant="outline" className="font-medium border-blue-500/30 text-blue-600 bg-blue-500/5">
+                      <Badge
+                        variant="outline"
+                        className="font-medium border-blue-500/30 text-blue-600 bg-blue-500/5"
+                      >
                         {behavioralCount} behavioral
                       </Badge>
                     )}
                     {veterinaryCount > 0 && (
-                      <Badge variant="outline" className="font-medium border-purple-500/30 text-purple-600 bg-purple-500/5">
+                      <Badge
+                        variant="outline"
+                        className="font-medium border-purple-500/30 text-purple-600 bg-purple-500/5"
+                      >
                         {veterinaryCount} veterinary
                       </Badge>
                     )}
                   </div>
                 </div>
               </div>
-              <Button onClick={() => navigate({ to: '/medical-logs/add' })} size="lg" className="shrink-0 sm:self-start gap-2">
+              <Button
+                onClick={() => navigate({ to: '/medical-logs/add' })}
+                size="lg"
+                className="shrink-0 sm:self-start gap-2"
+              >
                 <Plus className="size-5" />
                 Add Medical Log
               </Button>
@@ -236,7 +260,15 @@ function AdminLogsPage() {
               enablePagination={true}
               enableColumnVisibility={true}
               pageSize={15}
-              defaultVisibleColumns={['animal_name', 'logTypeBadge', 'administeredAtDisplay', 'fosterUser', 'loggedAtDisplay', 'generalNotes', 'doseDisplay']}
+              defaultVisibleColumns={[
+                'animal_name',
+                'logTypeBadge',
+                'administeredAtDisplay',
+                'fosterUser',
+                'loggedAtDisplay',
+                'generalNotes',
+                'doseDisplay',
+              ]}
             />
           )}
         </div>
