@@ -16,7 +16,6 @@ import { ClipboardPlus, Plus, Edit, Trash2, Eye, ChevronDown, ChevronRight } fro
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { ReusableTable } from '@/components/table_components';
 import CustomBadge from '@/components/custom/CustomBadge';
-import { FeatureSelector } from '@/components/FeatureSelector';
 import RoleGuard from '@/components/RoleGuard';
 import { useBoundStore } from '@/store';
 import { LOG_TYPE_OPTIONS, LOG_TYPE_COLORS, formatLogType } from '@/constants/medicalLogConstants';
