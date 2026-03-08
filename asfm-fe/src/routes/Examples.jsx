@@ -1,22 +1,25 @@
-import FilterBar from './components/FilterBar';
-import SearchBar from './components/SearchBar';
-import FilterSelect from './components/custom/FilterSelect';
-import { Button } from './components/ui/button';
-import { ReusableTable } from './components/table_components';
-import { mockLoanedItems } from './features/mockLoanedItems';
-import DashboardCard from './components/custom/DashboardCard';
-import { ModalDialog } from './components/ModalDialog';
-import ConfirmationDialog from './components/confirmationDialog';
+import FilterBar from '../components/FilterBar';
+import InputGroupForSearch from '../components/InputGroupForSearch';
+import FilterSelect from '../components/custom/FilterSelect';
+import { Button } from '../components/ui/button';
+import { ReusableTable } from '../components/table_components';
+import { mockLoanedItems } from '../features/mockLoanedItems';
+import DashboardCard from '../components/custom/DashboardCard';
+import { ModalDialog } from '../components/ModalDialog';
+import ConfirmationDialog from '../components/confirmationDialog';
 import { useState } from 'react';
-import { DashboardSummaryCard } from './components/DashboardSummaryCard';
-import { DASHBOARD_CARD_CONFIG } from './config/dashboardCard';
-import { useDashboardSummary } from './hooks/useDashboardSummary';
-import CustomBadge from './components/custom/CustomBadge';
-import { useBoundStore } from './store';
-import { DatePickerSimple } from './components/dateTimePicker';
-import { Link } from '@tanstack/react-router';
+import { DashboardSummaryCard } from '../components/DashboardSummaryCard';
+import { DASHBOARD_CARD_CONFIG } from '../config/dashboardCard';
+import { useDashboardSummary } from '../hooks/useDashboardSummary';
+import { useBoundStore } from '../store';
+import { DatePickerSimple } from '../components/dateTimePicker';
+import { createFileRoute } from '@tanstack/react-router';
 
-function App() {
+export const Route = createFileRoute('/Examples')({
+  component: ExamplesPage,
+});
+
+function ExamplesPage() {
   // Loaned items table columns
   const loanedItemsColumns = [
     {
@@ -88,26 +91,14 @@ function App() {
           selectTriggerClassName="w-[300px]"
           selectItems={['approved', 'pending', 'denied']}
         />
-        <SearchBar
+        <InputGroupForSearch
+          placeholder_text="Value to Match"
           value={filters.search}
           onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-          placeholder="Value to Match"
         />
       </FilterBar>
 
       <div id="examples" className="flex flex-col items-center h-auto gap-4 mt-17.5">
-        <div>
-          <Link to="/single-animal/$id" params={{ id: '550e8400-e29b-41d4-a716-446655550001' }}>
-            Go to animal 550e8400-e29b-41d4-a716-446655550001
-          </Link>
-          <Link
-            to="/my-animals/$id"
-            className="block"
-            params={{ id: '550e8400-e29b-41d4-a716-446655440101' }}
-          >
-            Go to user (John Doe) 550e8400-e29b-41d4-a716-446655440101
-          </Link>
-        </div>
         <div>
           <div className="text-center">Global State Test</div>
           <div>
@@ -223,5 +214,3 @@ function App() {
     </>
   );
 }
-
-export default App;
