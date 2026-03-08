@@ -38,9 +38,15 @@ function NavBar() {
               Admin Portal
             </Button>
             <Button variant="outline">All Users</Button>
-            <Button variant="outline" onClick={() => navigate({ to: '/animals' })}>Animals</Button>
-            <Button variant="outline" onClick={() => navigate({ to: '/inventory' })}>Inventory</Button>
-            <Button variant="outline" onClick={() => navigate({ to: '/loans' })}>Loans</Button>
+            <Button variant="outline" onClick={() => navigate({ to: '/animals' })}>
+              Animals
+            </Button>
+            <Button variant="outline" onClick={() => navigate({ to: '/inventory' })}>
+              Inventory
+            </Button>
+            <Button variant="outline" onClick={() => navigate({ to: '/loans' })}>
+              Loans
+            </Button>
             <Button variant="outline" onClick={() => navigate({ to: '/medical-logs' })}>
               Med Log
             </Button>
@@ -56,9 +62,7 @@ function NavBar() {
         {user ? (
           <div className="flex items-center gap-4 ml-auto">
             <div>
-              <div className="bg-gray-200 px-4 py-2 rounded-2xl">
-                {userRole}
-              </div>
+              <div className="bg-gray-200 px-4 py-2 rounded-2xl">{userRole}</div>
             </div>
             <Button variant="outline" onClick={handleSignOut}>
               Sign Out
