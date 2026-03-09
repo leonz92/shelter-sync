@@ -145,11 +145,13 @@ export interface FileRouteTypes {
     | '/inventory'
     | '/loans'
     | '/admin-portal'
+    | '/my-animals'
     | '/my-supplies'
     | '/animals/$animalId'
     | '/animals/add'
-    | '/animals/';
-  fileRoutesByTo: FileRoutesByTo;
+    | '/single-animal/$id'
+    | '/animals/'
+  fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/Examples'
@@ -158,10 +160,12 @@ export interface FileRouteTypes {
     | '/inventory'
     | '/loans'
     | '/admin-portal'
+    | '/my-animals'
     | '/my-supplies'
     | '/animals/$animalId'
     | '/animals/add'
-    | '/animals';
+    | '/single-animal/$id'
+    | '/animals'
   id:
     | '__root__'
     | '/'
@@ -173,24 +177,27 @@ export interface FileRouteTypes {
     | '/medical-logs'
     | '/_admin/inventory'
     | '/_admin/loans'
-    | '/_admin/admin-portal'
+    | '/_protected/admin-portal'
+    | '/_protected/my-animals'
     | '/_user/my-supplies'
     | '/animals/$animalId'
     | '/animals/add'
-    | '/animals/';
-  fileRoutesById: FileRoutesById;
+    | '/single-animal/$id'
+    | '/animals/'
+  fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
-  IndexRoute: typeof IndexRoute;
-  ExamplesRoute: typeof ExamplesRoute;
-  SignInRoute: typeof SignInRoute;
-  AdminRoute: typeof AdminRouteWithChildren;
-  ProtectedRoute: typeof ProtectedRouteWithChildren;
-  UserRoute: typeof UserRouteWithChildren;
-  MedicalLogsRoute: typeof MedicalLogsRoute;
-  AnimalsAnimalIdRoute: typeof AnimalsAnimalIdRoute;
-  AnimalsAddRoute: typeof AnimalsAddRoute;
-  AnimalsIndexRoute: typeof AnimalsIndexRoute;
+  IndexRoute: typeof IndexRoute
+  ExamplesRoute: typeof ExamplesRoute
+  SignInRoute: typeof SignInRoute
+  AdminRoute: typeof AdminRouteWithChildren
+  ProtectedRoute: typeof ProtectedRouteWithChildren
+  UserRoute: typeof UserRouteWithChildren
+  MedicalLogsRoute: typeof MedicalLogsRoute
+  AnimalsAnimalIdRoute: typeof AnimalsAnimalIdRoute
+  AnimalsAddRoute: typeof AnimalsAddRoute
+  SingleAnimalIdRoute: typeof SingleAnimalIdRoute
+  AnimalsIndexRoute: typeof AnimalsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -245,12 +252,19 @@ declare module '@tanstack/react-router' {
       parentRoute: typeof rootRouteImport;
     };
     '/animals/': {
-      id: '/animals/';
-      path: '/animals';
-      fullPath: '/animals/';
-      preLoaderRoute: typeof AnimalsIndexRouteImport;
-      parentRoute: typeof rootRouteImport;
-    };
+      id: '/animals/'
+      path: '/animals'
+      fullPath: '/animals/'
+      preLoaderRoute: typeof AnimalsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/single-animal/$id': {
+      id: '/single-animal/$id'
+      path: '/single-animal/$id'
+      fullPath: '/single-animal/$id'
+      preLoaderRoute: typeof SingleAnimalIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/animals/add': {
       id: '/animals/add';
       path: '/animals/add';
@@ -266,6 +280,26 @@ declare module '@tanstack/react-router' {
       parentRoute: typeof rootRouteImport;
     };
     '/_user/my-supplies': {
+      id: '/_user/my-supplies'
+      path: '/my-supplies'
+      fullPath: '/my-supplies'
+      preLoaderRoute: typeof UserMySuppliesRouteImport
+      parentRoute: typeof UserRoute
+    }
+    '/_protected/my-animals': {
+      id: '/_protected/my-animals'
+      path: '/my-animals'
+      fullPath: '/my-animals'
+      preLoaderRoute: typeof ProtectedMyAnimalsRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
+    '/_protected/admin-portal': {
+      id: '/_protected/admin-portal'
+      path: '/admin-portal'
+      fullPath: '/admin-portal'
+      preLoaderRoute: typeof ProtectedAdminPortalRouteImport
+      parentRoute: typeof ProtectedRoute
+    }
       id: '/_user/my-supplies';
       path: '/my-supplies';
       fullPath: '/my-supplies';
@@ -309,12 +343,14 @@ const AdminRouteChildren: AdminRouteChildren = {
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren);
 
 interface ProtectedRouteChildren {
-  ProtectedAdminPortalRoute: typeof ProtectedAdminPortalRoute;
+  ProtectedAdminPortalRoute: typeof ProtectedAdminPortalRoute
+  ProtectedMyAnimalsRoute: typeof ProtectedMyAnimalsRoute
 }
 
 const ProtectedRouteChildren: ProtectedRouteChildren = {
   ProtectedAdminPortalRoute: ProtectedAdminPortalRoute,
-};
+  ProtectedMyAnimalsRoute: ProtectedMyAnimalsRoute,
+}
 
 const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(ProtectedRouteChildren);
 
@@ -338,7 +374,6 @@ const rootRouteChildren: RootRouteChildren = {
   MedicalLogsRoute: MedicalLogsRoute,
   AnimalsAnimalIdRoute: AnimalsAnimalIdRoute,
   AnimalsAddRoute: AnimalsAddRoute,
-  MyAnimalsIdRoute: MyAnimalsIdRoute,
   SingleAnimalIdRoute: SingleAnimalIdRoute,
   AnimalsIndexRoute: AnimalsIndexRoute,
 };
