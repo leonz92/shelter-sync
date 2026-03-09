@@ -22,23 +22,21 @@ function ExpandableText({ text }) {
 
   const isLong = text.length > 50;
 
-  if (!isLong) return <span className="whitespace-nowrap">{text}</span>;
+  if (!isLong) return <span>{text}</span>;
 
   return (
     <button
       type="button"
       onClick={() => setExpanded((prev) => !prev)}
-      className={`text-left cursor-pointer hover:bg-muted/50 rounded px-1 -mx-1 transition-colors ${
-        expanded ? 'whitespace-nowrap' : ''
-      }`}
+      className="text-left cursor-pointer hover:bg-muted/50 rounded px-1 -mx-1 transition-colors"
     >
       {expanded ? (
         <span>
           {text} <span className="text-xs text-primary underline">less</span>
         </span>
       ) : (
-        <span className="whitespace-nowrap">
-          {text.slice(0, 50)}… <span className="text-xs text-primary underline">more</span>
+        <span className="line-clamp-2">
+          {text.slice(0, 150)}… <span className="text-xs text-primary underline">more</span>
         </span>
       )}
     </button>
@@ -111,8 +109,8 @@ function FosterLogsPage() {
     { accessorKey: 'administeredAtDisplay', header: 'Administered At' },
     { accessorKey: 'loggedAtDisplay', header: 'Logged At' },
     { accessorKey: 'prescriptionDisplay', header: 'Prescription' },
-    { accessorKey: 'generalNotes', header: 'General Notes' },
-    { accessorKey: 'behaviorNotes', header: 'Behavior Notes' },
+    { accessorKey: 'generalNotes', header: 'General Notes', cellClassName: 'whitespace-normal max-w-md' },
+    { accessorKey: 'behaviorNotes', header: 'Behavior Notes', cellClassName: 'whitespace-normal max-w-md' },
   ];
 
   const tableData = filtered.map((log) => ({
