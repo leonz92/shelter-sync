@@ -20,50 +20,49 @@ function AdminPortal() {
 
   const authHeader = { Authorization: `Bearer ${session?.access_token}` };
 
-  const fetchAll = async () => {
-    setLoading(true);
-    setUsersError(null);
-    setAnimalsError(null);
-    setInventoryError(null);
-    setTransactionsError(null);
-    try {
-      const userData = await apiClient.get('/users', { headers: authHeader });
-      setUsers(userData.data);
-    } catch (err) {
-      console.error(`User fetch error: ${err}`);
-      setUsersError(`There was an error loading the users!`);
-    }
-
-    try {
-      const animalData = await apiClient.get('/animals', { headers: authHeader });
-      setAnimals(animalData.data);
-    } catch (err) {
-      console.error(`Animal fetch error: ${err}`);
-      setAnimalsError(`There was an error loading the animals!`);
-    }
-
-    try {
-      const inventoryData = await apiClient.get('/inventory', { headers: authHeader });
-      setInventory(inventoryData.data);
-    } catch (err) {
-      console.error(`Inventory fetch error: ${err}`);
-      setInventoryError(`There was an error loading the inventory!`);
-    }
-
-    try {
-      const transactionData = await apiClient.get('/inventory-transactions', {
-        headers: authHeader,
-      });
-      setTransactions(transactionData.data);
-    } catch (err) {
-      console.error(`Inventory Transaction fetch error: ${err}`);
-      setTransactionsError(`There was an error loading the inventory transactions!`);
-    }
-
-    setLoading(false);
-  };
-
   useEffect(() => {
+    const fetchAll = async () => {
+      setLoading(true);
+      setUsersError(null);
+      setAnimalsError(null);
+      setInventoryError(null);
+      setTransactionsError(null);
+      try {
+        const userData = await apiClient.get('/users', { headers: authHeader });
+        setUsers(userData.data);
+      } catch (err) {
+        console.error(`User fetch error: ${err}`);
+        setUsersError(`There was an error loading the users!`);
+      }
+
+      try {
+        const animalData = await apiClient.get('/animals', { headers: authHeader });
+        setAnimals(animalData.data);
+      } catch (err) {
+        console.error(`Animal fetch error: ${err}`);
+        setAnimalsError(`There was an error loading the animals!`);
+      }
+
+      try {
+        const inventoryData = await apiClient.get('/inventory', { headers: authHeader });
+        setInventory(inventoryData.data);
+      } catch (err) {
+        console.error(`Inventory fetch error: ${err}`);
+        setInventoryError(`There was an error loading the inventory!`);
+      }
+
+      try {
+        const transactionData = await apiClient.get('/inventory-transactions', {
+          headers: authHeader,
+        });
+        setTransactions(transactionData.data);
+      } catch (err) {
+        console.error(`Inventory Transaction fetch error: ${err}`);
+        setTransactionsError(`There was an error loading the inventory transactions!`);
+      }
+
+      setLoading(false);
+    };
     fetchAll();
   }, []);
 
