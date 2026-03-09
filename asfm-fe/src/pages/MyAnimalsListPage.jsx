@@ -8,22 +8,21 @@ export default function MyAnimalsListPage() {
   const [myAnimals, setMyAnimals] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isError, setIsError] = useState(false);
-  const session = useBoundStore((state) => state.session)
+  const session = useBoundStore((state) => state.session);
   let token;
+
   if (session) {
-  token = session.access_token;
-    console.log(token)
+    token = session.access_token;
   }
 
-
-  const url = 'http://localhost:8080/api'; // <-- change url to an env variable once backend deployment url is finalized 
+  const url = 'http://localhost:8080/api'; // <-- change url to an env variable once backend deployment url is finalized
 
   async function fetchMyAnimals(userId) {
     try {
       const response = await fetch(`${url}/animals`, {
         headers: {
-          'Authorization' : `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
       if (!response.ok) {
         throw new Error(`Failed to fetch my animals: ${response.status}`);
