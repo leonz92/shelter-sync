@@ -1,6 +1,5 @@
+import apiClient from "@/lib/axios";
 import getBirthdayYear from "@/utils/getBirthday";
-
-const url = 'http://localhost:8080/api'; // <-- change url to an env variable once backend deployment url is finalized
 
 function sortMedicalLogs(logs) {
     logs.sort((a, b) => new Date(b.logged_at) - new Date(a.logged_at));
@@ -8,11 +7,8 @@ function sortMedicalLogs(logs) {
 
   export async function fetchAnimal(id) {
     try {
-      const response = await fetch(`${url}/animals/${id}`);
-      if (!response.ok) {
-        throw new Error(`Fetch request error status: ${response.status}`);
-      }
-      const data = await response.json();
+      const response = await apiClient.get(`/animals/${id}`)
+      const data = response.data
       if(Object.keys(data).length === 0) return null;
       const animal = data;
 
@@ -28,19 +24,10 @@ function sortMedicalLogs(logs) {
     }
   }
 
-  export async function fetchAnimalMedicalLogs(id, token) {
+  export async function fetchAnimalMedicalLogs() {
     try {
-      console.log('my token', token)
-      const response = await fetch(`${url}/medical-logs`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      if (!response.ok) {
-        throw new Error(`Failed to find the animal's medical logs ${response.status}`);
-      }
-      const data = await response.json();
-      console.log('animal log', data)
+      const response = await apiClient.get(`/medical-logs`);
+      const data = response.data
       sortMedicalLogs(data)
       return data;
     } catch (err) {

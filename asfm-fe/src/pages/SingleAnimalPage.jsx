@@ -33,21 +33,15 @@ export default function SingleAnimalPage({ id }) {
 
       let animalLogsResults;
       if (token) {
-        animalLogsResults = await fetchAnimalMedicalLogs(id, token);
+        animalLogsResults = await fetchAnimalMedicalLogs();
 
-        if (!animalLogsResults) {
-          setAnimalLogs(null);
-          setIsLoading(false);
-          return;
+        if (animalLogsResults) {
+          const filteredLogs = animalLogsResults.filter((log) => log.animal_id === id);
+          setAnimalLogs(filteredLogs);
+        } else {
+          setAnimalLogs(null)
         }
-
-        const filteredLogs = animalLogsResults.filter((log) => log.animal_id === id);
-
-        setAnimalLogs(filteredLogs);
-        setIsLoading(false);
-        return;
       }
-      setAnimalLogs(null);
       setIsLoading(false);
     }
 
@@ -76,18 +70,18 @@ export default function SingleAnimalPage({ id }) {
       <div className="max-w-7xl mx-auto py-20 px-4 sm:px-6 lg:px-8">
         <article>
           <AnimalGeneralInfo viewAnimal={viewAnimal} />
-          {user && (
-            <Card className="mt-10">
-              <CardTitle className="pl-5">Medical Logs</CardTitle>
-              <CardDescription className="px-5 flex flex-col gap-y-5">
-                {animalLogs && animalLogs.length > 0 ? (
-                  animalLogs.map((log, index) => <MedicalLogCard key={index} log={log} />)
-                ) : (
-                  <div>There are no recorded medical logs for this animal.</div>
-                )}
-              </CardDescription>
-            </Card>
-          )}
+          <Card className="mt-10">
+            <CardTitle className="pl-5">Medical Logs</CardTitle>
+            <CardDescription className="px-5 flex flex-col gap-y-5">
+              {!user ? (
+                <div>Medical records are only available for foster user owners.</div>
+              ) : animalLogs?.length > 0 ? (
+                animalLogs.map((log, index) => <MedicalLogCard key={index} log={log} />)
+              ) : (
+                <div>There are no recorded medical logs for this animal.</div>
+              )}
+            </CardDescription>
+          </Card>
         </article>
       </div>
     </>
