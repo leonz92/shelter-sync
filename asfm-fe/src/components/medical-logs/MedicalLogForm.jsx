@@ -22,7 +22,15 @@ const EMPTY_DEFAULTS = {
   administered_at: '',
   prescription: '',
 };
-import { Combobox, ComboboxInput, ComboboxContent, ComboboxItem, ComboboxEmpty, ComboboxList, ComboboxCollection } from '@/components/ui/combobox';
+import {
+  Combobox,
+  ComboboxInput,
+  ComboboxContent,
+  ComboboxItem,
+  ComboboxEmpty,
+  ComboboxList,
+  ComboboxCollection,
+} from '@/components/ui/combobox';
 import { useBoundStore } from '@/store';
 
 const required =

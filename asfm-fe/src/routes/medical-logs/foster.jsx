@@ -15,8 +15,6 @@ export const Route = createFileRoute('/medical-logs/foster')({
   component: FosterLogsPage,
 });
 
-
-
 function FosterLogsPage() {
   const navigate = useNavigate();
   const medicalLogs = useBoundStore((state) => state.medicalLogs);

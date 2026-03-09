@@ -187,7 +187,9 @@ export function ReusableTable({
       {/* Table */}
       <div>
         <Table>
-          <ShadcnTableHeader className={`relative sticky top-0 z-10 ${headerClassName} ${enableColumnVisibility ? 'pr-12' : ''}`}>
+          <ShadcnTableHeader
+            className={`relative sticky top-0 z-10 ${headerClassName} ${enableColumnVisibility ? 'pr-12' : ''}`}
+          >
             <ShadcnTableRow>
               {visibleColumnDefs.map((column, _index) => {
                 const columnKey = getColumnKey(column);
@@ -217,7 +219,7 @@ export function ReusableTable({
               <div className="absolute top-1/2 -translate-y-1/2 right-2 z-20">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-<Button variant="ghost" size="icon" className="h-8 w-8 text-primary">
+                    <Button variant="ghost" size="icon" className="h-8 w-8 text-primary">
                       <Settings className="size-4" />
                     </Button>
                   </DropdownMenuTrigger>
