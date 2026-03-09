@@ -237,7 +237,7 @@ function AdminLogsPage() {
               <Button
                 onClick={() => navigate({ to: '/medical-logs/add' })}
                 size="lg"
-                className="shrink-0 sm:self-start gap-2"
+                className="shrink-0 sm:self-center gap-2"
               >
                 <Plus className="size-5" />
                 Add Medical Log
