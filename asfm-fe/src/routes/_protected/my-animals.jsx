@@ -6,10 +6,9 @@ export const Route = createFileRoute('/_protected/my-animals')({
 });
 
 function RouteComponent() {
-
   return (
     <>
-      <MyAnimalsListPage  />
+      <MyAnimalsListPage />
     </>
   );
 }
