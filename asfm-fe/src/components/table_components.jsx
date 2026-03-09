@@ -214,10 +214,10 @@ export function ReusableTable({
               })}
             </ShadcnTableRow>
             {enableColumnVisibility && (
-              <div className="absolute top-2 right-2 z-20">
+              <div className="absolute top-1/2 -translate-y-1/2 right-2 z-20">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" size="icon" className="h-8 w-8">
+<Button variant="ghost" size="icon" className="h-8 w-8 text-primary">
                       <Settings className="size-4" />
                     </Button>
                   </DropdownMenuTrigger>
