@@ -46,7 +46,7 @@ export default function SingleAnimalPage({ id }) {
     }
 
     load();
-  }, [id, session]);
+  }, [id, session, token]);
 
   if (isLoading)
     return (
