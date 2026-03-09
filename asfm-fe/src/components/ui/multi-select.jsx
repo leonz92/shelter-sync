@@ -26,10 +26,6 @@ export function MultiSelect({
       ? `${selectedCount} type${selectedCount !== 1 ? 's' : ''} selected`
       : placeholder;
 
-  const selectedLabels = value
-    .map((v) => options.find((o) => o.value === v)?.label)
-    .filter(Boolean);
-
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>
@@ -62,20 +58,23 @@ export function MultiSelect({
         {value.length > 0 && (
           <div className="p-2 border-t bg-muted/30">
             <div className="flex gap-1 mb-2 flex-wrap">
-              {selectedLabels.map((label, idx) => (
-                <span
-                  key={idx}
-                  className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-primary/10 text-primary"
-                >
-                  {label}
-                  <button
-                    onClick={() => handleToggle(value[idx])}
-                    className="ml-1 hover:text-primary-foreground/80"
+              {value.map((v) => {
+                const label = options.find((o) => o.value === v)?.label;
+                return (
+                  <span
+                    key={v}
+                    className="inline-flex items-center px-2 py-1 rounded-full text-xs bg-primary/10 text-primary"
                   >
-                    <X className="size-3" />
-                  </button>
-                </span>
-              ))}
+                    {label}
+                    <button
+                      onClick={() => handleToggle(v)}
+                      className="ml-1 hover:text-primary-foreground/80"
+                    >
+                      <X className="size-3" />
+                    </button>
+                  </span>
+                );
+              })}
             </div>
             <Button
               variant="ghost"
