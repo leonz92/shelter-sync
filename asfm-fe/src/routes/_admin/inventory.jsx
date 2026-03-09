@@ -1,146 +1,143 @@
-import { createFileRoute } from '@tanstack/react-router'
-import Layout from '@/components/Layout';
-import BasicNavBar from '@/components/basicNavBar'
-import { ReusableTable } from '../../components/table_components'
-import { useEffect, useMemo, useState } from 'react'
+import { createFileRoute } from '@tanstack/react-router';
+import { ReusableTable } from '../../components/table_components';
+import { useEffect, useMemo, useState } from 'react';
 import apiClient from '../../lib/axios';
-import FilterBar from '@/components/FilterBar'
+import FilterBar from '@/components/FilterBar';
 import FilterSelect from '@/components/custom/FilterSelect';
-import InputGroupForSearch from '@/components/InputGroupForSearch'
-import { ModalDialog } from '@/components/ModalDialog'
-import { Input } from '@/components/ui/input'
+import InputGroupForSearch from '@/components/InputGroupForSearch';
+import { ModalDialog } from '@/components/ModalDialog';
+import { Input } from '@/components/ui/input';
 import { Edit, Trash2, Package } from 'lucide-react';
-import { Badge } from '@/components/ui/badge'
-import ConfirmationDialog from '@/components/confirmationDialog'
+import ConfirmationDialog from '@/components/confirmationDialog';
 
 const formatDate = (dateString) => {
-  if (!dateString) return '—'
-  const date = new Date(dateString)
-  const month = String(date.getMonth() + 1).padStart(2, '0')
-  const day = String(date.getDate()).padStart(2, '0')
-  const year = date.getFullYear()
-  return `${month}/${day}/${year}`
-}
+  if (!dateString) return '—';
+  const date = new Date(dateString);
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+  const year = date.getFullYear();
+  return `${month}/${day}/${year}`;
+};
 
 export const Route = createFileRoute('/_admin/inventory')({
   component: RouteComponent,
-})
+});
 
 function RouteComponent() {
-  const [filters, setFilters] = useState({ category: '', search: '' })
-  const [allInventory, setAllInventory] = useState([])
-  const [categories, setCategories] = useState([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState(null)
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
-  const [editItem, setEditItem] = useState(null)
-  const [deleteItem, setDeleteItem] = useState(null)
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [filters, setFilters] = useState({ category: '', search: '' });
+  const [allInventory, setAllInventory] = useState([]);
+  const [categories, setCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [editItem, setEditItem] = useState(null);
+  const [deleteItem, setDeleteItem] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const filteredInventory = useMemo(() => {
-    let filtered = allInventory
+    let filtered = allInventory;
     if (filters.category) {
-      filtered = filtered.filter(item => item.category === filters.category)
+      filtered = filtered.filter((item) => item.category === filters.category);
     }
     if (filters.search) {
-      filtered = filtered.filter(item =>
-        item.item_name.toLowerCase().includes(filters.search.toLowerCase())
-      )
+      filtered = filtered.filter((item) =>
+        item.item_name.toLowerCase().includes(filters.search.toLowerCase()),
+      );
     }
-    return filtered
-  }, [allInventory, filters])
-
+    return filtered;
+  }, [allInventory, filters]);
   const fetchData = async () => {
-    setLoading(true)
-    setError(null)
+    setLoading(true);
+    setError(null);
     try {
-      const inventoryRes = await apiClient.get('/inventory')
+      const inventoryRes = await apiClient.get('/inventory');
 
-      const enrichedInventory = inventoryRes.data.map(inv => ({
+      const enrichedInventory = inventoryRes.data.map((inv) => ({
         ...inv,
-        item_name: inv.item?.name ?? 'Unknown',
-        category: inv.item?.category ?? 'Unknown',
-      }))
+        item_name: inv.item?.name || 'Unknown',
+        category: inv.item?.category || 'Unknown',
+      }));
 
-      setAllInventory(enrichedInventory)
-      setCategories([...new Set(enrichedInventory.map(item => item.category))])
+      setAllInventory(enrichedInventory);
+      setCategories([...new Set(enrichedInventory.map((item) => item.category))]);
     } catch (err) {
-      console.error('Error fetching data:', err)
-      setError('Failed to load inventory. Please try again.')
+      console.error('Error fetching data:', err);
+      setError('Failed to load inventory. Please try again.');
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    fetchData();
+  }, []);
 
   const handleEdit = (inventoryItem) => {
-    setEditItem(inventoryItem)
-    setIsEditModalOpen(true)
-  }
+    setEditItem(inventoryItem);
+    setIsEditModalOpen(true);
+  };
 
   const handleEditSubmit = () => {
-    console.log('Edit inventory item:', editItem)
-    setIsEditModalOpen(false)
-  }
+    console.log('Edit inventory item:', editItem);
+    setIsEditModalOpen(false);
+  };
 
   const handleDelete = (inventoryItem) => {
-    setDeleteItem(inventoryItem)
-    setShowDeleteConfirm(true)
-  }
+    setDeleteItem(inventoryItem);
+    setShowDeleteConfirm(true);
+  };
 
   const handleClearFilters = () => {
-    setFilters({ search: '', category: '' })
-  }
+    setFilters({ search: '', category: '' });
+  };
 
   const handleAddNew = () => {
-    setIsModalOpen(true)
-  }
+    setIsModalOpen(true);
+  };
 
   const handleModalSubmit = () => {
-    console.log('Add new inventory item')
-  }
+    console.log('Add new inventory item');
+  };
 
   const inventoryColumns = [
     {
-      accessorKey: "item_name",
-      header: "Item Name",
+      accessorKey: 'item_name',
+      header: 'Item Name',
       sortable: true,
-      textSize: "sm",
-      headClassName: "min-w-[180px]",
+      textSize: 'sm',
+      headClassName: 'min-w-[180px]',
     },
     {
-      accessorKey: "category",
-      header: "Category",
+      accessorKey: 'category',
+      header: 'Category',
       sortable: true,
-      textSize: "sm",
-      headClassName: "min-w-[180px]",
+      textSize: 'sm',
+      headClassName: 'min-w-[180px]',
     },
     {
-      accessorKey: "quantity",
-      header: "Quantity",
+      accessorKey: 'quantity',
+      header: 'Quantity',
       sortable: true,
-      textSize: "sm",
-      headClassName: "min-w-[100px]",
+      textSize: 'sm',
+      headClassName: 'min-w-[100px]',
     },
     {
-      accessorKey: "expiration_date",
-      header: "Expiration Date",
+      accessorKey: 'expiration_date',
+      header: 'Expiration Date',
       sortable: true,
-      textSize: "sm",
-      headClassName: "min-w-[150px]",
+      textSize: 'sm',
+      headClassName: 'min-w-[150px]',
       cell: ({ row }) => {
-        const isCrate = row.original.category === 'CRATE'
-        if (!isCrate) return <span className="invisible">{formatDate(row.original.expiration_date)}</span>
-        return formatDate(row.original.expiration_date)
+        const isCrate = row.original.category === 'CRATE';
+        if (!isCrate)
+          return <span className="invisible">{formatDate(row.original.expiration_date)}</span>;
+        return formatDate(row.original.expiration_date);
       },
     },
     {
-      id: "actions",
-      header: "Actions",
+      id: 'actions',
+      header: 'Actions',
       cell: ({ row }) => (
         <div className="flex gap-2">
           <button
@@ -160,7 +157,7 @@ function RouteComponent() {
         </div>
       ),
     },
-  ]
+  ];
 
   if (error) return (
     <div className="flex flex-col items-center pt-8 gap-3">
@@ -172,13 +169,10 @@ function RouteComponent() {
         Retry
       </button>
     </div>
-  )
-
-  const totalItems = allInventory.length
-  const categoryCount = categories.length
+  );
 
   return (
-    <Layout navBar={<BasicNavBar />}>
+    <>
       <div className="relative overflow-hidden rounded-xl border bg-card p-6 sm:p-8 mb-4">
         <div className="flex items-start gap-4">
           <div className="flex items-center justify-center size-12 sm:size-14 rounded-xl bg-secondary/20 shrink-0">
@@ -222,7 +216,7 @@ function RouteComponent() {
         isLoading={loading}
         headerClassName="bg-secondary text-primary-foreground"
         tablebodyRowClassName="bg-white hover:bg-secondary/20"
-        containerClassName='overflow-auto max-h-150 rounded-lg border border-pale-sky shadow-sm relative w-full'
+        containerClassName="overflow-auto max-h-150 rounded-lg border border-pale-sky shadow-sm relative w-full"
       />
 
       <ModalDialog
@@ -318,6 +312,6 @@ function RouteComponent() {
           </div>
         </form>
       </ModalDialog>
-    </Layout>
-  )
+    </>
+  );
 }
