@@ -29,6 +29,8 @@ const REQUIRED_FIELDS = [
   { key: 'sex', label: 'Sex' },
   { key: 'foster_status', label: 'Status' },
   { key: 'dob', label: 'Date of Birth' },
+  { key: 'weight', label: 'Weight' },
+  { key: 'kennel_id', label: 'Kennel ID' },
 ];
 
 function validate(form) {
@@ -115,7 +117,7 @@ export default function AnimalForm({ formId, onSubmit, initialValues = {}, error
             className={`w-full ${fieldErrors.chip_id ? 'border-red-500' : ''}`}
             value={form.chip_id}
             onChange={setInput('chip_id')}
-            placeholder="123456789"
+            placeholder="Enter chip number"
           />
           {fieldErrors.chip_id && <p className="text-xs text-red-500">{fieldErrors.chip_id}</p>}
         </div>
@@ -197,14 +199,16 @@ export default function AnimalForm({ formId, onSubmit, initialValues = {}, error
         </div>
 
         <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium">Weight (lbs)</label>
+          <label className="text-sm font-medium">
+            Weight (lbs) <span className="text-red-500">*</span>
+          </label>
           <Input
             type="number"
             step="0.1"
             className={`w-full ${fieldErrors.weight ? 'border-red-500' : ''}`}
             value={form.weight}
             onChange={setInput('weight')}
-            placeholder="65.5"
+            placeholder="Enter weight"
           />
           {fieldErrors.weight && <p className="text-xs text-red-500">{fieldErrors.weight}</p>}
         </div>
@@ -212,13 +216,15 @@ export default function AnimalForm({ formId, onSubmit, initialValues = {}, error
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="flex flex-col gap-1">
-          <label className="text-sm font-medium">Kennel ID</label>
+          <label className="text-sm font-medium">
+            Kennel ID <span className="text-red-500">*</span>
+          </label>
           <Input
             type="number"
             className={`w-full ${fieldErrors.kennel_id ? 'border-red-500' : ''}`}
             value={form.kennel_id}
             onChange={setInput('kennel_id')}
-            placeholder="1"
+            placeholder="Enter a number"
           />
           {fieldErrors.kennel_id && <p className="text-xs text-red-500">{fieldErrors.kennel_id}</p>}
         </div>
