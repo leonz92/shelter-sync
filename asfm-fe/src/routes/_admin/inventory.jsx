@@ -130,7 +130,7 @@ function RouteComponent() {
       headClassName: 'min-w-[150px]',
       cell: ({ row }) => {
         const isCrate = row.original.category === 'CRATE';
-        if (!isCrate)
+        if (isCrate)
           return <span className="invisible">{formatDate(row.original.expiration_date)}</span>;
         return formatDate(row.original.expiration_date);
       },
