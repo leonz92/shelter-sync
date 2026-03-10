@@ -1,21 +1,25 @@
-import FilterBar from './components/FilterBar';
-import InputGroupForSearch from './components/InputGroupForSearch';
-import FilterSelect from './components/custom/FilterSelect';
-import { Button } from './components/ui/button';
-import { ReusableTable } from './components/table_components';
-import { mockLoanedItems } from './features/mockLoanedItems';
-import DashboardCard from './components/custom/DashboardCard';
-import { ModalDialog } from './components/ModalDialog';
-import ConfirmationDialog from './components/confirmationDialog';
+import FilterBar from '../components/FilterBar';
+import InputGroupForSearch from '../components/InputGroupForSearch';
+import FilterSelect from '../components/custom/FilterSelect';
+import { Button } from '../components/ui/button';
+import { ReusableTable } from '../components/table_components';
+import { mockLoanedItems } from '../features/mockLoanedItems';
+import DashboardCard from '../components/custom/DashboardCard';
+import { ModalDialog } from '../components/ModalDialog';
+import ConfirmationDialog from '../components/confirmationDialog';
 import { useState } from 'react';
-import { DashboardSummaryCard } from './components/DashboardSummaryCard';
-import { DASHBOARD_CARD_CONFIG } from './config/dashboardCard';
-import { useDashboardSummary } from './hooks/useDashboardSummary';
-import CustomBadge from './components/custom/CustomBadge';
-import { useBoundStore } from './store';
-import { DatePickerSimple } from './components/dateTimePicker';
+import { DashboardSummaryCard } from '../components/DashboardSummaryCard';
+import { DASHBOARD_CARD_CONFIG } from '../config/dashboardCard';
+import { useDashboardSummary } from '../hooks/useDashboardSummary';
+import { useBoundStore } from '../store';
+import { DatePickerSimple } from '../components/dateTimePicker';
+import { createFileRoute } from '@tanstack/react-router';
 
-function App() {
+export const Route = createFileRoute('/Examples')({
+  component: ExamplesPage,
+});
+
+function ExamplesPage() {
   // Loaned items table columns
   const loanedItemsColumns = [
     {
@@ -120,7 +124,7 @@ function App() {
           <Button variant="ghost">Ghost button</Button>
           <Button variant="link">Link button</Button>
         </div>
-
+        <Button onClick={() => navigate({ to: '/single-animal' })}>Go to single animal</Button>
         <FilterSelect
           selectTriggerClassName="w-[300px]"
           selectItems={['approved', 'pending', 'denied']}
@@ -210,5 +214,3 @@ function App() {
     </>
   );
 }
-
-export default App;

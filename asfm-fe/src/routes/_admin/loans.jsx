@@ -1,9 +1,7 @@
 import { createFileRoute } from '@tanstack/react-router';
-import Layout from '@/components/Layout';
-import NavBar from '@/components/NavBar';
 import { ReusableTable } from '../../components/table_components';
 import { useMemo, useState } from 'react';
-import { Edit, ClipboardList, Plus } from 'lucide-react';
+import { Edit, ClipboardList } from 'lucide-react';
 import { mockLoanedItems } from '../../features/mockLoanedItems';
 import FilterBar from '@/components/FilterBar';
 import FilterSelect from '@/components/custom/FilterSelect';
@@ -11,7 +9,6 @@ import InputGroupForSearch from '@/components/InputGroupForSearch';
 import { ModalDialog } from '@/components/ModalDialog';
 import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
 
 const formatDate = (dateString) => {
   const date = new Date(dateString);
@@ -142,7 +139,7 @@ function RouteComponent() {
   const returnedCount = allLoans.filter((l) => l.loanStatus === 'Complete').length;
 
   return (
-    <Layout navBar={<NavBar />}>
+    <>
       <div className="relative overflow-hidden rounded-xl border bg-card p-6 sm:p-8 mb-4">
         <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-start gap-4">
@@ -249,6 +246,6 @@ function RouteComponent() {
           </div>
         </form>
       </ModalDialog>
-    </Layout>
+    </>
   );
 }

@@ -1,16 +1,6 @@
 import { Button } from './ui/button';
 
-export default function FilterBar({
-  children,
-  onFilter,
-  onClear,
-  onAddNew,
-  addNewButtonLabel = 'Add New',
-}) {
-  const handleFilterSearch = () => {
-    onFilter();
-  };
-
+export default function FilterBar({ children, onClear, onAddNew, addNewButtonLabel = 'Add New' }) {
   const handleClear = () => {
     if (onClear) onClear();
   };

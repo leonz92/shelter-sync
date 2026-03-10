@@ -1,6 +1,4 @@
 import { createFileRoute } from '@tanstack/react-router';
-import Layout from '@/components/Layout';
-import NavBar from '@/components/NavBar';
 import { ReusableTable } from '../../components/table_components';
 import { useMemo } from 'react';
 import { mockLoanedItems } from '../../features/mockLoanedItems';
@@ -65,10 +63,11 @@ function RouteComponent() {
       textSize: 'sm',
       headClassName: 'min-w-[180px]',
       cell: ({ row }) => {
-        const isCrate = row.original.itemDescription.toLowerCase().includes('crate');
+        const isCrate = row.original.itemDescription.toLowerCase().includes('crate');;
         if (!isCrate)
-          return <span className="invisible">{formatDate(row.original.expectedReturnDate)}</span>;
-        return formatDate(row.original.expectedReturnDate);
+         
+          return <span className="invisible">{formatDate(row.original.expectedReturnDate)}</span>;;
+        return formatDate(row.original.expectedReturnDate);;
       },
     },
     {
@@ -91,7 +90,7 @@ function RouteComponent() {
   const returnedCount = supplies.filter((s) => s.loanStatus === 'Complete').length;
 
   return (
-    <Layout navBar={<NavBar />}>
+    <>
       <div className="relative overflow-hidden rounded-xl border bg-card p-6 sm:p-8 mb-4">
         <div className="flex items-start gap-4">
           <div className="flex items-center justify-center size-12 sm:size-14 rounded-xl bg-secondary/20 shrink-0">
@@ -142,6 +141,6 @@ function RouteComponent() {
         tablebodyRowClassName="bg-white hover:bg-secondary/20"
         containerClassName="overflow-auto max-h-150 rounded-lg border border-pale-sky shadow-sm relative w-full"
       />
-    </Layout>
+    </>
   );
 }

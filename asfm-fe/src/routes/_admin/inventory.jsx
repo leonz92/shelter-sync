@@ -1,6 +1,4 @@
 import { createFileRoute } from '@tanstack/react-router';
-import Layout from '@/components/Layout';
-import NavBar from '@/components/NavBar';
 import { ReusableTable } from '../../components/table_components';
 import { useEffect, useMemo, useState } from 'react';
 import apiClient from '../../lib/axios';
@@ -10,8 +8,8 @@ import InputGroupForSearch from '@/components/InputGroupForSearch';
 import { ModalDialog } from '@/components/ModalDialog';
 import { Input } from '@/components/ui/input';
 import { Edit, Trash2, Package } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
 import ConfirmationDialog from '@/components/confirmationDialog';
+import { useBoundStore } from '@/store';
 
 const formatDate = (dateString) => {
   if (!dateString) return '—';
@@ -50,26 +48,20 @@ function RouteComponent() {
     }
     return filtered;
   }, [allInventory, filters]);
+  const session = useBoundStore((state) => state.session);
+  const authHeader = { Authorization: `Bearer ${session?.access_token}` };
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [inventoryRes, itemsRes] = await Promise.all([
-          apiClient.get('/inventory'),
-          apiClient.get('/items'),
+          apiClient.get('/inventory', { headers: authHeader }),
         ]);
-
-        const itemMap = {};
-        const categoryMap = {};
-        itemsRes.data.forEach((item) => {
-          itemMap[item.id] = item.name;
-          categoryMap[item.id] = item.category;
-        });
 
         const enrichedInventory = inventoryRes.data.map((inv) => ({
           ...inv,
-          item_name: itemMap[inv.item_id] || 'Unknown',
-          category: categoryMap[inv.item_id] || 'Unknown',
+          item_name: inv.item?.name || 'Unknown',
+          category: inv.item?.category || 'Unknown',
         }));
 
         setAllInventory(enrichedInventory);
@@ -172,11 +164,8 @@ function RouteComponent() {
 
   if (error) return <div className="flex justify-center pt-8 text-red-500">{error}</div>;
 
-  const totalItems = allInventory.length;
-  const categoryCount = categories.length;
-
   return (
-    <Layout navBar={<NavBar />}>
+    <>
       <div className="relative overflow-hidden rounded-xl border bg-card p-6 sm:p-8 mb-4">
         <div className="flex items-start gap-4">
           <div className="flex items-center justify-center size-12 sm:size-14 rounded-xl bg-secondary/20 shrink-0">
@@ -316,6 +305,6 @@ function RouteComponent() {
           </div>
         </form>
       </ModalDialog>
-    </Layout>
+    </>
   );
 }
