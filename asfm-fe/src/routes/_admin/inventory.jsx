@@ -46,8 +46,6 @@ const EMPTY_NEW_ITEM = {
 
 function RouteComponent() {
   const user = useBoundStore((state) => state.user);
-  const session = useBoundStore((state) => state.session);
-  const authHeader = { Authorization: `Bearer ${session?.access_token}` };
 
   const [filters, setFilters] = useState({ category: '', search: '' });
   const [allInventory, setAllInventory] = useState([]);
@@ -141,7 +139,6 @@ function RouteComponent() {
             item_medication_side_effects: newItem.medication_side_effects || '',
           }),
         },
-        { headers: authHeader },
       );
       setIsModalOpen(false);
       setNewItem(EMPTY_NEW_ITEM);
@@ -173,7 +170,6 @@ function RouteComponent() {
           notes: editItem.notes || '-',
           ...(editItem.expiration_date && { expiration_date: new Date(editItem.expiration_date).toISOString() }),
         },
-        { headers: authHeader },
       );
       setIsEditModalOpen(false);
       await fetchData();
