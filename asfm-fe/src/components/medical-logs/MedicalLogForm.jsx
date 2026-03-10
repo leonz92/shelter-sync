@@ -30,6 +30,7 @@ import {
   ComboboxEmpty,
   ComboboxList,
   ComboboxCollection,
+  ComboboxValue,
 } from '@/components/ui/combobox';
 import { useBoundStore } from '@/store';
 
@@ -38,8 +39,8 @@ const required =
   ({ value }) =>
     !value || !value.toString().trim() ? `${label} is required.` : undefined;
 
-export default function MedicalLogForm({ formId, onSubmit, initialValues = {} }) {
-  const medicalLogs = useBoundStore((state) => state.medicalLogs);
+export default function MedicalLogForm({ formId, onSubmit, initialValues = {}, animals = [] }) {
+  const medicalLogs = useBoundStore((state) => state.medicalLogs) || [];
   const fetchMedicalLogs = useBoundStore((state) => state.fetchMedicalLogs);
 
   // Fetch medical logs on mount
@@ -47,11 +48,31 @@ export default function MedicalLogForm({ formId, onSubmit, initialValues = {} })
     fetchMedicalLogs();
   }, [fetchMedicalLogs]);
 
-  // Get unique animal names from medical logs
+  // Get unique animal names from medical logs (fallback if no animals prop)
   const animalNamesFromLogs = useMemo(() => {
     const names = [...new Set(medicalLogs.map((log) => log.animal_name).filter(Boolean))];
     return names.sort();
   }, [medicalLogs]);
+
+  // Create animal ID to name map for display
+  const animalIdToNameMap = useMemo(() => {
+    const map = new Map();
+    animals.forEach(animal => {
+      map.set(animal.id, animal.name);
+    });
+    return map;
+  }, [animals]);
+
+  // Prepare animal options for combobox
+  // Prefer animals prop if available, otherwise fallback to names from logs
+  const animalOptions = useMemo(() => {
+    if (animals.length > 0) {
+      // Return array of animal objects with id and name
+      return animals;
+    }
+    // Fallback: convert names to simple strings
+    return animalNamesFromLogs;
+  }, [animals, animalNamesFromLogs]);
 
   const form = useForm({
     defaultValues: { ...EMPTY_DEFAULTS, ...initialValues },
@@ -80,20 +101,23 @@ export default function MedicalLogForm({ formId, onSubmit, initialValues = {} })
             <label className="text-sm font-medium">
               Animal <span className="text-red-500">*</span>
             </label>
-            {animalNamesFromLogs.length > 0 ? (
+            {animalOptions.length > 0 ? (
               <Combobox
-                items={animalNamesFromLogs}
-                value={field.state.label}
+                items={animalOptions}
+                value={field.state.value}
                 onValueChange={field.handleChange}
               >
-                <ComboboxInput placeholder="Select an animal from logs..." />
+                <ComboboxInput placeholder="Select an animal..." />
+                <ComboboxValue>
+                  {animalIdToNameMap.get(field.state.value) || field.state.value}
+                </ComboboxValue>
                 <ComboboxContent>
-                  <ComboboxEmpty>No animals in medical logs yet.</ComboboxEmpty>
+                  <ComboboxEmpty>No animals available.</ComboboxEmpty>
                   <ComboboxList>
                     <ComboboxCollection>
                       {(item) => (
-                        <ComboboxItem key={item} value={item}>
-                          {item}
+                        <ComboboxItem key={item.id || item} value={item.id || item}>
+                          {item.name || item}
                         </ComboboxItem>
                       )}
                     </ComboboxCollection>
@@ -106,7 +130,7 @@ export default function MedicalLogForm({ formId, onSubmit, initialValues = {} })
                 value={field.state.value}
                 onBlur={field.handleBlur}
                 onChange={(e) => field.handleChange(e.target.value)}
-                placeholder="No animals in logs - type animal name..."
+                placeholder="No animals available - type animal name..."
                 rows={1}
               />
             )}
