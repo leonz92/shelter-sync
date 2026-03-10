@@ -67,7 +67,6 @@ function MedicalLogListPage() {
 
   if (medicalLogsError) {
     return (
-      <Layout>
         <RoleGuard allowedRoles={['STAFF']}>
           <div className="flex flex-col items-center justify-center py-24 gap-4">
             <p className="text-xl text-red-500">{medicalLogsError}</p>
@@ -76,12 +75,10 @@ function MedicalLogListPage() {
             </Button>
           </div>
         </RoleGuard>
-      </Layout>
     );
   }
 
   return (
-    <Layout>
       <RoleGuard allowedRoles={['STAFF']}>
         <div className="space-y-6">
           {/* Header */}
@@ -185,6 +182,5 @@ function MedicalLogListPage() {
           )}
         </div>
       </RoleGuard>
-    </Layout>
   );
 }

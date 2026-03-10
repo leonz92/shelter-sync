@@ -100,19 +100,16 @@ function AnimalListPage() {
 
   if (animalsError) {
     return (
-      <Layout>
         <div className="flex flex-col items-center justify-center py-24 gap-4">
           <p className="text-xl text-red-500">{animalsError}</p>
           <Button variant="outline" onClick={() => fetchAnimals()}>
             Retry
           </Button>
         </div>
-      </Layout>
     );
   }
 
   return (
-    <Layout>
       <div className="space-y-6">
         {/* Dashboard Header Card */}
         <div className="relative overflow-hidden rounded-xl border bg-card p-6 sm:p-8">
@@ -218,6 +215,5 @@ function AnimalListPage() {
           />
         )}
       </div>
-    </Layout>
   );
 }

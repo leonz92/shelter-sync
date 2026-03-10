@@ -114,7 +114,6 @@ function FosterLogsPage() {
 
   if (medicalLogsError) {
     return (
-      <Layout>
         <RoleGuard allowedRoles={['USER']}>
           <div className="flex flex-col items-center justify-center py-24 gap-4">
             <p className="text-xl text-red-500">{medicalLogsError}</p>
@@ -123,12 +122,10 @@ function FosterLogsPage() {
             </Button>
           </div>
         </RoleGuard>
-      </Layout>
     );
   }
 
   return (
-    <Layout>
       <RoleGuard allowedRoles={['USER']}>
         <div className="flex flex-col gap-6 h-full">
           {/* Dashboard Header Card */}
@@ -219,6 +216,5 @@ function FosterLogsPage() {
           )}
         </div>
       </RoleGuard>
-    </Layout>
   );
 }
