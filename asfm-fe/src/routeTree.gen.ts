@@ -17,10 +17,10 @@ import { Route as ExamplesRouteImport } from './routes/Examples'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AnimalsIndexRouteImport } from './routes/animals/index'
 import { Route as SingleAnimalIdRouteImport } from './routes/single-animal.$id'
-import { Route as MyAnimalsIdRouteImport } from './routes/my-animals.$id'
 import { Route as AnimalsAddRouteImport } from './routes/animals/add'
 import { Route as AnimalsAnimalIdRouteImport } from './routes/animals/$animalId'
 import { Route as UserMySuppliesRouteImport } from './routes/_user/my-supplies'
+import { Route as ProtectedMyAnimalsRouteImport } from './routes/_protected/my-animals'
 import { Route as AdminUsersRouteImport } from './routes/_admin/users'
 import { Route as AdminLoansRouteImport } from './routes/_admin/loans'
 import { Route as AdminInventoryRouteImport } from './routes/_admin/inventory'
@@ -64,11 +64,6 @@ const SingleAnimalIdRoute = SingleAnimalIdRouteImport.update({
   path: '/single-animal/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
-const MyAnimalsIdRoute = MyAnimalsIdRouteImport.update({
-  id: '/my-animals/$id',
-  path: '/my-animals/$id',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const AnimalsAddRoute = AnimalsAddRouteImport.update({
   id: '/animals/add',
   path: '/animals/add',
@@ -83,6 +78,11 @@ const UserMySuppliesRoute = UserMySuppliesRouteImport.update({
   id: '/my-supplies',
   path: '/my-supplies',
   getParentRoute: () => UserRoute,
+} as any)
+const ProtectedMyAnimalsRoute = ProtectedMyAnimalsRouteImport.update({
+  id: '/_protected/my-animals',
+  path: '/my-animals',
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AdminUsersRoute = AdminUsersRouteImport.update({
   id: '/users',
@@ -114,10 +114,10 @@ export interface FileRoutesByFullPath {
   '/inventory': typeof AdminInventoryRoute
   '/loans': typeof AdminLoansRoute
   '/users': typeof AdminUsersRoute
+  '/my-animals': typeof ProtectedMyAnimalsRoute
   '/my-supplies': typeof UserMySuppliesRoute
   '/animals/$animalId': typeof AnimalsAnimalIdRoute
   '/animals/add': typeof AnimalsAddRoute
-  '/my-animals/$id': typeof MyAnimalsIdRoute
   '/single-animal/$id': typeof SingleAnimalIdRoute
   '/animals/': typeof AnimalsIndexRoute
 }
@@ -130,10 +130,10 @@ export interface FileRoutesByTo {
   '/inventory': typeof AdminInventoryRoute
   '/loans': typeof AdminLoansRoute
   '/users': typeof AdminUsersRoute
+  '/my-animals': typeof ProtectedMyAnimalsRoute
   '/my-supplies': typeof UserMySuppliesRoute
   '/animals/$animalId': typeof AnimalsAnimalIdRoute
   '/animals/add': typeof AnimalsAddRoute
-  '/my-animals/$id': typeof MyAnimalsIdRoute
   '/single-animal/$id': typeof SingleAnimalIdRoute
   '/animals': typeof AnimalsIndexRoute
 }
@@ -149,10 +149,10 @@ export interface FileRoutesById {
   '/_admin/inventory': typeof AdminInventoryRoute
   '/_admin/loans': typeof AdminLoansRoute
   '/_admin/users': typeof AdminUsersRoute
+  '/_protected/my-animals': typeof ProtectedMyAnimalsRoute
   '/_user/my-supplies': typeof UserMySuppliesRoute
   '/animals/$animalId': typeof AnimalsAnimalIdRoute
   '/animals/add': typeof AnimalsAddRoute
-  '/my-animals/$id': typeof MyAnimalsIdRoute
   '/single-animal/$id': typeof SingleAnimalIdRoute
   '/animals/': typeof AnimalsIndexRoute
 }
@@ -167,10 +167,10 @@ export interface FileRouteTypes {
     | '/inventory'
     | '/loans'
     | '/users'
+    | '/my-animals'
     | '/my-supplies'
     | '/animals/$animalId'
     | '/animals/add'
-    | '/my-animals/$id'
     | '/single-animal/$id'
     | '/animals/'
   fileRoutesByTo: FileRoutesByTo
@@ -183,10 +183,10 @@ export interface FileRouteTypes {
     | '/inventory'
     | '/loans'
     | '/users'
+    | '/my-animals'
     | '/my-supplies'
     | '/animals/$animalId'
     | '/animals/add'
-    | '/my-animals/$id'
     | '/single-animal/$id'
     | '/animals'
   id:
@@ -201,10 +201,10 @@ export interface FileRouteTypes {
     | '/_admin/inventory'
     | '/_admin/loans'
     | '/_admin/users'
+    | '/_protected/my-animals'
     | '/_user/my-supplies'
     | '/animals/$animalId'
     | '/animals/add'
-    | '/my-animals/$id'
     | '/single-animal/$id'
     | '/animals/'
   fileRoutesById: FileRoutesById
@@ -216,9 +216,9 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRouteWithChildren
   UserRoute: typeof UserRouteWithChildren
   MedicalLogsRoute: typeof MedicalLogsRoute
+  ProtectedMyAnimalsRoute: typeof ProtectedMyAnimalsRoute
   AnimalsAnimalIdRoute: typeof AnimalsAnimalIdRoute
   AnimalsAddRoute: typeof AnimalsAddRoute
-  MyAnimalsIdRoute: typeof MyAnimalsIdRoute
   SingleAnimalIdRoute: typeof SingleAnimalIdRoute
   AnimalsIndexRoute: typeof AnimalsIndexRoute
 }
@@ -281,13 +281,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof SingleAnimalIdRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/my-animals/$id': {
-      id: '/my-animals/$id'
-      path: '/my-animals/$id'
-      fullPath: '/my-animals/$id'
-      preLoaderRoute: typeof MyAnimalsIdRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/animals/add': {
       id: '/animals/add'
       path: '/animals/add'
@@ -308,6 +301,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/my-supplies'
       preLoaderRoute: typeof UserMySuppliesRouteImport
       parentRoute: typeof UserRoute
+    }
+    '/_protected/my-animals': {
+      id: '/_protected/my-animals'
+      path: '/my-animals'
+      fullPath: '/my-animals'
+      preLoaderRoute: typeof ProtectedMyAnimalsRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/_admin/users': {
       id: '/_admin/users'
@@ -373,9 +373,9 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRouteWithChildren,
   UserRoute: UserRouteWithChildren,
   MedicalLogsRoute: MedicalLogsRoute,
+  ProtectedMyAnimalsRoute: ProtectedMyAnimalsRoute,
   AnimalsAnimalIdRoute: AnimalsAnimalIdRoute,
   AnimalsAddRoute: AnimalsAddRoute,
-  MyAnimalsIdRoute: MyAnimalsIdRoute,
   SingleAnimalIdRoute: SingleAnimalIdRoute,
   AnimalsIndexRoute: AnimalsIndexRoute,
 }
