@@ -24,6 +24,10 @@ function NavBar() {
         </Button>
         {userRole === 'USER' && (
           <>
+            <Button variant="outline">My Animals</Button>
+            <Button variant="outline" onClick={() => navigate({ to: '/medical-logs/foster' })}>
+              My Foster Logs
+            </Button>
             <Button variant="outline" onClick={() => navigate({ to: '/my-animals' })}>My Animals</Button>
             <Button variant="outline" onClick={() => navigate({ to: '/my-supplies' })}>
               My Supplies
@@ -41,6 +45,9 @@ function NavBar() {
             <Button variant="outline" onClick={() => navigate({ to: '/loans' })}>Loans</Button>
             <Button variant="outline" onClick={() => navigate({ to: '/medical-logs' })}>
               Med Log
+            </Button>
+            <Button variant="outline" onClick={() => navigate({ to: '/medical-logs/admin' })}>
+              Admin Logs
             </Button>
           </>
         )}

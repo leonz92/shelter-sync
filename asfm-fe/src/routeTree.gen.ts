@@ -11,17 +11,21 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as MedicalLogsRouteImport } from './routes/medical-logs'
 import { Route as UserRouteImport } from './routes/_user'
+import { Route as ProtectedRouteImport } from './routes/_protected'
 import { Route as AdminRouteImport } from './routes/_admin'
 import { Route as SignInRouteImport } from './routes/SignIn'
 import { Route as ExamplesRouteImport } from './routes/Examples'
 import { Route as IndexRouteImport } from './routes/index'
-import { Route as AnimalsIndexRouteImport } from './routes/_admin/animals/index';
+import { Route as MedicalLogsIndexRouteImport } from './routes/medical-logs/index'
+import { Route as AnimalsIndexRouteImport } from './routes/animals/index'
 import { Route as SingleAnimalIdRouteImport } from './routes/single-animal.$id'
-import { Route as AnimalsAddRouteImport } from './routes/_admin/animals/add';
-import { Route as AnimalsAnimalIdRouteImport } from './routes/_admin/animals/$animalId';
+import { Route as MedicalLogsFosterRouteImport } from './routes/medical-logs/foster'
+import { Route as MedicalLogsAdminRouteImport } from './routes/medical-logs/admin'
+import { Route as MedicalLogsAddRouteImport } from './routes/medical-logs/add'
+import { Route as AnimalsAddRouteImport } from './routes/animals/add'
+import { Route as AnimalsAnimalIdRouteImport } from './routes/animals/$animalId'
 import { Route as UserMySuppliesRouteImport } from './routes/_user/my-supplies'
 import { Route as ProtectedMyAnimalsRouteImport } from './routes/_protected/my-animals'
-import { Route as AdminUsersRouteImport } from './routes/_admin/users'
 import { Route as AdminLoansRouteImport } from './routes/_admin/loans'
 import { Route as AdminInventoryRouteImport } from './routes/_admin/inventory'
 import { Route as AdminAdminPortalRouteImport } from './routes/_admin/admin-portal'
@@ -33,6 +37,10 @@ const MedicalLogsRoute = MedicalLogsRouteImport.update({
 } as any)
 const UserRoute = UserRouteImport.update({
   id: '/_user',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProtectedRoute = ProtectedRouteImport.update({
+  id: '/_protected',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -54,25 +62,45 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MedicalLogsIndexRoute = MedicalLogsIndexRouteImport.update({
+  id: '/',
+  path: '/',
+  getParentRoute: () => MedicalLogsRoute,
+} as any)
 const AnimalsIndexRoute = AnimalsIndexRouteImport.update({
   id: '/animals/',
   path: '/animals/',
-  getParentRoute: () => AdminRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
 const SingleAnimalIdRoute = SingleAnimalIdRouteImport.update({
   id: '/single-animal/$id',
   path: '/single-animal/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
+const MedicalLogsFosterRoute = MedicalLogsFosterRouteImport.update({
+  id: '/foster',
+  path: '/foster',
+  getParentRoute: () => MedicalLogsRoute,
+} as any)
+const MedicalLogsAdminRoute = MedicalLogsAdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => MedicalLogsRoute,
+} as any)
+const MedicalLogsAddRoute = MedicalLogsAddRouteImport.update({
+  id: '/add',
+  path: '/add',
+  getParentRoute: () => MedicalLogsRoute,
+} as any)
 const AnimalsAddRoute = AnimalsAddRouteImport.update({
   id: '/animals/add',
   path: '/animals/add',
-  getParentRoute: () => AdminRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
 const AnimalsAnimalIdRoute = AnimalsAnimalIdRouteImport.update({
   id: '/animals/$animalId',
   path: '/animals/$animalId',
-  getParentRoute: () => AdminRoute,
+  getParentRoute: () => rootRouteImport,
 } as any)
 const UserMySuppliesRoute = UserMySuppliesRouteImport.update({
   id: '/my-supplies',
@@ -80,14 +108,9 @@ const UserMySuppliesRoute = UserMySuppliesRouteImport.update({
   getParentRoute: () => UserRoute,
 } as any)
 const ProtectedMyAnimalsRoute = ProtectedMyAnimalsRouteImport.update({
-  id: '/_protected/my-animals',
+  id: '/my-animals',
   path: '/my-animals',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminUsersRoute = AdminUsersRouteImport.update({
-  id: '/users',
-  path: '/users',
-  getParentRoute: () => AdminRoute,
+  getParentRoute: () => ProtectedRoute,
 } as any)
 const AdminLoansRoute = AdminLoansRouteImport.update({
   id: '/loans',
@@ -109,33 +132,38 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/Examples': typeof ExamplesRoute
   '/SignIn': typeof SignInRoute
-  '/medical-logs': typeof MedicalLogsRoute
+  '/medical-logs': typeof MedicalLogsRouteWithChildren
   '/admin-portal': typeof AdminAdminPortalRoute
   '/inventory': typeof AdminInventoryRoute
   '/loans': typeof AdminLoansRoute
-  '/users': typeof AdminUsersRoute
   '/my-animals': typeof ProtectedMyAnimalsRoute
   '/my-supplies': typeof UserMySuppliesRoute
   '/animals/$animalId': typeof AnimalsAnimalIdRoute
   '/animals/add': typeof AnimalsAddRoute
+  '/medical-logs/add': typeof MedicalLogsAddRoute
+  '/medical-logs/admin': typeof MedicalLogsAdminRoute
+  '/medical-logs/foster': typeof MedicalLogsFosterRoute
   '/single-animal/$id': typeof SingleAnimalIdRoute
   '/animals/': typeof AnimalsIndexRoute
+  '/medical-logs/': typeof MedicalLogsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/Examples': typeof ExamplesRoute
   '/SignIn': typeof SignInRoute
-  '/medical-logs': typeof MedicalLogsRoute
   '/admin-portal': typeof AdminAdminPortalRoute
   '/inventory': typeof AdminInventoryRoute
   '/loans': typeof AdminLoansRoute
-  '/users': typeof AdminUsersRoute
   '/my-animals': typeof ProtectedMyAnimalsRoute
   '/my-supplies': typeof UserMySuppliesRoute
   '/animals/$animalId': typeof AnimalsAnimalIdRoute
   '/animals/add': typeof AnimalsAddRoute
+  '/medical-logs/add': typeof MedicalLogsAddRoute
+  '/medical-logs/admin': typeof MedicalLogsAdminRoute
+  '/medical-logs/foster': typeof MedicalLogsFosterRoute
   '/single-animal/$id': typeof SingleAnimalIdRoute
   '/animals': typeof AnimalsIndexRoute
+  '/medical-logs': typeof MedicalLogsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -143,18 +171,22 @@ export interface FileRoutesById {
   '/Examples': typeof ExamplesRoute
   '/SignIn': typeof SignInRoute
   '/_admin': typeof AdminRouteWithChildren
+  '/_protected': typeof ProtectedRouteWithChildren
   '/_user': typeof UserRouteWithChildren
-  '/medical-logs': typeof MedicalLogsRoute
+  '/medical-logs': typeof MedicalLogsRouteWithChildren
   '/_admin/admin-portal': typeof AdminAdminPortalRoute
   '/_admin/inventory': typeof AdminInventoryRoute
   '/_admin/loans': typeof AdminLoansRoute
-  '/_admin/users': typeof AdminUsersRoute
   '/_protected/my-animals': typeof ProtectedMyAnimalsRoute
   '/_user/my-supplies': typeof UserMySuppliesRoute
   '/animals/$animalId': typeof AnimalsAnimalIdRoute
   '/animals/add': typeof AnimalsAddRoute
+  '/medical-logs/add': typeof MedicalLogsAddRoute
+  '/medical-logs/admin': typeof MedicalLogsAdminRoute
+  '/medical-logs/foster': typeof MedicalLogsFosterRoute
   '/single-animal/$id': typeof SingleAnimalIdRoute
   '/animals/': typeof AnimalsIndexRoute
+  '/medical-logs/': typeof MedicalLogsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -166,47 +198,56 @@ export interface FileRouteTypes {
     | '/admin-portal'
     | '/inventory'
     | '/loans'
-    | '/users'
     | '/my-animals'
     | '/my-supplies'
     | '/animals/$animalId'
     | '/animals/add'
+    | '/medical-logs/add'
+    | '/medical-logs/admin'
+    | '/medical-logs/foster'
     | '/single-animal/$id'
     | '/animals/'
+    | '/medical-logs/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/Examples'
     | '/SignIn'
-    | '/medical-logs'
     | '/admin-portal'
     | '/inventory'
     | '/loans'
-    | '/users'
     | '/my-animals'
     | '/my-supplies'
     | '/animals/$animalId'
     | '/animals/add'
+    | '/medical-logs/add'
+    | '/medical-logs/admin'
+    | '/medical-logs/foster'
     | '/single-animal/$id'
     | '/animals'
+    | '/medical-logs'
   id:
     | '__root__'
     | '/'
     | '/Examples'
     | '/SignIn'
     | '/_admin'
+    | '/_protected'
     | '/_user'
     | '/medical-logs'
     | '/_admin/admin-portal'
     | '/_admin/inventory'
     | '/_admin/loans'
-    | '/_admin/users'
     | '/_protected/my-animals'
     | '/_user/my-supplies'
     | '/animals/$animalId'
     | '/animals/add'
+    | '/medical-logs/add'
+    | '/medical-logs/admin'
+    | '/medical-logs/foster'
     | '/single-animal/$id'
     | '/animals/'
+    | '/medical-logs/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -214,9 +255,9 @@ export interface RootRouteChildren {
   ExamplesRoute: typeof ExamplesRoute
   SignInRoute: typeof SignInRoute
   AdminRoute: typeof AdminRouteWithChildren
+  ProtectedRoute: typeof ProtectedRouteWithChildren
   UserRoute: typeof UserRouteWithChildren
-  MedicalLogsRoute: typeof MedicalLogsRoute
-  ProtectedMyAnimalsRoute: typeof ProtectedMyAnimalsRoute
+  MedicalLogsRoute: typeof MedicalLogsRouteWithChildren
   AnimalsAnimalIdRoute: typeof AnimalsAnimalIdRoute
   AnimalsAddRoute: typeof AnimalsAddRoute
   SingleAnimalIdRoute: typeof SingleAnimalIdRoute
@@ -237,6 +278,13 @@ declare module '@tanstack/react-router' {
       path: ''
       fullPath: '/'
       preLoaderRoute: typeof UserRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/_protected': {
+      id: '/_protected'
+      path: ''
+      fullPath: '/'
+      preLoaderRoute: typeof ProtectedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_admin': {
@@ -267,6 +315,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/medical-logs/': {
+      id: '/medical-logs/'
+      path: '/'
+      fullPath: '/medical-logs/'
+      preLoaderRoute: typeof MedicalLogsIndexRouteImport
+      parentRoute: typeof MedicalLogsRoute
+    }
     '/animals/': {
       id: '/animals/'
       path: '/animals'
@@ -280,6 +335,27 @@ declare module '@tanstack/react-router' {
       fullPath: '/single-animal/$id'
       preLoaderRoute: typeof SingleAnimalIdRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/medical-logs/foster': {
+      id: '/medical-logs/foster'
+      path: '/foster'
+      fullPath: '/medical-logs/foster'
+      preLoaderRoute: typeof MedicalLogsFosterRouteImport
+      parentRoute: typeof MedicalLogsRoute
+    }
+    '/medical-logs/admin': {
+      id: '/medical-logs/admin'
+      path: '/admin'
+      fullPath: '/medical-logs/admin'
+      preLoaderRoute: typeof MedicalLogsAdminRouteImport
+      parentRoute: typeof MedicalLogsRoute
+    }
+    '/medical-logs/add': {
+      id: '/medical-logs/add'
+      path: '/add'
+      fullPath: '/medical-logs/add'
+      preLoaderRoute: typeof MedicalLogsAddRouteImport
+      parentRoute: typeof MedicalLogsRoute
     }
     '/animals/add': {
       id: '/animals/add'
@@ -307,14 +383,7 @@ declare module '@tanstack/react-router' {
       path: '/my-animals'
       fullPath: '/my-animals'
       preLoaderRoute: typeof ProtectedMyAnimalsRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/_admin/users': {
-      id: '/_admin/users'
-      path: '/users'
-      fullPath: '/users'
-      preLoaderRoute: typeof AdminUsersRouteImport
-      parentRoute: typeof AdminRoute
+      parentRoute: typeof ProtectedRoute
     }
     '/_admin/loans': {
       id: '/_admin/loans'
@@ -344,17 +413,27 @@ interface AdminRouteChildren {
   AdminAdminPortalRoute: typeof AdminAdminPortalRoute
   AdminInventoryRoute: typeof AdminInventoryRoute
   AdminLoansRoute: typeof AdminLoansRoute
-  AdminUsersRoute: typeof AdminUsersRoute
 }
 
 const AdminRouteChildren: AdminRouteChildren = {
   AdminAdminPortalRoute: AdminAdminPortalRoute,
   AdminInventoryRoute: AdminInventoryRoute,
   AdminLoansRoute: AdminLoansRoute,
-  AdminUsersRoute: AdminUsersRoute,
 }
 
 const AdminRouteWithChildren = AdminRoute._addFileChildren(AdminRouteChildren)
+
+interface ProtectedRouteChildren {
+  ProtectedMyAnimalsRoute: typeof ProtectedMyAnimalsRoute
+}
+
+const ProtectedRouteChildren: ProtectedRouteChildren = {
+  ProtectedMyAnimalsRoute: ProtectedMyAnimalsRoute,
+}
+
+const ProtectedRouteWithChildren = ProtectedRoute._addFileChildren(
+  ProtectedRouteChildren,
+)
 
 interface UserRouteChildren {
   UserMySuppliesRoute: typeof UserMySuppliesRoute
@@ -366,14 +445,32 @@ const UserRouteChildren: UserRouteChildren = {
 
 const UserRouteWithChildren = UserRoute._addFileChildren(UserRouteChildren)
 
+interface MedicalLogsRouteChildren {
+  MedicalLogsAddRoute: typeof MedicalLogsAddRoute
+  MedicalLogsAdminRoute: typeof MedicalLogsAdminRoute
+  MedicalLogsFosterRoute: typeof MedicalLogsFosterRoute
+  MedicalLogsIndexRoute: typeof MedicalLogsIndexRoute
+}
+
+const MedicalLogsRouteChildren: MedicalLogsRouteChildren = {
+  MedicalLogsAddRoute: MedicalLogsAddRoute,
+  MedicalLogsAdminRoute: MedicalLogsAdminRoute,
+  MedicalLogsFosterRoute: MedicalLogsFosterRoute,
+  MedicalLogsIndexRoute: MedicalLogsIndexRoute,
+}
+
+const MedicalLogsRouteWithChildren = MedicalLogsRoute._addFileChildren(
+  MedicalLogsRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   ExamplesRoute: ExamplesRoute,
   SignInRoute: SignInRoute,
   AdminRoute: AdminRouteWithChildren,
+  ProtectedRoute: ProtectedRouteWithChildren,
   UserRoute: UserRouteWithChildren,
-  MedicalLogsRoute: MedicalLogsRoute,
-  ProtectedMyAnimalsRoute: ProtectedMyAnimalsRoute,
+  MedicalLogsRoute: MedicalLogsRouteWithChildren,
   AnimalsAnimalIdRoute: AnimalsAnimalIdRoute,
   AnimalsAddRoute: AnimalsAddRoute,
   SingleAnimalIdRoute: SingleAnimalIdRoute,
