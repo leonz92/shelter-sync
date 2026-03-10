@@ -16,9 +16,9 @@ import { Route as AdminRouteImport } from './routes/_admin';
 import { Route as SignInRouteImport } from './routes/SignIn';
 import { Route as ExamplesRouteImport } from './routes/Examples';
 import { Route as IndexRouteImport } from './routes/index';
-import { Route as AnimalsIndexRouteImport } from './routes/animals/index';
-import { Route as AnimalsAddRouteImport } from './routes/animals/add';
-import { Route as AnimalsAnimalIdRouteImport } from './routes/animals/$animalId';
+import { Route as AnimalsIndexRouteImport } from './routes/_admin/animals/index';
+import { Route as AnimalsAddRouteImport } from './routes/_admin/animals/add';
+import { Route as AnimalsAnimalIdRouteImport } from './routes/_admin/animals/$animalId';
 import { Route as UserMySuppliesRouteImport } from './routes/_user/my-supplies';
 import { Route as ProtectedAdminPortalRouteImport } from './routes/_admin/admin-portal';
 import { Route as AdminLoansRouteImport } from './routes/_admin/loans';
@@ -59,17 +59,17 @@ const IndexRoute = IndexRouteImport.update({
 const AnimalsIndexRoute = AnimalsIndexRouteImport.update({
   id: '/animals/',
   path: '/animals/',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AdminRoute,
 } as any);
 const AnimalsAddRoute = AnimalsAddRouteImport.update({
   id: '/animals/add',
   path: '/animals/add',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AdminRoute,
 } as any);
 const AnimalsAnimalIdRoute = AnimalsAnimalIdRouteImport.update({
   id: '/animals/$animalId',
   path: '/animals/$animalId',
-  getParentRoute: () => rootRouteImport,
+  getParentRoute: () => AdminRoute,
 } as any);
 const UserMySuppliesRoute = UserMySuppliesRouteImport.update({
   id: '/my-supplies',
@@ -338,8 +338,8 @@ const rootRouteChildren: RootRouteChildren = {
   MedicalLogsRoute: MedicalLogsRoute,
   AnimalsAnimalIdRoute: AnimalsAnimalIdRoute,
   AnimalsAddRoute: AnimalsAddRoute,
-  MyAnimalsIdRoute: MyAnimalsIdRoute,
-  SingleAnimalIdRoute: SingleAnimalIdRoute,
+  // MyAnimalsIdRoute: MyAnimalsIdRoute,
+  // SingleAnimalIdRoute: SingleAnimalIdRoute,
   AnimalsIndexRoute: AnimalsIndexRoute,
 };
 export const routeTree = rootRouteImport
