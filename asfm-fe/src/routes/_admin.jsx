@@ -3,9 +3,11 @@ import { useBoundStore } from '@/store';
 
 export const Route = createFileRoute('/_admin')({
   beforeLoad: async ({ context, location }) => {
-    const { initializeAuth, user, userRole } = useBoundStore.getState();
+    const { initializeAuth } = useBoundStore.getState();
 
-    await initializeAuth(); // force beforeLoad to wait for auth before redirecting
+    await initializeAuth();
+
+    const { user, userRole } = useBoundStore.getState();
 
     if (!user) {
       throw redirect({
