@@ -18,7 +18,7 @@ function AdminPortal() {
   const [inventoryError, setInventoryError] = useState(null);
   const [transactionsError, setTransactionsError] = useState(null);
 
-  const authHeader = { Authorization: `Bearer ${session?.access_token}` };
+  // const authHeader = { Authorization: `Bearer ${session?.access_token}` };
 
   useEffect(() => {
     const fetchAll = async () => {
@@ -28,40 +28,22 @@ function AdminPortal() {
       setInventoryError(null);
       setTransactionsError(null);
       try {
-        const userData = await apiClient.get('/users', { headers: authHeader });
-        setUsers(userData.data);
+        const [userData, animalData, inventoryData, transactionData] = await Promise.allSettled([
+          await apiClient.get('/users'),
+          await apiClient.get('/animals'),
+          await apiClient.get('/inventory'),
+          await apiClient.get('/inventory-transactions?limit=10000'),
+        ]);
+        setUsers(userData.value.data);
+        setAnimals(animalData.value.data);
+        setInventory(inventoryData.value.data);
+        setTransactions(transactionData.value.data);
       } catch (err) {
         console.error(`User fetch error: ${err}`);
         setUsersError(`There was an error loading the users!`);
+      } finally {
+        setLoading(false);
       }
-
-      try {
-        const animalData = await apiClient.get('/animals', { headers: authHeader });
-        setAnimals(animalData.data);
-      } catch (err) {
-        console.error(`Animal fetch error: ${err}`);
-        setAnimalsError(`There was an error loading the animals!`);
-      }
-
-      try {
-        const inventoryData = await apiClient.get('/inventory', { headers: authHeader });
-        setInventory(inventoryData.data);
-      } catch (err) {
-        console.error(`Inventory fetch error: ${err}`);
-        setInventoryError(`There was an error loading the inventory!`);
-      }
-
-      try {
-        const transactionData = await apiClient.get('/inventory-transactions?limit=10000', {
-          headers: authHeader,
-        });
-        setTransactions(transactionData.data);
-      } catch (err) {
-        console.error(`Inventory Transaction fetch error: ${err}`);
-        setTransactionsError(`There was an error loading the inventory transactions!`);
-      }
-
-      setLoading(false);
     };
     fetchAll();
   }, []);
