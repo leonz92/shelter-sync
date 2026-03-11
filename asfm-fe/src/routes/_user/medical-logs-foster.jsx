@@ -46,7 +46,7 @@ function FosterLogsPage() {
 
         // Search filter
         const searchLower = filters.search.toLowerCase();
-        const matchesSearch = log.animal_name?.toLowerCase().includes(searchLower);
+        const matchesSearch = log.animal_name?.toLowerCase().includes(searchLower) ?? false;
 
         // Log type filter (now an array)
         const matchesLogTypes =

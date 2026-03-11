@@ -43,7 +43,7 @@ function MedicalLogListPage() {
       }))
       .filter((log) => {
         // Search filter
-        const matchesSearch = log.animal_name.toLowerCase().includes(filters.search.toLowerCase());
+        const matchesSearch = log.animal_name?.toLowerCase().includes(filters.search.toLowerCase()) ?? false;
 
         // Date range filter
         let matchesDateRange = true;
