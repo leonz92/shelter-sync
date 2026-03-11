@@ -39,6 +39,18 @@ const required =
   ({ value }) =>
     !value || !value.toString().trim() ? `${label} is required.` : undefined;
 
+const notInFuture =
+  (label) =>
+  ({ value }) => {
+    if (!value) return undefined;
+    const selectedDate = new Date(value);
+    const now = new Date();
+    if (selectedDate > now) {
+      return `${label} cannot be in the future.`;
+    }
+    return undefined;
+  };
+
 export default function MedicalLogForm({ formId, onSubmit, initialValues = {}, animals = [] }) {
   const medicalLogs = useBoundStore((state) => state.medicalLogs) || [];
 
@@ -70,7 +82,16 @@ export default function MedicalLogForm({ formId, onSubmit, initialValues = {}, a
 
   const form = useForm({
     defaultValues: { ...EMPTY_DEFAULTS, ...initialValues },
-    onSubmit: async ({ value }) => {
+    onSubmit: async ({ value, formApi }) => {
+      // Validate all fields before submission
+      await formApi.validateAllFields('change');
+      
+      // Check if form has any errors
+      const state = formApi.getState();
+      if (state.isSubmitting || state.errors.length > 0) {
+        return; // Don't submit if there are validation errors
+      }
+      
       // Convert animal name to animal ID for submission
       const animalId = animalNameToIdMap.get(value.animal_id);
       
@@ -258,17 +279,21 @@ export default function MedicalLogForm({ formId, onSubmit, initialValues = {}, a
         </form.Field>
 
         {/* Administered at */}
-        <form.Field name="administered_at">
+        <form.Field name="administered_at" validators={{ onChange: notInFuture('Administered At') }}>
           {(field) => (
             <div className="flex flex-col gap-1">
               <label className="text-sm font-medium">Administered At</label>
               <Input
                 type="datetime-local"
-                className="w-full"
+                className={`w-full ${field.state.meta.errors.length ? 'border-red-500' : ''}`}
                 value={field.state.value}
                 onBlur={field.handleBlur}
                 onChange={(e) => field.handleChange(e.target.value)}
+                max={new Date().toISOString().slice(0, 16)}
               />
+              {field.state.meta.errors.length > 0 && (
+                <p className="text-xs text-red-500">{field.state.meta.errors.join(', ')}</p>
+              )}
             </div>
           )}
         </form.Field>

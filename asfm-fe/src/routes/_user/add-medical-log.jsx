@@ -104,7 +104,7 @@ function AddMedicalLogPage() {
       <Button
         variant="ghost"
         className="-ml-2"
-        onClick={() => navigate({ to: '/medical-logs-foster' })}
+        onClick={() => navigate({ to: '/foster-medical-logs' })}
       >
         ← Back to Medical Logs
       </Button>
@@ -138,7 +138,7 @@ function AddMedicalLogPage() {
               <div className="flex justify-end gap-3 mt-6">
                 <Button
                   variant="outline"
-                  onClick={() => navigate({ to: '/medical-logs-foster' })}
+                  onClick={() => navigate({ to: '/foster-medical-logs' })}
                 >
                   Cancel
                 </Button>
@@ -156,7 +156,7 @@ function AddMedicalLogPage() {
         <ConfirmationDialog
           {...confirmation}
           button="Done"
-          onClose={() => navigate({ to: '/medical-logs-foster' })}
+          onClose={() => navigate({ to: '/foster-medical-logs' })}
         />
       )}
     </div>

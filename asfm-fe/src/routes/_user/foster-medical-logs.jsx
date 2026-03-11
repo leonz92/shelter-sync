@@ -10,7 +10,7 @@ import { CompactMedicalLogFilterBar } from '@/components/CompactMedicalLogFilter
 import apiClient from '@/lib/axios';
 import { formatDateTime, calculateLogStats, MEDICAL_LOG_BASE_COLUMNS } from '@/utils/medicalLogUtils';
 
-export const Route = createFileRoute('/_user/medical-logs-foster')({
+export const Route = createFileRoute('/_user/foster-medical-logs')({
   component: FosterLogsPage,
 });
 

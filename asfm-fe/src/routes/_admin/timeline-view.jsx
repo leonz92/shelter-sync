@@ -10,7 +10,7 @@ import { CompactMedicalLogFilterBar } from '@/components/CompactMedicalLogFilter
 import RoleGuard from '@/components/RoleGuard';
 import apiClient from '@/lib/axios';
 
-export const Route = createFileRoute('/_admin/time-line-view')({ component: MedicalLogListPage });
+export const Route = createFileRoute('/_admin/timeline-view')({ component: MedicalLogListPage });
 
 function MedicalLogListPage() {
   const navigate = useNavigate();
@@ -252,6 +252,15 @@ function MedicalLogListPage() {
                       <p className="text-xs text-muted-foreground">
                         <span className="font-medium">Dose:</span> {log.dose}
                         {log.qty_administered != null && ` × ${log.qty_administered}`}
+                      </p>
+                    )}
+                    {log.administered_at && (
+                      <p className="text-xs text-muted-foreground mt-1">
+                        <span className="font-medium">Administered:</span>{' '}
+                        {new Date(log.administered_at).toLocaleDateString()} {new Date(log.administered_at).toLocaleTimeString([], {
+                          hour: '2-digit',
+                          minute: '2-digit',
+                        })}
                       </p>
                     )}
                   </CardContent>
