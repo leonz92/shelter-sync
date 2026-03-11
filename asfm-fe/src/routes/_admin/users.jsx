@@ -22,7 +22,7 @@ function RouteComponent() {
       (user) =>
         `${user.first_name} ${user.last_name}`.toLowerCase().includes(searchLower) ||
         user.email?.toLowerCase().includes(searchLower) ||
-        user.address?.toLowerCase().includes(searchLower)
+        user.address?.toLowerCase().includes(searchLower),
     );
   }, [users, search]);
 
@@ -144,6 +144,7 @@ function RouteComponent() {
         headerClassName="bg-secondary text-primary-foreground"
         tablebodyRowClassName="bg-white hover:bg-secondary/20"
         containerClassName="overflow-auto max-h-150 rounded-lg border border-pale-sky shadow-sm relative w-full"
+        enablePagination
       />
     </>
   );

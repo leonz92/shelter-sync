@@ -114,33 +114,32 @@ function RouteComponent() {
     setIsAddSubmitting(true);
     setAddError(null);
     try {
-      await apiClient.post(
-        '/inventory-transactions/intake',
-        {
-          item_name: newItem.item_name,
-          item_category: newItem.category,
-          item_species: newItem.species,
-          item_unit: newItem.unit,
-          item_is_active: true,
-          item_brand: newItem.brand || '',
-          item_description: newItem.description || '',
-          quantity: Number(newItem.quantity),
-          status: 'COMPLETE',
-          notes: newItem.notes || '-',
-          staff_user: user.id,
-          ...(newItem.expiration_date && { inventory_expiration_date: new Date(newItem.expiration_date).toISOString() }),
-          ...(newItem.category === 'FOOD' && { item_food_life_stage: newItem.life_stage }),
-          ...(newItem.category === 'CRATE' && {
-            item_crate_size: newItem.crate_size,
-            item_crate_status: newItem.crate_status,
-          }),
-          ...(newItem.category === 'MEDICINE' && {
-            item_medication_dose: newItem.medication_dose,
-            item_medication_administration_route: newItem.medication_route,
-            item_medication_side_effects: newItem.medication_side_effects || '',
-          }),
-        },
-      );
+      await apiClient.post('/inventory-transactions/intake', {
+        item_name: newItem.item_name,
+        item_category: newItem.category,
+        item_species: newItem.species,
+        item_unit: newItem.unit,
+        item_is_active: true,
+        item_brand: newItem.brand || '',
+        item_description: newItem.description || '',
+        quantity: Number(newItem.quantity),
+        status: 'COMPLETE',
+        notes: newItem.notes || '-',
+        staff_user: user.id,
+        ...(newItem.expiration_date && {
+          inventory_expiration_date: new Date(newItem.expiration_date).toISOString(),
+        }),
+        ...(newItem.category === 'FOOD' && { item_food_life_stage: newItem.life_stage }),
+        ...(newItem.category === 'CRATE' && {
+          item_crate_size: newItem.crate_size,
+          item_crate_status: newItem.crate_status,
+        }),
+        ...(newItem.category === 'MEDICINE' && {
+          item_medication_dose: newItem.medication_dose,
+          item_medication_administration_route: newItem.medication_route,
+          item_medication_side_effects: newItem.medication_side_effects || '',
+        }),
+      });
       setIsModalOpen(false);
       setNewItem(EMPTY_NEW_ITEM);
       await fetchData();
@@ -154,7 +153,13 @@ function RouteComponent() {
 
   // --- Edit ---
   const handleEdit = (inventoryItem) => {
-    setEditItem({ ...inventoryItem, notes: '', expiration_date: inventoryItem.expiration_date ? inventoryItem.expiration_date.split('T')[0] : '' });
+    setEditItem({
+      ...inventoryItem,
+      notes: '',
+      expiration_date: inventoryItem.expiration_date
+        ? inventoryItem.expiration_date.split('T')[0]
+        : '',
+    });
     setIsEditModalOpen(true);
   };
 
@@ -162,20 +167,20 @@ function RouteComponent() {
     setIsEditSubmitting(true);
     setEditError(null);
     try {
-      await apiClient.patch(
-        `/inventory/${editItem.id}`,
-        {
-          quantity: Number(editItem.quantity),
-          item_id: editItem.item_id,
-          staff_user: user.id,
-          notes: editItem.notes || '-',
-          ...(editItem.expiration_date && { expiration_date: new Date(editItem.expiration_date).toISOString() }),
-        },
-      );
+      await apiClient.patch(`/inventory/${editItem.id}`, {
+        quantity: Number(editItem.quantity),
+        item_id: editItem.item_id,
+        staff_user: user.id,
+        notes: editItem.notes || '-',
+        ...(editItem.expiration_date && {
+          expiration_date: new Date(editItem.expiration_date).toISOString(),
+        }),
+      });
       setIsEditModalOpen(false);
       await fetchData();
     } catch (err) {
-      const message = err.response?.data?.message || 'Failed to update inventory. Please try again.';
+      const message =
+        err.response?.data?.message || 'Failed to update inventory. Please try again.';
       setEditError(message);
     } finally {
       setIsEditSubmitting(false);
@@ -297,6 +302,7 @@ function RouteComponent() {
         headerClassName="bg-secondary text-primary-foreground"
         tablebodyRowClassName="bg-white hover:bg-secondary/20"
         containerClassName="overflow-auto max-h-150 rounded-lg border border-pale-sky shadow-sm relative w-full"
+        enablePagination
       />
 
       {/* Add New Item Modal */}
@@ -427,7 +433,9 @@ function RouteComponent() {
                 <Input
                   placeholder="Known side effects (optional)"
                   value={newItem.medication_side_effects}
-                  onChange={(e) => setNewItem({ ...newItem, medication_side_effects: e.target.value })}
+                  onChange={(e) =>
+                    setNewItem({ ...newItem, medication_side_effects: e.target.value })
+                  }
                 />
               </div>
             </>
@@ -519,7 +527,6 @@ function RouteComponent() {
           {editError && <p className="text-sm text-red-600">{editError}</p>}
         </form>
       </ModalDialog>
-
     </>
   );
 }
