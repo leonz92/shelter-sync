@@ -27,7 +27,7 @@ function AddMedicalLogPage() {
   const fetchAnimals = async () => {
     setLoadingAnimals(true);
     try {
-      const response = await apiClient.get('/animals');
+      const response = await apiClient.get('/animals', { params: { limit: 10000 } });
       const rawAnimals = response?.data || [];
 
       // Validate response is an array
