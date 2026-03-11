@@ -8,7 +8,6 @@ import CustomBadge from '@/components/custom/CustomBadge';
 import { LOG_TYPE_COLORS, formatLogType } from '@/constants/medicalLogConstants';
 import { CompactMedicalLogFilterBar } from '@/components/CompactMedicalLogFilterBar';
 import apiClient from '@/lib/axios';
-import { useBoundStore } from '@/store';
 import { formatDateTime, calculateLogStats, MEDICAL_LOG_BASE_COLUMNS } from '@/utils/medicalLogUtils';
 
 export const Route = createFileRoute('/_user/medical-logs-foster')({
@@ -17,7 +16,6 @@ export const Route = createFileRoute('/_user/medical-logs-foster')({
 
 function FosterLogsPage() {
   const navigate = useNavigate();
-  const user = useBoundStore((state) => state.user);
   const [filters, setFilters] = useState({
     search: '',
     dateRange: { from: null, to: null },
@@ -29,14 +27,6 @@ function FosterLogsPage() {
   const [assignedAnimalIds, setAssignedAnimalIds] = useState(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // Create animal lookup for efficient enrichment
-  const animalLookup = useMemo(() => {
-    return animals.reduce((acc, animal) => {
-      acc[animal.id] = animal.name;
-      return acc;
-    }, {});
-  }, [animals]);
 
   const filteredLogs = useMemo(() => {
     return allLogs
@@ -71,14 +61,14 @@ function FosterLogsPage() {
     setError(null);
     try {
       // Step 1: Fetch user's currently assigned animals (same as "My Animals")
-      const myAnimalsResponse = await apiClient.get('/animals');
-      const myAnimals = myAnimalsResponse.data || [];
+      const assignedAnimalsResponse = await apiClient.get('/animals');
+      const assignedAnimals = assignedAnimalsResponse.data || [];
 
       // Build set of currently assigned animal IDs
-      const currentAssignedIds = new Set(myAnimals.map(animal => animal.id));
-      setAssignedAnimalIds(currentAssignedIds);
+      const assignedIds = new Set(assignedAnimals.map(animal => animal.id));
+      setAssignedAnimalIds(assignedIds);
 
-      if (currentAssignedIds.size === 0) {
+      if (assignedIds.size === 0) {
         // No assigned animals, nothing to show
         setAnimals([]);
         setAllLogs([]);
@@ -91,17 +81,17 @@ function FosterLogsPage() {
       const rawLogs = logsResponse.data || [];
 
       // Step 3: Filter logs to only those for current user's assigned animals
-      const logsForAssignedAnimals = rawLogs.filter(log =>
-        currentAssignedIds.has(log.animal_id)
+      const assignedAnimalLogs = rawLogs.filter(log =>
+        assignedIds.has(log.animal_id)
       );
 
-      // Step 4: Build animal lookup from my assigned animals
-      const animalMap = new Map(myAnimals.map(a => [a.id, a.name]));
+      // Step 4: Build animal lookup from assigned animals
+      const animalMap = new Map(assignedAnimals.map(a => [a.id, a.name]));
 
       // Step 5: Enrich logs with animal names
       // Note: We don't fetch users list (STAFF-only API)
       // Foster user name is not displayed since these are the current user's own logs
-      const enrichedLogs = logsForAssignedAnimals.map(log => {
+      const enrichedLogs = assignedAnimalLogs.map(log => {
         const animalName = animalMap.get(log.animal_id);
         return {
           ...log,
@@ -110,7 +100,7 @@ function FosterLogsPage() {
         };
       });
 
-      setAnimals(myAnimals);
+      setAnimals(assignedAnimals);
       setAllLogs(enrichedLogs);
     } catch (err) {
       console.error('Error fetching medical logs:', err);
@@ -162,7 +152,7 @@ function FosterLogsPage() {
     logTypeBadge: (
       <CustomBadge
         text={formatLogType(log.category)}
-        badgeClassName={LOG_TYPE_COLORS[log.category]}
+        badgeClassName={LOG_TYPE_COLORS[log.category] || 'bg-gray-100 text-gray-800'}
       />
     ),
     general_notes: log.general_notes || '—',

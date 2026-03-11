@@ -225,15 +225,16 @@ function MedicalLogListPage() {
                     <div className="flex flex-wrap items-center gap-2 mb-2">
                       <CustomBadge
                         text={formatLogType(log.category)}
-                        badgeClassName={LOG_TYPE_COLORS[log.category]}
+                        badgeClassName={LOG_TYPE_COLORS[log.category] || 'bg-gray-100 text-gray-800'}
                       />
                       <span className="text-sm font-semibold">{log.animal_name}</span>
                       <span className="text-xs text-muted-foreground ml-auto">
-                        {new Date(log.logged_at).toLocaleDateString()}{' '}
-                        {new Date(log.logged_at).toLocaleTimeString([], {
-                          hour: '2-digit',
-                          minute: '2-digit',
-                        })}
+                        {log.logged_at
+                          ? `${new Date(log.logged_at).toLocaleDateString()} ${new Date(log.logged_at).toLocaleTimeString([], {
+                              hour: '2-digit',
+                              minute: '2-digit',
+                            })}`
+                          : '—'}
                       </span>
                     </div>
                     {log.general_notes && (
