@@ -8,11 +8,7 @@ import CustomBadge from '@/components/custom/CustomBadge';
 import { LOG_TYPE_COLORS, formatLogType } from '@/constants/medicalLogConstants';
 import { CompactMedicalLogFilterBar } from '@/components/CompactMedicalLogFilterBar';
 import apiClient from '@/lib/axios';
-
-const formatDateTime = (dateString) => {
-  if (!dateString) return '—';
-  return new Date(dateString).toLocaleString();
-};
+import { formatDateTime, calculateLogStats } from '@/utils/medicalLogUtils';
 
 export const Route = createFileRoute('/_admin/admin-medical-logs')({
   id: '/admin-medical-logs',
@@ -81,6 +77,7 @@ function AdminLogsPage() {
     try {
       // Fetch medical logs first
       const logsResponse = await apiClient.get('/medical-logs');
+      console.log('Fetched medical logs:', logsResponse.data);
 
       // Extract unique animal IDs from logs
       const animalIds = [...new Set(logsResponse.data.map(log => log.animal_id).filter(Boolean))];
@@ -188,10 +185,7 @@ function AdminLogsPage() {
   };
 
   // Stats for header
-  const totalLogs = allLogs.length;
-  const medicalCount = allLogs.filter((l) => l.category === 'MEDICAL').length;
-  const behavioralCount = allLogs.filter((l) => l.category === 'BEHAVIORAL').length;
-  const veterinaryCount = allLogs.filter((l) => l.category === 'VETERINARY').length;
+  const { total: totalLogs, medical: medicalCount, behavioral: behavioralCount, veterinary: veterinaryCount } = calculateLogStats(allLogs);
 
   const columns = [
     { accessorKey: 'animal_name', header: 'Animal', textSize: 'sm' },
@@ -205,7 +199,8 @@ function AdminLogsPage() {
     { accessorKey: 'dose', header: 'Dose', textSize: 'sm' },
     { accessorKey: 'qty_administered', header: 'Qty', textSize: 'sm' },
     { accessorKey: 'administered_at', header: 'Administered At', textSize: 'sm' },
-    { accessorKey: 'foster_user_name', header: 'Foster User', textSize: 'sm' },
+    { accessorKey: 'created_by_type', header: 'Created By Type', textSize: 'sm' },
+    { accessorKey: 'creator_name', header: 'Creator Name', textSize: 'sm' },
     { accessorKey: 'logged_at', header: 'Logged At', textSize: 'sm' },
     {
       accessorKey: 'prescription',
@@ -243,7 +238,8 @@ function AdminLogsPage() {
     qty_administered: log.qty_administered != null ? log.qty_administered : '—',
     administered_at: formatDateTime(log.administered_at),
     prescription: log.prescription || '—',
-    foster_user_name: log.foster_user_name || '—',
+    created_by_type: log.foster_user_id ? 'Foster' : 'Staff',
+    creator_name: log.foster_user_id ? log.foster_user_name : 'Staff User',
     logged_at: formatDateTime(log.logged_at),
     
   }));
@@ -341,7 +337,8 @@ function AdminLogsPage() {
             'animal_name',
             'logTypeBadge',
             'administered_at',
-            'foster_user_name',
+            'created_by_type',
+            'creator_name',
             'logged_at',
             'general_notes',
             'dose',
