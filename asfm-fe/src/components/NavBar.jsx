@@ -38,7 +38,7 @@ function NavBar() {
         {userRole === 'STAFF' && (
           <>
             <Button variant="outline" onClick={() => navigate({ to: '/admin-portal' })}>
-              Dashboard
+              Admin Portal
             </Button>
             <Button variant="outline" onClick={() => navigate({ to: '/users' })}>
               All Users
