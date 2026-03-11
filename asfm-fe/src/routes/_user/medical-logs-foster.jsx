@@ -6,9 +6,7 @@ import { ClipboardPlus, Plus } from 'lucide-react';
 import { ReusableTable } from '@/components/table_components';
 import CustomBadge from '@/components/custom/CustomBadge';
 import { LOG_TYPE_COLORS, formatLogType } from '@/constants/medicalLogConstants';
-import FilterBar from '@/components/FilterBar';
-import FilterSelect from '@/components/custom/FilterSelect';
-import InputGroupForSearch from '@/components/InputGroupForSearch';
+import { CompactMedicalLogFilterBar } from '@/components/CompactMedicalLogFilterBar';
 import apiClient from '@/lib/axios';
 import { useBoundStore } from '@/store';
 
@@ -26,8 +24,9 @@ function FosterLogsPage() {
   const user = useBoundStore((state) => state.user);
   const [filters, setFilters] = useState({
     search: '',
-    category: '',
     dateRange: { from: null, to: null },
+    logTypes: [],
+    createdBy: 'all',
   });
   const [allLogs, setAllLogs] = useState([]);
   const [animals, setAnimals] = useState([]);
@@ -55,8 +54,9 @@ function FosterLogsPage() {
           log.animal_name?.toLowerCase().includes(searchLower) ||
           log.general_notes?.toLowerCase().includes(searchLower);
 
-        // Category filter
-        const matchesCategory = !filters.category || log.category === filters.category;
+        // Log type filter (now an array)
+        const matchesLogTypes =
+          filters.logTypes.length === 0 || filters.logTypes.includes(log.category);
 
         // Date range filter
         let matchesDateRange = true;
@@ -67,7 +67,7 @@ function FosterLogsPage() {
           matchesDateRange = matchesDateRange && new Date(log.logged_at) <= filters.dateRange.to;
         }
 
-        return matchesSearch && matchesCategory && matchesDateRange;
+        return matchesSearch && matchesLogTypes && matchesDateRange;
       })
       .sort((a, b) => new Date(b.logged_at) - new Date(a.logged_at));
   }, [allLogs, filters, assignedAnimalIds]);
@@ -104,34 +104,15 @@ function FosterLogsPage() {
       // Step 4: Build animal lookup from my assigned animals
       const animalMap = new Map(myAnimals.map(a => [a.id, a.name]));
 
-      // Step 5: Get unique foster user IDs from filtered logs
-      const fosterUserIds = [...new Set(relevantLogs.map(log => log.foster_user_id).filter(Boolean))];
-
-      // Step 6: Fetch foster users for display names
-      let userMap = new Map();
-      if (fosterUserIds.length > 0) {
-        try {
-          const usersResponse = await apiClient.get('/users');
-          const users = usersResponse.data;
-
-          // Create user name map (first_name + last_name)
-          userMap = new Map(users.map(u => [
-            u.id,
-            `${u.first_name} ${u.last_name}`.trim() || u.email
-          ]));
-        } catch (e) {
-          console.error('Failed to fetch users:', e);
-        }
-      }
-
-      // Step 7: Enrich logs with animal names and foster user names
+      // Step 5: Enrich logs with animal names
+      // Note: We don't fetch users list (STAFF-only API)
+      // Foster user name is not displayed since these are the current user's own logs
       const enrichedLogs = relevantLogs.map(log => {
         const animalName = animalMap.get(log.animal_id);
-        const fosterUserName = userMap.get(log.foster_user_id);
         return {
           ...log,
           animal_name: animalName || '—',
-          foster_user_name: fosterUserName || '—',
+          foster_user_name: '—', // Not shown for foster's own logs
         };
       });
 
@@ -152,27 +133,11 @@ function FosterLogsPage() {
   const handleClearFilters = () => {
     setFilters({
       search: '',
-      category: '',
       dateRange: { from: null, to: null },
+      logTypes: [],
+      createdBy: 'all',
     });
   };
-
-  // Get unique categories for filter
-  const categories = useMemo(() => {
-    const uniqueCategories = [...new Set(allLogs.map(log => log.category).filter(Boolean))];
-    return uniqueCategories;
-  }, [allLogs]);
-
-  // Create category labels map
-  const categoryLabelsMap = useMemo(() => {
-    const labels = {};
-    allLogs.forEach(log => {
-      if (log.category && !labels[log.category]) {
-        labels[log.category] = formatLogType(log.category);
-      }
-    });
-    return labels;
-  }, [allLogs]);
 
   // Stats for header - logs for currently assigned animals only
   const activeFosterLogs = allLogs;
@@ -300,24 +265,12 @@ function FosterLogsPage() {
         </div>
       </div>
 
-      <FilterBar
-        onFilter={() => {}}
-        onClear={handleClearFilters}
-        onAddNew={() => navigate({ to: '/add-medical-log' })}
-        addNewButtonLabel="Add Medical Log"
-      >
-        <InputGroupForSearch
-          placeholder_text="Search by animal or notes"
-          value={filters.search}
-          onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-        />
-        <FilterSelect
-          value={filters.category}
-          onChange={(value) => setFilters({ ...filters, category: value })}
-          selectItems={categories}
-          selectItemsMap={categoryLabelsMap}
-        />
-      </FilterBar>
+      <CompactMedicalLogFilterBar
+        filters={filters}
+        onFiltersChange={setFilters}
+        showAddNew={false}
+        showCreatedBy={false}
+      />
 
       {!loading && filteredLogs.length === 0 ? (
         <p className="text-muted-foreground text-center py-12">

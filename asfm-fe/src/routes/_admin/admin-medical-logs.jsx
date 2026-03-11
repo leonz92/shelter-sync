@@ -6,9 +6,7 @@ import { ClipboardPlus, Plus } from 'lucide-react';
 import { ReusableTable } from '@/components/table_components';
 import CustomBadge from '@/components/custom/CustomBadge';
 import { LOG_TYPE_COLORS, formatLogType } from '@/constants/medicalLogConstants';
-import FilterBar from '@/components/FilterBar';
-import FilterSelect from '@/components/custom/FilterSelect';
-import InputGroupForSearch from '@/components/InputGroupForSearch';
+import { CompactMedicalLogFilterBar } from '@/components/CompactMedicalLogFilterBar';
 import apiClient from '@/lib/axios';
 
 const formatDateTime = (dateString) => {
@@ -25,8 +23,8 @@ function AdminLogsPage() {
   const navigate = useNavigate();
   const [filters, setFilters] = useState({
     search: '',
-    category: '',
     dateRange: { from: null, to: null },
+    logTypes: [],
     createdBy: 'all',
   });
   const [allLogs, setAllLogs] = useState([]);
@@ -51,8 +49,9 @@ function AdminLogsPage() {
           log.animal_name?.toLowerCase().includes(searchLower) ||
           log.general_notes?.toLowerCase().includes(searchLower);
 
-        // Category filter
-        const matchesCategory = !filters.category || log.category === filters.category;
+        // Log type filter (now an array)
+        const matchesLogTypes =
+          filters.logTypes.length === 0 || filters.logTypes.includes(log.category);
 
         // Date range filter
         let matchesDateRange = true;
@@ -71,7 +70,7 @@ function AdminLogsPage() {
           matchesCreatedBy = !!log.foster_user_id;
         }
 
-        return matchesSearch && matchesCategory && matchesDateRange && matchesCreatedBy;
+        return matchesSearch && matchesLogTypes && matchesDateRange && matchesCreatedBy;
       })
       .sort((a, b) => new Date(b.logged_at) - new Date(a.logged_at));
   }, [allLogs, filters]);
@@ -182,28 +181,11 @@ function AdminLogsPage() {
   const handleClearFilters = () => {
     setFilters({
       search: '',
-      category: '',
       dateRange: { from: null, to: null },
+      logTypes: [],
       createdBy: 'all',
     });
   };
-
-  // Get unique categories for filter
-  const categories = useMemo(() => {
-    const uniqueCategories = [...new Set(allLogs.map(log => log.category).filter(Boolean))];
-    return uniqueCategories;
-  }, [allLogs]);
-
-  // Create category labels map
-  const categoryLabelsMap = useMemo(() => {
-    const labels = {};
-    allLogs.forEach(log => {
-      if (log.category && !labels[log.category]) {
-        labels[log.category] = formatLogType(log.category);
-      }
-    });
-    return labels;
-  }, [allLogs]);
 
   // Stats for header
   const totalLogs = allLogs.length;
@@ -334,34 +316,11 @@ function AdminLogsPage() {
         </div>
       </div>
 
-      <FilterBar
-        onFilter={() => {}}
-        onClear={handleClearFilters}
-        onAddNew={() => navigate({ to: '/medical-logs-add' })}
-        addNewButtonLabel="Add Medical Log"
-      >
-        <InputGroupForSearch
-          placeholder_text="Search by animal or notes"
-          value={filters.search}
-          onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-        />
-        <FilterSelect
-          value={filters.category}
-          onChange={(value) => setFilters({ ...filters, category: value })}
-          selectItems={categories}
-          selectItemsMap={categoryLabelsMap}
-        />
-        <FilterSelect
-          value={filters.createdBy}
-          onChange={(value) => setFilters({ ...filters, createdBy: value })}
-          selectItems={['all', 'admin', 'foster']}
-          selectItemsMap={{
-            all: 'All Logs',
-            admin: 'Admin Only',
-            foster: 'Foster Only',
-          }}
-        />
-      </FilterBar>
+      <CompactMedicalLogFilterBar
+        filters={filters}
+        onFiltersChange={setFilters}
+        showAddNew={false}
+      />
 
       {!loading && filteredLogs.length === 0 ? (
         <p className="text-muted-foreground text-center py-12">
