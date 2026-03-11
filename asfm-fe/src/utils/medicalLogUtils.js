@@ -40,16 +40,17 @@ export const MEDICAL_LOG_BASE_COLUMNS = [
     cellClassName: 'text-center',
     textSize: 'sm',
   },
-  { accessorKey: 'dose', header: 'Dose', textSize: 'sm' },
-  { accessorKey: 'qty_administered', header: 'Qty', textSize: 'sm' },
-  { accessorKey: 'administered_at', header: 'Administered At', textSize: 'sm' },
-  { accessorKey: 'logged_at', header: 'Logged At', textSize: 'sm' },
+  // Medical-related fields grouped together
   {
     accessorKey: 'prescription',
     header: 'Prescription',
     cellClassName: 'whitespace-normal max-w-md',
     textSize: 'sm',
   },
+  { accessorKey: 'dose', header: 'Dose', textSize: 'sm' },
+  { accessorKey: 'qty_administered', header: 'Qty', textSize: 'sm' },
+  { accessorKey: 'administered_at', header: 'Administered At', textSize: 'sm' },
+  { accessorKey: 'logged_at', header: 'Logged At', textSize: 'sm' },
   {
     accessorKey: 'general_notes',
     header: 'General Notes',
