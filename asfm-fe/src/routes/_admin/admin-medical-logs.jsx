@@ -132,7 +132,6 @@ function AdminLogsPage() {
       if (fosterUserIds.length > 0) {
         try {
           const usersResponse = await apiClient.get('/users');
-          console.log('Fetched users for enrichment:', usersResponse.data);
           fetchedUsers = usersResponse.data;
 
           // Create user name map (first_name + last_name)

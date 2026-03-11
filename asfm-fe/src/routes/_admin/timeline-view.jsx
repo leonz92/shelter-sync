@@ -97,7 +97,6 @@ function MedicalLogListPage() {
         try {
           const allAnimalsResponse = await apiClient.get('/animals', { params: { limit: 1000 } }); //  Correct way to do it 
           fetchedAnimals = allAnimalsResponse.data;
-          console.log('Fetched', fetchedAnimals.length, 'animals');
         } catch (e) {
           console.error('Failed to fetch all animals:', e);
         }
@@ -109,7 +108,6 @@ function MedicalLogListPage() {
         const missingAnimalIds = animalIds.filter(id => !animalMap.has(id));
 
         if (missingAnimalIds.length > 0) {
-          console.log('Fetching missing animals individually:', missingAnimalIds.length);
           const individualFetches = missingAnimalIds.map(id =>
             apiClient.get(`/animals/${id}`).catch(err => {
               console.error('Failed to fetch animal', id, err);
@@ -127,8 +125,6 @@ function MedicalLogListPage() {
         }
       }
 
-      console.log('Final animal map size:', animalMap.size, 'out of', animalIds.length, 'animal IDs');
-      console.log('Animal map entries:', Array.from(animalMap.entries()));
       
       setAnimals(fetchedAnimals);
     } catch (err) {

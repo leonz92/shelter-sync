@@ -17,7 +17,6 @@ export const Route = createFileRoute('/_admin/medical-logs-add')({
 function AddMedicalLogPage() {
   const navigate = useNavigate();
   const user = useBoundStore((state) => state.user);
-  console.log('Current user in AddMedicalLogPage:', user);
   const [animals, setAnimals] = useState([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState('');
@@ -51,7 +50,6 @@ function AddMedicalLogPage() {
   const filteredAnimals = (animals || [])
 
   const handleSubmit = async (formData) => {
-    console.log("formData:", formData);
     setSubmitError('');
     setIsSubmitting(true);
 
@@ -72,7 +70,6 @@ function AddMedicalLogPage() {
         foster_user_id:  user.id,
         ...formData.medication_id && { medication_id: formData.medication_id },
       };
-      console.log('Payload for new medical log:', payload);
       const response = await apiClient.post('/medical-logs', payload);
 
       setIsSubmitting(false);
