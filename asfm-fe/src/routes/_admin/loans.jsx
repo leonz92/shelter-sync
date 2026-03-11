@@ -44,7 +44,6 @@ function RouteComponent() {
     notes: '',
   });
   const [fieldErrors, setFieldErrors] = useState({});
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [allItems, setAllItems] = useState([]);
   const [allUsers, setAllUsers] = useState([]);
 
@@ -108,7 +107,6 @@ function RouteComponent() {
       return;
     }
     setFieldErrors({});
-    setIsSubmitting(true);
     try {
       await apiClient.post('/inventory-transactions/distribute', {
         type: 'LOAN',
@@ -138,8 +136,35 @@ function RouteComponent() {
         api: err.response?.data?.message || 'Failed to create loan. Please try again.',
       });
     } finally {
-      setIsSubmitting(false);
       setLoading(false);
+    }
+  };
+
+  const handleStatusChange = async (transactionId, newStatus, quantity) => {
+    try {
+      await apiClient.patch(`/inventory-transactions/${transactionId}/status`, {
+        status: newStatus.toUpperCase(),
+        staff_user: user.id,
+        quantity,
+      });
+      const trigger = document.querySelector(`[data-id="${transactionId}"]`);
+      if (trigger) {
+        trigger.style.borderColor = 'var(--secondary)';
+        trigger.style.borderWidth = '2px';
+        setTimeout(() => {
+          trigger.style.borderColor = '';
+          trigger.style.borderWidth = '';
+        }, 5000);
+      }
+      setAllLoans((prev) =>
+        prev.map((loan) => {
+          return loan.inventoryTransactionId === transactionId
+            ? { ...loan, loanStatus: newStatus[0].toUpperCase() + newStatus.slice(1).toLowerCase() }
+            : loan;
+        }),
+      );
+    } catch (err) {
+      console.error(`There was an error while updating the status of this loan: ${err}`);
     }
   };
 
@@ -199,6 +224,22 @@ function RouteComponent() {
       sortable: true,
       textSize: 'sm',
       headClassName: 'min-w-[120px]',
+      cell: ({ row }) => (
+        <Select
+          value={row.original.loanStatus.toUpperCase()}
+          onValueChange={(val) =>
+            handleStatusChange(row.original.inventoryTransactionId, val, row.original.quantity)
+          }
+        >
+          <SelectTrigger className="w-[120px]" data-id={row.original.inventoryTransactionId}>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="ACTIVE">Active</SelectItem>
+            <SelectItem value="COMPLETE">Complete</SelectItem>
+          </SelectContent>
+        </Select>
+      ),
     },
     {
       accessorKey: 'inventoryTransactionId',
