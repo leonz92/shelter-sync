@@ -41,19 +41,20 @@ function AdminLogsPage() {
       .filter((log) => {
         // Search filter
         const searchLower = filters.search.toLowerCase();
-        const matchesSearch = log.animal_name?.toLowerCase().includes(searchLower);
+        const matchesSearch = log.animal_name?.toLowerCase().includes(searchLower) ?? false;
 
         // Log type filter (now an array)
         const matchesLogTypes =
           filters.logTypes.length === 0 || filters.logTypes.includes(log.category);
 
-        // Date range filter
+        // Date range filter - safely parse dates to avoid "Invalid Date" comparisons
         let matchesDateRange = true;
-        if (filters.dateRange.from) {
-          matchesDateRange = matchesDateRange && new Date(log.logged_at) >= filters.dateRange.from;
+        const logDate = log.logged_at ? new Date(log.logged_at) : null;
+        if (filters.dateRange.from && logDate && !isNaN(logDate.getTime())) {
+          matchesDateRange = matchesDateRange && logDate >= filters.dateRange.from;
         }
-        if (filters.dateRange.to) {
-          matchesDateRange = matchesDateRange && new Date(log.logged_at) <= filters.dateRange.to;
+        if (filters.dateRange.to && logDate && !isNaN(logDate.getTime())) {
+          matchesDateRange = matchesDateRange && logDate <= filters.dateRange.to;
         }
 
         // Created by filter
@@ -66,7 +67,15 @@ function AdminLogsPage() {
 
         return matchesSearch && matchesLogTypes && matchesDateRange && matchesCreatedBy;
       })
-      .sort((a, b) => new Date(b.logged_at) - new Date(a.logged_at));
+      .sort((a, b) => {
+        // Safe date comparison - default to 0 (epoch) for missing/invalid dates
+        const dateA = a.logged_at ? new Date(a.logged_at).getTime() : 0;
+        const dateB = b.logged_at ? new Date(b.logged_at).getTime() : 0;
+        // Handle invalid dates (NaN) by treating them as 0
+        const timeA = isNaN(dateA) ? 0 : dateA;
+        const timeB = isNaN(dateB) ? 0 : dateB;
+        return timeB - timeA; // Descending order (newest first)
+      });
   }, [allLogs, filters]);
 
   const fetchData = async () => {

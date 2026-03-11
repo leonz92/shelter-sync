@@ -88,10 +88,10 @@ function FosterLogsPage() {
 
       // Step 2: Fetch all medical logs
       const logsResponse = await apiClient.get('/medical-logs');
-      console.log('Fetched medical logs:', logsResponse);
+      const rawLogs = logsResponse.data || [];
 
       // Step 3: Filter logs to only those for current user's assigned animals
-      const logsForAssignedAnimals = logsResponse.data.filter(log =>
+      const logsForAssignedAnimals = rawLogs.filter(log =>
         currentAssignedIds.has(log.animal_id)
       );
 
@@ -114,7 +114,25 @@ function FosterLogsPage() {
       setAllLogs(enrichedLogs);
     } catch (err) {
       console.error('Error fetching medical logs:', err);
-      setError('Failed to load medical logs. Please try again.');
+      
+      // Provide user-friendly error message based on error type
+      let errorMessage = 'Failed to load medical logs. Please try again.';
+      
+      if (err.response) {
+        // Server responded with error status
+        if (err.response.status === 401) {
+          errorMessage = 'Your session has expired. Please log in again.';
+        } else if (err.response.status === 403) {
+          errorMessage = 'You do not have permission to view medical logs.';
+        } else if (err.response.status >= 500) {
+          errorMessage = 'Server error. Please try again later.';
+        }
+      } else if (err.request) {
+        // Request made but no response (network error)
+        errorMessage = 'Network error. Please check your connection.';
+      }
+      
+      setError(errorMessage);
     } finally {
       setLoading(false);
     }
