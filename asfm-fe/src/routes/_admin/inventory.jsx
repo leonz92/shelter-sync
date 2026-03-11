@@ -9,6 +9,7 @@ import { ModalDialog } from '@/components/ModalDialog';
 import { Input } from '@/components/ui/input';
 import { Edit, Trash2, Package } from 'lucide-react';
 import ConfirmationDialog from '@/components/confirmationDialog';
+import InventoryTransactionTabs from '@/components/InventoryTransactionTabs';
 
 const formatDate = (dateString) => {
   if (!dateString) return '—';
@@ -47,6 +48,7 @@ function RouteComponent() {
     }
     return filtered;
   }, [allInventory, filters]);
+
   const fetchData = async () => {
     setLoading(true);
     setError(null);
@@ -159,17 +161,18 @@ function RouteComponent() {
     },
   ];
 
-  if (error) return (
-    <div className="flex flex-col items-center pt-8 gap-3">
-      <p className="text-red-500">{error}</p>
-      <button
-        onClick={fetchData}
-        className="px-4 py-2 text-sm rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
-      >
-        Retry
-      </button>
-    </div>
-  );
+  if (error)
+    return (
+      <div className="flex flex-col items-center pt-8 gap-3">
+        <p className="text-red-500">{error}</p>
+        <button
+          onClick={fetchData}
+          className="px-4 py-2 text-sm rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
+        >
+          Retry
+        </button>
+      </div>
+    );
 
   return (
     <>
@@ -188,7 +191,7 @@ function RouteComponent() {
           </div>
         </div>
       </div>
-
+      <InventoryTransactionTabs />
       <FilterBar
         onFilter={() => {}}
         onClear={handleClearFilters}
