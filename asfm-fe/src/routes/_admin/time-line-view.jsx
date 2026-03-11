@@ -76,10 +76,17 @@ function MedicalLogListPage() {
     setError(null);
     try {
       const response = await apiClient.get('/medical-logs');
-      setMedicalLogs(response.data);
+      const rawLogs = response?.data || [];
+
+      // Validate response is an array
+      if (!Array.isArray(rawLogs)) {
+        throw new Error('Unexpected response format from server: expected array of logs');
+      }
+
+      setMedicalLogs(rawLogs);
 
       // Extract unique animal IDs from logs
-      const animalIds = [...new Set(response.data.map(log => log.animal_id).filter(Boolean))];
+      const animalIds = [...new Set(rawLogs.map(log => log.animal_id).filter(Boolean))];
 
       // Fetch animals
       let fetchedAnimals = [];

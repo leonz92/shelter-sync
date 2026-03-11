@@ -27,12 +27,19 @@ function AddMedicalLogPage() {
     setSubmitError('');
     try {
       const response = await apiClient.get('/animals');
-      console.log('Fetched animals:', response.data.length);
+      const rawAnimals = response?.data || [];
+
+      // Validate response is an array
+      if (!Array.isArray(rawAnimals)) {
+        throw new Error('Unexpected response format from server: expected array of animals');
+      }
+
+      console.log('Fetched animals in add medical logs:', rawAnimals.length);
       console.log('User ID:', user?.id);
       
       // Filter to show only fostered animals
       // Note: The backend will validate the active assignment when creating the log
-      const fosteredAnimals = response.data.filter(animal => 
+      const fosteredAnimals = rawAnimals.filter(animal => 
         animal.foster_status === 'FOSTERED'
       );
       

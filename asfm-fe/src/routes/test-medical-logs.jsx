@@ -28,20 +28,31 @@ function TestMedicalLogsPage() {
         apiClient.get('/animals'),
       ]);
 
+      // Safely extract data with fallbacks
+      const rawLogs = logsResponse?.data || [];
+      const rawAnimals = animalsResponse?.data || [];
+
+      // Validate responses are arrays
+      if (!Array.isArray(rawLogs)) {
+        throw new Error('Unexpected response format: expected array of logs');
+      }
+      if (!Array.isArray(rawAnimals)) {
+        throw new Error('Unexpected response format: expected array of animals');
+      }
+
       console.log('=== API Response ===');
-      console.log('Logs Response object:', logsResponse);
-      console.log('Logs Response data:', logsResponse.data);
+      console.log('Logs count:', rawLogs.length);
+      console.log('Animals count:', rawAnimals.length);
       console.log('Logs Response status:', logsResponse.status);
-      console.log('Animals Response data:', animalsResponse.data);
       console.log('=====================');
 
       // Set animals
-      setAnimals(animalsResponse.data);
+      setAnimals(rawAnimals);
 
       // Enrich logs with animal names
-      const enrichedLogs = logsResponse.data.map(log => ({
+      const enrichedLogs = rawLogs.map(log => ({
         ...log,
-        animal_name: animalsResponse.data.find(a => a.id === log.animal_id)?.name || null,
+        animal_name: rawAnimals.find(a => a.id === log.animal_id)?.name || null,
       }));
 
       setLogs(enrichedLogs);

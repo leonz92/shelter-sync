@@ -25,7 +25,14 @@ function AddMedicalLogPage() {
     setLoadingAnimals(true);
     try {
       const response = await apiClient.get('/animals');
-      setAnimals(response.data);
+      const rawAnimals = response?.data || [];
+
+      // Validate response is an array
+      if (!Array.isArray(rawAnimals)) {
+        throw new Error('Unexpected response format from server: expected array of animals');
+      }
+
+      setAnimals(rawAnimals);
     } catch (err) {
       console.error('Error fetching animals:', err);
       setSubmitError('Failed to load animals. Please try again.');
