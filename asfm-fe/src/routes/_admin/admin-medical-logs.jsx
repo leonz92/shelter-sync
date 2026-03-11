@@ -84,20 +84,20 @@ function AdminLogsPage() {
       const fosterUserIds = [...new Set(logsResponse.data.map(log => log.foster_user_id).filter(Boolean))];
 
       // Fetch animals - try all animals first, then fallback to individual fetches
-      let animals = [];
+      let fetchedAnimals = [];
       let animalMap = new Map();
 
       if (animalIds.length > 0) {
         // Try fetching all animals (works for STAFF)
         try {
           const allAnimalsResponse = await apiClient.get('/animals');
-          animals = allAnimalsResponse.data;
+          fetchedAnimals = allAnimalsResponse.data;
         } catch (e) {
           console.error('Failed to fetch all animals:', e);
         }
 
         // Create initial map from fetched animals
-        animalMap = new Map(animals.map(a => [a.id, a.name]));
+        animalMap = new Map(fetchedAnimals.map(a => [a.id, a.name]));
 
         // For any animals not found, fetch them individually
         const missingAnimalIds = animalIds.filter(id => !animalMap.has(id));
@@ -112,23 +112,23 @@ function AdminLogsPage() {
           individualResponses.forEach(response => {
             if (response?.data) {
               animalMap.set(response.data.id, response.data.name);
-              animals.push(response.data);
+              fetchedAnimals.push(response.data);
             }
           });
         }
       }
 
       // Fetch foster users
-      let users = [];
+      let fetchedUsers = [];
       let userMap = new Map();
 
       if (fosterUserIds.length > 0) {
         try {
           const usersResponse = await apiClient.get('/users');
-          users = usersResponse.data;
+          fetchedUsers = usersResponse.data;
 
           // Create user name map (first_name + last_name)
-          userMap = new Map(users.map(u => [
+          userMap = new Map(fetchedUsers.map(u => [
             u.id,
             `${u.first_name} ${u.last_name}`.trim() || u.email
           ]));
@@ -159,7 +159,7 @@ function AdminLogsPage() {
         });
       }
 
-      setAnimals(animals);
+      setAnimals(fetchedAnimals);
       setAllLogs(enrichedLogs);
     } catch (err) {
       console.error('Error fetching medical logs:', err);
