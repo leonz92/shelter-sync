@@ -1,4 +1,5 @@
 import { fetchMedicalLogs as fetchMedicalLogsFromAPI } from '@/services/medicalLogsService';
+import { enrichMedicalLogs } from '@/utils/enrichMedicalLogs';
 
 export const medicalLogsSlice = (set, get) => ({
   medicalLogs: [],
@@ -19,14 +20,8 @@ export const medicalLogsSlice = (set, get) => ({
       const data = await fetchMedicalLogsFromAPI();
       const animals = get().animals;
 
-      // Enrich medical logs with animal names
-      const enrichedData = data.map((log) => {
-        const animal = animals.find((a) => a.id === log.animal_id);
-        return {
-          ...log,
-          animal_name: animal?.name || 'Unknown Animal',
-        };
-      });
+      // Enrich using centralized utility
+      const enrichedData = enrichMedicalLogs(data, animals, []);
 
       set((state) => {
         state.medicalLogs = enrichedData;
@@ -44,10 +39,12 @@ export const medicalLogsSlice = (set, get) => ({
   addMedicalLog: (log) =>
     set((state) => {
       const animals = get().animals;
+
+      // Inline enrichment for single log (animals array is typically small)
       const animal = animals.find((a) => a.id === log.animal_id);
       state.medicalLogs.push({
         ...log,
-        animal_name: animal?.name || 'Unknown Animal',
+        animal_name: animal?.name || '—',
       });
     }),
 });
