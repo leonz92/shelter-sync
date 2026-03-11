@@ -132,14 +132,7 @@ function FosterLogsPage() {
     fetchData();
   }, []);
 
-  const handleClearFilters = () => {
-    setFilters({
-      search: '',
-      dateRange: { from: null, to: null },
-      logTypes: [],
-      createdBy: 'all',
-    });
-  };
+
 
   // Stats for header - logs for currently assigned animals only
   const { total: totalLogs, medical: medicalCount, behavioral: behavioralCount, veterinary: veterinaryCount } = calculateLogStats(allLogs);
