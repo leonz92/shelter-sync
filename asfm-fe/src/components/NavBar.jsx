@@ -43,7 +43,7 @@ function NavBar() {
             <Button variant="outline" onClick={() => navigate({ to: '/animals' })}>Animals</Button>
             <Button variant="outline" onClick={() => navigate({ to: '/inventory' })}>Inventory</Button>
             <Button variant="outline" onClick={() => navigate({ to: '/loans' })}>Loans</Button>
-            <Button variant="outline" onClick={() => navigate({ to: '/medical-logs' })}>
+            <Button variant="outline" onClick={() => navigate({ to: '/time-line-view' })}>
               Med Log
             </Button>
             <Button variant="outline" onClick={() => navigate({ to: '/admin-medical-logs' })}>

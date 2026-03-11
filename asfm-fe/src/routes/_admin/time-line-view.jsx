@@ -10,7 +10,7 @@ import { CompactMedicalLogFilterBar } from '@/components/CompactMedicalLogFilter
 import RoleGuard from '@/components/RoleGuard';
 import apiClient from '@/lib/axios';
 
-export const Route = createFileRoute('/_user/')({ component: MedicalLogListPage });
+export const Route = createFileRoute('/_admin/time-line-view')({ component: MedicalLogListPage });
 
 function MedicalLogListPage() {
   const navigate = useNavigate();
