@@ -7,26 +7,17 @@ import { Button } from '@/components/ui/button';
 import { Loader2, Users, PawPrint, ArrowLeftRight, Timer } from 'lucide-react';
 
 function AdminPortal() {
-  const session = useBoundStore((state) => state.session);
   const [users, setUsers] = useState([]);
   const [animals, setAnimals] = useState([]);
   const [inventory, setInventory] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [usersError, setUsersError] = useState(null);
-  const [animalsError, setAnimalsError] = useState(null);
-  const [inventoryError, setInventoryError] = useState(null);
-  const [transactionsError, setTransactionsError] = useState(null);
-
-  // const authHeader = { Authorization: `Bearer ${session?.access_token}` };
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const fetchAll = async () => {
       setLoading(true);
-      setUsersError(null);
-      setAnimalsError(null);
-      setInventoryError(null);
-      setTransactionsError(null);
+      setError(null);
       try {
         const [userData, animalData, inventoryData, transactionData] = await Promise.allSettled([
           await apiClient.get('/users'),
@@ -40,7 +31,7 @@ function AdminPortal() {
         setTransactions(transactionData.value.data);
       } catch (err) {
         console.error(`User fetch error: ${err}`);
-        setUsersError(`There was an error loading the users!`);
+        setError(`There was an error loading the users!`);
       } finally {
         setLoading(false);
       }
