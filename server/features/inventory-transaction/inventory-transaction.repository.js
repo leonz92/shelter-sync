@@ -164,26 +164,22 @@ exports.createDistributeTransaction = async ({
 };
 
 exports.updateStatus = async ({ status, staff_user, quantity, id, inventory_id }) => {
-  try {
-    const updatedStatus = await prisma.$transaction(async (tx) => {
-      const inventoryAction =
-        status === 'COMPLETE' ? { increment: quantity } : { decrement: quantity };
+  const updatedStatus = await prisma.$transaction(async (tx) => {
+    const inventoryAction =
+      status === 'COMPLETE' ? { increment: quantity } : { decrement: quantity };
 
-      await tx.inventory.update({
-        where: { id: inventory_id },
-        data: { quantity: inventoryAction },
-      });
-
-      return tx.inventoryTransaction.update({
-        where: { id },
-        data: {
-          status,
-          staff_user: { connect: { id: staff_user } },
-        },
-      });
+    await tx.inventory.update({
+      where: { id: inventory_id },
+      data: { quantity: inventoryAction },
     });
-    return updatedStatus;
-  } catch (err) {
-    throw err;
-  }
+
+    return tx.inventoryTransaction.update({
+      where: { id },
+      data: {
+        status,
+        staff_user: { connect: { id: staff_user } },
+      },
+    });
+  });
+  return updatedStatus;
 };
