@@ -337,7 +337,7 @@ function AdminLogsPage() {
       <FilterBar
         onFilter={() => {}}
         onClear={handleClearFilters}
-        onAddNew={() => navigate({ to: '/admin-medical-logs-add' })}
+        onAddNew={() => navigate({ to: '/medical-logs-add' })}
         addNewButtonLabel="Add Medical Log"
       >
         <InputGroupForSearch
