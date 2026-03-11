@@ -367,7 +367,7 @@ function RouteComponent() {
 
           <div className="flex flex-col gap-1">
             <label className="text-sm font-medium">
-              Foster User <span className="text-red-500">*</span>
+              Loaned To: <span className="text-red-500">*</span>
             </label>
             <Select
               value={formData.foster_user}
