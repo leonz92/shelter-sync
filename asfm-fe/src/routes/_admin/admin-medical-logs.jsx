@@ -197,7 +197,7 @@ function AdminLogsPage() {
     qty_administered: log.qty_administered != null ? log.qty_administered : '—',
     administered_at: formatDateTime(log.administered_at),
     prescription: log.prescription || '—',
-    created_by_type: log.foster_user_id ? 'Foster' : 'Staff',
+    created_by_type: log.foster_user_role === 'USER' ? 'Foster User' : 'Staff User',
     creator_name: log.foster_user_id ? log.foster_user_name : 'Staff User',
     logged_at: formatDateTime(log.logged_at),
     

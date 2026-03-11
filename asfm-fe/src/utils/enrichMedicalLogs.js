@@ -14,14 +14,16 @@
  * @param {Map<string, string>} userMap - Map of user_id -> user_display_name
  * @returns {Object} Enriched log with animal_name, foster_user_name, is_orphaned
  */
-export function enrichMedicalLog(log, animalMap, userMap) {
+export function enrichMedicalLog(log, animalMap, userMap, userRoleMap) {
   const animalName = animalMap?.get(log.animal_id);
   const fosterUserName = userMap?.get(log.foster_user_id);
+  const fosterUserRole = userRoleMap?.get(log.foster_user_id);
 
   return {
     ...log,
     animal_name: animalName || '—',
     foster_user_name: fosterUserName || '—',
+    foster_user_role: fosterUserRole || null,
     is_orphaned: !animalName,
   };
 }
@@ -50,8 +52,9 @@ export function enrichMedicalLogs(logs, animals, users = []) {
       `${u.first_name || ''} ${u.last_name || ''}`.trim() || u.email || '—',
     ])
   );
+  const userRoleMap = new Map(users.map((u) => [u.id, u.role]));
 
-  return logs.map((log) => enrichMedicalLog(log, animalMap, userMap));
+  return logs.map((log) => enrichMedicalLog(log, animalMap, userMap, userRoleMap));
 }
 
 /**
