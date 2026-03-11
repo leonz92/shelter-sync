@@ -75,7 +75,7 @@ function NavBar() {
                   <SheetClose asChild>
                     <Button
                       variant="outline"
-                      onClick={() => navigate({ to: '/medical-logs/foster' })}
+                      onClick={() => navigate({ to: '/foster-medical-logs' })}
                     >
                       My Foster Logs
                     </Button>
@@ -108,7 +108,7 @@ function NavBar() {
               </Sheet>
             ) : (
               <div className="contents hidden lg:contents">
-                <Button variant="outline" onClick={() => navigate({ to: '/medical-logs/foster' })}>
+                <Button variant="outline" onClick={() => navigate({ to: '/foster-medical-logs' })}>
                   My Foster Logs
                 </Button>
                 <Button variant="outline" onClick={() => navigate({ to: '/my-animals' })}>
@@ -161,14 +161,14 @@ function NavBar() {
                     </Button>
                   </SheetClose>
                   <SheetClose asChild>
-                    <Button variant="outline" onClick={() => navigate({ to: '/medical-logs' })}>
+                    <Button variant="outline" onClick={() => navigate({ to: '/timeline-view' })}>
                       Med Log
                     </Button>
                   </SheetClose>
                   <SheetClose asChild>
                     <Button
                       variant="outline"
-                      onClick={() => navigate({ to: '/medical-logs/admin' })}
+                      onClick={() => navigate({ to: '/admin-medical-logs' })}
                     >
                       Admin Logs
                     </Button>
@@ -206,10 +206,10 @@ function NavBar() {
                 <Button variant="outline" onClick={() => navigate({ to: '/loans' })}>
                   Loans
                 </Button>
-                <Button variant="outline" onClick={() => navigate({ to: '/medical-logs' })}>
+                <Button variant="outline" onClick={() => navigate({ to: '/timeline-view' })}>
                   Med Log
                 </Button>
-                <Button variant="outline" onClick={() => navigate({ to: '/medical-logs/admin' })}>
+                <Button variant="outline" onClick={() => navigate({ to: '/admin-medical-logs' })}>
                   Admin Logs
                 </Button>
               </div>
