@@ -1,25 +1,19 @@
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
 import { useState, useMemo, useEffect } from 'react';
-import Layout from '@/components/Layout';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import CustomBadge from '@/components/custom/CustomBadge';
-import { useBoundStore } from '@/store';
 import { LOG_TYPE_COLORS, formatLogType } from '@/constants/medicalLogConstants';
 import { ClipboardList, Plus } from 'lucide-react';
 import { CompactMedicalLogFilterBar } from '@/components/CompactMedicalLogFilterBar';
 import RoleGuard from '@/components/RoleGuard';
+import apiClient from '@/lib/axios';
 
-export const Route = createFileRoute('/medical-logs/')({ component: MedicalLogListPage });
+export const Route = createFileRoute('/_user/')({ component: MedicalLogListPage });
 
 function MedicalLogListPage() {
   const navigate = useNavigate();
-  const medicalLogs = useBoundStore((state) => state.medicalLogs);
-  const medicalLogsLoading = useBoundStore((state) => state.medicalLogsLoading);
-  const medicalLogsError = useBoundStore((state) => state.medicalLogsError);
-  const fetchMedicalLogs = useBoundStore((state) => state.fetchMedicalLogs);
-  const fetchAnimals = useBoundStore((state) => state.fetchAnimals);
 
   const [filters, setFilters] = useState({
     search: '',
@@ -28,13 +22,25 @@ function MedicalLogListPage() {
     createdBy: 'all',
   });
 
-  useEffect(() => {
-    fetchMedicalLogs();
-    fetchAnimals();
-  }, [fetchMedicalLogs, fetchAnimals]);
+  const [medicalLogs, setMedicalLogs] = useState([]);
+  const [animals, setAnimals] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Create animal lookup for efficient enrichment
+  const animalLookup = useMemo(() => {
+    return animals.reduce((acc, animal) => {
+      acc[animal.id] = animal.name;
+      return acc;
+    }, {});
+  }, [animals]);
 
   const filtered = useMemo(() => {
     return medicalLogs
+      .map((log) => ({
+        ...log,
+        animal_name: animalLookup[log.animal_id] || 'Unknown Animal',
+      }))
       .filter((log) => {
         // Search filter
         const matchesSearch = log.animal_name.toLowerCase().includes(filters.search.toLowerCase());
@@ -63,14 +69,79 @@ function MedicalLogListPage() {
         return matchesSearch && matchesDateRange && matchesLogTypes && matchesCreatedBy;
       })
       .sort((a, b) => new Date(b.logged_at) - new Date(a.logged_at));
-  }, [medicalLogs, filters]);
+  }, [medicalLogs, filters, animalLookup]);
 
-  if (medicalLogsError) {
+  const fetchData = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const response = await apiClient.get('/medical-logs');
+      setMedicalLogs(response.data);
+
+      // Extract unique animal IDs from logs
+      const animalIds = [...new Set(response.data.map(log => log.animal_id).filter(Boolean))];
+
+      // Fetch animals
+      let fetchedAnimals = [];
+      let animalMap = new Map();
+
+      if (animalIds.length > 0) {
+        // Try fetching all animals first
+        try {
+          const allAnimalsResponse = await apiClient.get('/animals');
+          fetchedAnimals = allAnimalsResponse.data;
+          console.log('Fetched', fetchedAnimals.length, 'animals');
+        } catch (e) {
+          console.error('Failed to fetch all animals:', e);
+        }
+
+        // Create initial map from fetched animals
+        animalMap = new Map(fetchedAnimals.map(a => [a.id, a.name]));
+
+        // For any animals not found, fetch them individually
+        const missingAnimalIds = animalIds.filter(id => !animalMap.has(id));
+
+        if (missingAnimalIds.length > 0) {
+          console.log('Fetching missing animals individually:', missingAnimalIds.length);
+          const individualFetches = missingAnimalIds.map(id =>
+            apiClient.get(`/animals/${id}`).catch(err => {
+              console.error('Failed to fetch animal', id, err);
+              return null;
+            })
+          );
+          const individualResponses = await Promise.all(individualFetches);
+
+          individualResponses.forEach(response => {
+            if (response?.data) {
+              animalMap.set(response.data.id, response.data.name);
+              fetchedAnimals.push(response.data);
+            }
+          });
+        }
+      }
+
+      console.log('Final animal map size:', animalMap.size, 'out of', animalIds.length, 'animal IDs');
+      console.log('Animal map entries:', Array.from(animalMap.entries()));
+      
+      setAnimals(fetchedAnimals);
+    } catch (err) {
+      console.error('Error fetching medical logs:', err);
+      setError('Failed to load medical logs. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []);
+
+  if (error) {
     return (
         <RoleGuard allowedRoles={['STAFF']}>
           <div className="flex flex-col items-center justify-center py-24 gap-4">
-            <p className="text-xl text-red-500">{medicalLogsError}</p>
-            <Button variant="outline" onClick={() => fetchMedicalLogs()}>
+            <p className="text-xl text-red-500">{error}</p>
+            <Button variant="outline" onClick={fetchData}>
               Retry
             </Button>
           </div>
@@ -118,7 +189,7 @@ function MedicalLogListPage() {
           </div>
 
           {/* Timeline */}
-          {medicalLogsLoading ? (
+          {loading ? (
             <div className="space-y-4">
               {Array.from({ length: 4 }).map((_, i) => (
                 <Card key={i}>
