@@ -84,13 +84,20 @@ function AdminLogsPage() {
     try {
       // Fetch medical logs first
       const logsResponse = await apiClient.get('/medical-logs');
-      console.log('Fetched medical logs:', logsResponse.data);
+      const rawLogs = logsResponse?.data || [];
+
+      // Validate response is an array
+      if (!Array.isArray(rawLogs)) {
+        throw new Error('Unexpected response format from server: expected array of logs');
+      }
+
+      console.log('Fetched medical logs:', rawLogs.length);
 
       // Extract unique animal IDs from logs
-      const animalIds = [...new Set(logsResponse.data.map(log => log.animal_id).filter(Boolean))];
+      const animalIds = [...new Set(rawLogs.map(log => log.animal_id).filter(Boolean))];
 
       // Extract unique foster user IDs from logs
-      const fosterUserIds = [...new Set(logsResponse.data.map(log => log.foster_user_id).filter(Boolean))];
+      const fosterUserIds = [...new Set(rawLogs.map(log => log.foster_user_id).filter(Boolean))];
 
       // Fetch animals - try all animals first, then fallback to individual fetches
       let fetchedAnimals = [];
@@ -147,7 +154,7 @@ function AdminLogsPage() {
       }
 
       // Enrich logs with animal names and foster user names
-      const enrichedLogs = logsResponse.data.map(log => {
+      const enrichedLogs = rawLogs.map(log => {
         const animalName = animalMap.get(log.animal_id);
         const fosterUserName = userMap.get(log.foster_user_id);
         return {
