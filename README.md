@@ -17,6 +17,7 @@
 - [Getting Started](#getting-started)
 - [Environment Variables](#environment-variables)
 - [API Endpoints](#api-endpoints)
+- [Contributors](#contributors)
 
 ---
 
@@ -281,3 +282,19 @@ All endpoints require an `Authorization: Bearer <token>` header unless marked as
 | Method | Path      | Description         | Auth   |
 | ------ | --------- | ------------------- | ------ |
 | `GET`  | `/health` | Server health check | Public |
+
+## Contributors
+
+### Team Leads
+
+- [Yoon](https://github.com/CloudyBae)
+- [Michael](https://github.com/CodeDiversity)
+
+### The Team
+
+- [Rami](https://github.com/Rami-Ismael)
+- [Leon](https://github.com/leonz92)
+- [Devan](https://github.com/devanrivera98)
+- [Ryan](https://github.com/ryan-griego)
+- [Dylan](https://github.com/dylanyng)
+- [Kyle](https://github.com/anjo-mi)
