@@ -107,11 +107,13 @@ function RouteComponent() {
     {
       accessorKey: 'item_name',
       header: 'Item Name',
+      sortable: false,
       cell: ({ row }) => `${row.original.item.name}`,
     },
     {
       accessorKey: 'quantity',
       header: 'Quantity',
+      sortable: false,
       cell: ({ row }) => `${row.original.quantity} ${row.original.item.unit}`,
     },
   ];
