@@ -10,6 +10,7 @@ import FilterBar from '@/components/FilterBar';
 import FilterSelect from '@/components/custom/FilterSelect';
 import InputGroupForSearch from '@/components/InputGroupForSearch';
 import apiClient from '@/lib/axios';
+import { useBoundStore } from '@/store';
 
 const formatDateTime = (dateString) => {
   if (!dateString) return '—';
@@ -22,6 +23,7 @@ export const Route = createFileRoute('/_user/medical-logs-foster')({
 
 function FosterLogsPage() {
   const navigate = useNavigate();
+  const user = useBoundStore((state) => state.user);
   const [filters, setFilters] = useState({
     search: '',
     category: '',
@@ -29,6 +31,7 @@ function FosterLogsPage() {
   });
   const [allLogs, setAllLogs] = useState([]);
   const [animals, setAnimals] = useState([]);
+  const [assignedAnimalIds, setAssignedAnimalIds] = useState(new Set());
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -43,8 +46,8 @@ function FosterLogsPage() {
   const filteredLogs = useMemo(() => {
     return allLogs
       .filter((log) => {
-        // First filter: only foster logs
-        if (!log.foster_user_id) return false;
+        // First filter: only logs for animals currently assigned to this foster
+        if (!assignedAnimalIds.has(log.animal_id)) return false;
 
         // Search filter
         const searchLower = filters.search.toLowerCase();
@@ -67,71 +70,49 @@ function FosterLogsPage() {
         return matchesSearch && matchesCategory && matchesDateRange;
       })
       .sort((a, b) => new Date(b.logged_at) - new Date(a.logged_at));
-  }, [allLogs, filters]);
+  }, [allLogs, filters, assignedAnimalIds]);
 
   const fetchData = async () => {
     setLoading(true);
     setError(null);
     try {
-      // Fetch medical logs first
-      const logsResponse = await apiClient.get('/medical-logs');
+      // Step 1: Fetch user's currently assigned animals (same as "My Animals")
+      const myAnimalsResponse = await apiClient.get('/animals');
+      const myAnimals = myAnimalsResponse.data || [];
 
-      // Extract unique animal IDs from logs
-      const animalIds = [...new Set(logsResponse.data.map(log => log.animal_id).filter(Boolean))];
+      // Build set of currently assigned animal IDs
+      const currentAssignedIds = new Set(myAnimals.map(animal => animal.id));
+      setAssignedAnimalIds(currentAssignedIds);
 
-      // Extract unique foster user IDs from logs
-      const fosterUserIds = [...new Set(logsResponse.data.map(log => log.foster_user_id).filter(Boolean))];
-
-      // Fetch animals - try all animals first, then fallback to individual fetches
-      let animals = [];
-      let animalMap = new Map();
-
-      if (animalIds.length > 0) {
-        // Try fetching all animals (works for STAFF)
-        try {
-          const allAnimalsResponse = await apiClient.get('/animals');
-          animals = allAnimalsResponse.data;
-          console.log('Fetched', animals.length, 'animals');
-        } catch (e) {
-          console.error('Failed to fetch all animals:', e);
-        }
-
-        // Create initial map from fetched animals
-        animalMap = new Map(animals.map(a => [a.id, a.name]));
-
-        // For any animals not found, fetch them individually
-        const missingAnimalIds = animalIds.filter(id => !animalMap.has(id));
-
-        if (missingAnimalIds.length > 0) {
-          console.log('Fetching missing animals individually:', missingAnimalIds.length);
-          const individualFetches = missingAnimalIds.map(id =>
-            apiClient.get(`/animals/${id}`).catch(err => {
-              console.error('Failed to fetch animal', id, err);
-              return null;
-            })
-          );
-          const individualResponses = await Promise.all(individualFetches);
-
-          individualResponses.forEach(response => {
-            if (response?.data) {
-              animalMap.set(response.data.id, response.data.name);
-              animals.push(response.data);
-            }
-          });
-        }
-
-        console.log('Final animal map size:', animalMap.size, 'out of', animalIds.length, 'animal IDs');
-        console.log('Animal map entries:', Array.from(animalMap.entries()));
+      if (currentAssignedIds.size === 0) {
+        // No assigned animals, nothing to show
+        setAnimals([]);
+        setAllLogs([]);
+        setLoading(false);
+        return;
       }
 
-      // Fetch foster users
-      let users = [];
-      let userMap = new Map();
+      // Step 2: Fetch all medical logs
+      const logsResponse = await apiClient.get('/medical-logs');
+      console.log('Fetched medical logs:', logsResponse);
 
+      // Step 3: Filter logs to only those for current user's assigned animals
+      const relevantLogs = logsResponse.data.filter(log =>
+        currentAssignedIds.has(log.animal_id)
+      );
+
+      // Step 4: Build animal lookup from my assigned animals
+      const animalMap = new Map(myAnimals.map(a => [a.id, a.name]));
+
+      // Step 5: Get unique foster user IDs from filtered logs
+      const fosterUserIds = [...new Set(relevantLogs.map(log => log.foster_user_id).filter(Boolean))];
+
+      // Step 6: Fetch foster users for display names
+      let userMap = new Map();
       if (fosterUserIds.length > 0) {
         try {
           const usersResponse = await apiClient.get('/users');
-          users = usersResponse.data;
+          const users = usersResponse.data;
 
           // Create user name map (first_name + last_name)
           userMap = new Map(users.map(u => [
@@ -143,29 +124,18 @@ function FosterLogsPage() {
         }
       }
 
-      // Enrich logs with animal names and foster user names
-      const enrichedLogs = logsResponse.data.map(log => {
+      // Step 7: Enrich logs with animal names and foster user names
+      const enrichedLogs = relevantLogs.map(log => {
         const animalName = animalMap.get(log.animal_id);
         const fosterUserName = userMap.get(log.foster_user_id);
         return {
           ...log,
           animal_name: animalName || '—',
           foster_user_name: fosterUserName || '—',
-          // Add a flag for orphaned logs
-          is_orphaned: !animalName,
         };
       });
 
-      // Log orphaned logs for debugging
-      const orphanedCount = enrichedLogs.filter(log => log.is_orphaned).length;
-      if (orphanedCount > 0) {
-        console.warn(`⚠️ Found ${orphanedCount} orphaned logs (invalid animal_id)`);
-        enrichedLogs.filter(log => log.is_orphaned).forEach(log => {
-          console.warn(`  Log ID: ${log.id}, Invalid animal_id: ${log.animal_id}`);
-        });
-      }
-
-      setAnimals(animals);
+      setAnimals(myAnimals);
       setAllLogs(enrichedLogs);
     } catch (err) {
       console.error('Error fetching medical logs:', err);
@@ -204,12 +174,12 @@ function FosterLogsPage() {
     return labels;
   }, [allLogs]);
 
-  // Stats for header - foster-permitted logs only
-  const fosterLogs = allLogs.filter((log) => log.foster_user_id);
-  const totalLogs = fosterLogs.length;
-  const medicalCount = fosterLogs.filter((l) => l.category === 'MEDICAL').length;
-  const behavioralCount = fosterLogs.filter((l) => l.category === 'BEHAVIORAL').length;
-  const veterinaryCount = fosterLogs.filter((l) => l.category === 'VETERINARY').length;
+  // Stats for header - logs for currently assigned animals only
+  const activeFosterLogs = allLogs;
+  const totalLogs = activeFosterLogs.length;
+  const medicalCount = activeFosterLogs.filter((l) => l.category === 'MEDICAL').length;
+  const behavioralCount = activeFosterLogs.filter((l) => l.category === 'BEHAVIORAL').length;
+  const veterinaryCount = activeFosterLogs.filter((l) => l.category === 'VETERINARY').length;
 
   const columns = [
     { accessorKey: 'animal_name', header: 'Animal', textSize: 'sm' },
@@ -333,7 +303,7 @@ function FosterLogsPage() {
       <FilterBar
         onFilter={() => {}}
         onClear={handleClearFilters}
-        onAddNew={() => navigate({ to: '/user-medical-logs-add' })}
+        onAddNew={() => navigate({ to: '/add-medical-log' })}
         addNewButtonLabel="Add Medical Log"
       >
         <InputGroupForSearch
