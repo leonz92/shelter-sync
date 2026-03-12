@@ -1,29 +1,30 @@
 import CustomBadge from '@/components/custom/CustomBadge';
-import { fetchMedication, fetchMedicationItem } from '@/services/medicalLogCardService';
-import { useEffect } from 'react';
-import { useState } from 'react';
+import { fetchMedicationItem } from '@/services/medicalLogCardService';
+import { useState, useEffect } from 'react';
 
 export default function MedicalLogCard({ log }) {
-  const [medication, setMedication] = useState('');
   const [item, setItem] = useState('');
+  const logCategory = log?.category[0] + log?.category.slice(1).toLowerCase();
+  const formattedDate = new Date(log.logged_at).toUTCString();
 
   useEffect(() => {
     async function load() {
-      const result = await fetchMedication(log.medication_id);
-      if (!result) return setMedication(null);
-      setMedication(result);
-      const itemData = await fetchMedicationItem(result.item_id);
+      // This is broken, needs medical-log creation and BE services to be updated
+      const itemData = await fetchMedicationItem(log.medication_id);
       if (!itemData) return setItem(null);
-      setItem(itemData[0]);
+      setItem(itemData);
     }
 
-    load();
+    // don't run due to 404 errors
+    // if (log.medication_id) {
+    //   load();
+    // }
   }, [log.medication_id]);
 
   return (
     <div className="ring-1 p-2 rounded-lg">
-      <span className="text-lg font-semibold">[{log.logged_at}]</span>
-      <CustomBadge text="BEHAVIORAL" badgeClassName="ml-5 px-2 py-1" />
+      <span className="text-lg font-semibold">Logged at: [ {formattedDate} ]</span>
+      <CustomBadge text={logCategory} badgeClassName="ml-5 px-2 py-1" />
       <div className="pt-5">
         <span className="text-lg font-semibold">General Notes:</span>
         <span className="block pt-2">{log.general_notes ? log.general_notes : 'None'}</span>
@@ -38,10 +39,10 @@ export default function MedicalLogCard({ log }) {
           <span className="block pt-2">
             {item.name} {log.dose && `- Dosage: ${log.dose} dose`}{' '}
             {log.prescription && `- Prescription: ${log.prescription}`}{' '}
-            {medication && `- Administration Route: ${medication.administration_route}`}
+            {item.medication && `- Administration Route: ${item.medication.administration_route}`}
           </span>
         ) : (
-          <span className="block pt-2"> None</span>
+          <span className="block pt-2">None</span>
         )}
       </div>
     </div>
