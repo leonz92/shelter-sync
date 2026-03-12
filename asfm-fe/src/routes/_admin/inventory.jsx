@@ -233,7 +233,7 @@ function RouteComponent() {
         <div className="flex gap-2">
           <button
             onClick={() => handleEdit(row.original)}
-            className="p-1 hover:bg-blue-100 rounded"
+            className="p-1 hover:bg-blue-100 rounded cursor-pointer"
             title="Edit"
           >
             <Edit size={18} className="text-blue-600" />
@@ -249,7 +249,7 @@ function RouteComponent() {
         <p className="text-red-500">{error}</p>
         <button
           onClick={fetchData}
-          className="px-4 py-2 text-sm rounded-md bg-primary text-primary-foreground hover:bg-primary/90"
+          className="px-4 py-2 text-sm rounded-md bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer"
         >
           Retry
         </button>

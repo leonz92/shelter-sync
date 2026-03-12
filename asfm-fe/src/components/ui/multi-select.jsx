@@ -43,7 +43,7 @@ export function MultiSelect({
               onClick={() => handleToggle(option.value)}
               className={cn(
                 'flex items-center gap-2 w-full px-3 py-2 rounded-md text-sm hover:bg-accent hover:text-accent-foreground transition-colors',
-                'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2',
+                'focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 cursor-pointer',
               )}
             >
               <Checkbox
@@ -69,7 +69,7 @@ export function MultiSelect({
                     {label}
                     <button
                       onClick={() => handleToggle(v)}
-                      className="ml-1 hover:text-primary-foreground/80"
+                      className="ml-1 hover:text-primary-foreground/80 cursor-pointer"
                     >
                       <X className="size-3" />
                     </button>

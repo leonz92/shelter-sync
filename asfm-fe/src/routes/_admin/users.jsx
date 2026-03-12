@@ -96,7 +96,7 @@ function RouteComponent() {
         <div className="text-red-500 mb-4">{error}</div>
         <button
           onClick={handleRetry}
-          className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
+          className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 cursor-pointer"
         >
           Retry
         </button>
