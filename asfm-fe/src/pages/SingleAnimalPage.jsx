@@ -105,7 +105,7 @@ export default function SingleAnimalPage({ id }) {
               {viewAnimal?.name ?? 'Animal Profile'}
             </h1>
             <p className="mt-1 text-sm sm:text-base text-muted-foreground">
-              A detailed profile for foster care reference, daily check-ins, and medical history.
+              An at-a-glance profile for foster care, daily check-ins, and medical history.
             </p>
             <div className="mt-3 flex flex-wrap items-center gap-3">
               <Badge variant="secondary" className="font-medium">
