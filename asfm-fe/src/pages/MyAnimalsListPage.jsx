@@ -3,6 +3,9 @@ import { useEffect, useState } from 'react';
 import { Spinner } from '@/components/ui/spinner';
 import { useBoundStore } from '@/store';
 import apiClient from '@/lib/axios';
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { PawPrint } from 'lucide-react';
 
 export default function MyAnimalsListPage() {
   const user = useBoundStore((state) => state.user);
@@ -43,33 +46,63 @@ export default function MyAnimalsListPage() {
 
   if (isError) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen text-center px-4">
-        <h2 className="text-2xl font-semibold mb-4">Oops!</h2>
-        <p className="text-lg text-gray-700">That animal doesn't seem to be available right now.</p>
-        <p className="mt-2 text-gray-500">Please try searching again or check back later.</p>
+      <div className="flex flex-col items-center justify-center py-24 gap-4 text-center px-4">
+        <div className="flex items-center justify-center size-14 rounded-xl bg-secondary/30">
+          <PawPrint className="size-7 text-primary" />
+        </div>
+        <div className="space-y-2">
+          <h2 className="text-2xl font-semibold">Unable to load your animals</h2>
+          <p className="text-muted-foreground">Please try again in a moment.</p>
+        </div>
+        <Button onClick={fetchMyAnimals} variant="outline">
+          Retry
+        </Button>
       </div>
     );
   }
 
   return (
-    <div className="max-w-7xl mx-auto py-20 px-4 sm:px-6 lg:px-8">
-      <div className="ring-2 p-5 rounded-lg bg-secondary">
-        <h1 className="text-center text-2xl">My Animals</h1>
-      </div>
-      <div className="mt-10 p-4 ring-2 rounded-lg flex flex-col gap-y-5 min-h-screen bg-secondary">
-        {myAnimals.length === 0 ? (
-          <div className="flex flex-col  items-center pt-5">
-            <h2 className="text-2xl font-semibold">No animals registered</h2>
-            <p className="text-lg pt-5">Animals you register will show up here.</p>
+    <div className="space-y-6">
+      <div className="relative overflow-hidden rounded-xl border bg-card p-6 sm:p-8">
+        <div className="flex items-start gap-4">
+          <div className="flex items-center justify-center size-12 sm:size-14 rounded-xl bg-secondary/20 shrink-0">
+            <PawPrint className="size-6 sm:size-7 text-primary" />
           </div>
-        ) : (
-          <>
-            {myAnimals.map((animal, index) => (
-              <MyAnimalCard key={index} animal={animal} />
-            ))}
-          </>
-        )}
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-bold tracking-tight text-foreground">
+              My Animals
+            </h1>
+            <p className="text-muted-foreground mt-1 text-sm sm:text-base">
+              User ID: {user?.id} — animals currently assigned to your foster care.
+            </p>
+            <div className="flex items-center gap-3 mt-3 flex-wrap">
+              <Badge variant="secondary" className="font-medium">
+                {myAnimals.length} assigned
+              </Badge>
+            </div>
+          </div>
+        </div>
       </div>
+
+      {myAnimals.length === 0 ? (
+        <div className="rounded-xl border bg-card p-4 sm:p-6">
+          <div className="flex flex-col items-center justify-center text-center py-16 px-4">
+            <div className="flex items-center justify-center size-12 rounded-xl bg-secondary/30 mb-4">
+              <PawPrint className="size-6 text-primary" />
+            </div>
+            <h2 className="text-xl font-semibold">No animals assigned yet</h2>
+            <p className="text-muted-foreground mt-2 max-w-md">
+              When animals are assigned to your foster profile, they will appear here.
+            </p>
+          </div>
+        </div>
+      ) : (
+        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {myAnimals.map((animal) => (
+            <MyAnimalCard key={animal.id} animal={animal} />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
