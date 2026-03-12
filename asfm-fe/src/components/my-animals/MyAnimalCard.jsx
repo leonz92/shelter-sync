@@ -1,51 +1,93 @@
 import getBirthdayYear from '@/utils/getBirthday';
 import { Card } from '../ui/card';
+import { buttonVariants } from '../ui/button';
+import { cn } from '@/lib/utils';
+import { Badge } from '../ui/badge';
+import { PawPrint } from 'lucide-react';
+
+const formatLabel = (value) => {
+  if (!value) return 'Unknown';
+  return value.charAt(0).toUpperCase() + value.slice(1).toLowerCase();
+};
 
 export default function MyAnimalCard({ animal }) {
   const age = getBirthdayYear(animal.dob);
+  const ageLabel = age ? `${age} ${age > 1 ? 'yrs' : 'yr'}` : 'Unknown age';
+  const speciesLabel = formatLabel(animal.species);
+  const sexLabel = formatLabel(animal.sex);
+  const imageUrl = animal.picture || 'https://placehold.co/600x600?text=Animal';
 
   return (
-    <>
-      <Card className="flex flex-row items-center gap-4 p-4">
+    <Card className="overflow-hidden border-border/80 py-0 gap-0 shadow-sm transition-shadow hover:shadow-md">
+      <div className="relative aspect-[4/3] overflow-hidden bg-secondary/20">
         <img
-          src={animal.picture}
+          src={imageUrl}
           alt={`adoption picture of ${animal.species} ${animal.name}`}
-          className="h-16 w-16 rounded-xl object-fit flex-shrink-0"
+          className="h-full w-full object-cover"
         />
-        <div className="flex flex-wrap gap-5 justify-between w-full">
-          <div className="flex flex-wrap gap-5">
-            <AnimalStatPill label={'animal id'} data={animal.chip_id ?? 'No id'} />
-            <AnimalStatPill label={'name'} data={animal.name ?? 'No name'} />
-            <AnimalStatPill
-              label={'age'}
-              data={age ? `${age} ${age > 1 ? 'yrs' : 'yr'}` : 'No age'}
-            />
-            <AnimalStatPill label={'Species'} data={animal.species ?? 'Unknown'} />
-            <AnimalStatPill label={'Sex'} data={animal.sex ?? 'Sex unknown'} />
-            <AnimalStatPill label={'Fixed Status'} data={animal.altered ? 'Fixed' : 'Not Fixed'} />
-          </div>
-          <div className="flex justify-center w-full md:w-auto">
-            <a
-              href={`/single-animal/${animal.id}`}
-              className="ring-1 ring-gray-200 rounded-xl bg-gray-50 hover:bg-gray-100 px-4 py-2 flex flex-col justify-center gap-y-0.5 w-full md:w-auto items-center hover:underline underline-offset-2"
-            >
-              Read More
-            </a>
+        <div className="absolute inset-x-0 top-0 flex items-center justify-between p-4">
+          <Badge variant="secondary" className="rounded-full bg-background/90 backdrop-blur">
+            {speciesLabel}
+          </Badge>
+          <div className="flex items-center gap-1 rounded-full bg-background/90 px-3 py-1 text-xs font-medium backdrop-blur">
+            <PawPrint className="size-3.5 text-primary" />
+            {animal.chip_id ?? 'No chip ID'}
           </div>
         </div>
-      </Card>
-    </>
+      </div>
+
+      <div className="flex flex-1 flex-col gap-5 p-5">
+        <div className="space-y-2">
+          <div className="flex items-start justify-between gap-3">
+            <div>
+              <h2 className="text-xl font-semibold tracking-tight">{animal.name ?? 'Unnamed Animal'}</h2>
+              <p className="text-sm text-muted-foreground">
+                {sexLabel} · {ageLabel}
+              </p>
+            </div>
+            <Badge
+              variant="outline"
+              className={cn(
+                'rounded-full font-medium',
+                animal.altered
+                  ? 'border-emerald-500/30 bg-emerald-500/5 text-emerald-600'
+                  : 'border-amber-500/30 bg-amber-500/5 text-amber-700'
+              )}
+            >
+              {animal.altered ? 'Fixed' : 'Not Fixed'}
+            </Badge>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-3">
+          <AnimalStatPill label="Chip ID" data={animal.chip_id ?? '—'} />
+          <AnimalStatPill label="Species" data={speciesLabel} />
+          <AnimalStatPill label="Sex" data={sexLabel} />
+        </div>
+
+        <div className="flex justify-end">
+          <a
+            href={`/single-animal/${animal.id}`}
+            className={cn(
+              buttonVariants({ variant: 'outline' }),
+              'rounded-full border-primary/20 bg-primary/5 px-5 hover:bg-primary/10'
+            )}
+          >
+            View Profile
+          </a>
+        </div>
+      </div>
+    </Card>
   );
 }
 
 function AnimalStatPill({ label, data }) {
   return (
-    <div
-      className="ring-1 ring-gray-200 rounded-xl bg-gray-50 px-4 py-1 flex flex-col gap-y-0.5
-"
-    >
-      <span className="block text-gray-500 text-center">{label}</span>
-      <span className="block text-center">{data}</span>
+    <div className="rounded-2xl border bg-muted/20 px-4 py-3">
+      <span className="block text-muted-foreground text-xs font-medium uppercase tracking-[0.16em]">
+        {label}
+      </span>
+      <span className="mt-1 block text-sm font-medium">{data}</span>
     </div>
   );
 }

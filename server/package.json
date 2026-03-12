@@ -19,7 +19,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "postinstall": "prisma generate",
+    "postinstall": "prisma generate --schema ./prisma",
     "test": "echo \"No tests specified\" && exit 0",
     "start": "node index.js",
     "dev": "nodemon index.js",

@@ -13,6 +13,8 @@ export default function DashboardCard({
 }) {
   const navigate = useNavigate();
 
+  const colCount = itemsArray.length > 0 ? Object.keys(itemsArray[0]).length : 1;
+
   const rowMapped = itemsArray.map((item, index) => (
     <DescriptionCardRow items={item} key={index} />
   ));
@@ -34,7 +36,10 @@ export default function DashboardCard({
           </Button>
         </CardAction>
       </CardHeader>
-      <CardDescription className={cn('flex flex-col px-6 py-2 gap-y-5', cardDescriptionClassName)}>
+      <CardDescription
+        className={cn('px-6 py-2', cardDescriptionClassName)}
+        style={{ display: 'grid', gridTemplateColumns: `repeat(${colCount}, minmax(auto, 1fr))` }}
+      >
         {rowMapped}
       </CardDescription>
     </Card>
@@ -47,11 +52,16 @@ function DescriptionCardRow({ items }) {
   }
 
   const rowMapped = Object.keys(items).map((key) => (
-    <div className="flex flex-col">
+    <div className="flex flex-col py-2 px-1" key={key}>
       <span className="font-bold">{capitalize(key)}</span>
-      <span className="flex pl-0.25">{items[key]}</span>
+      <span>{items[key]}</span>
     </div>
   ));
 
-  return <div className="flex justify-between ring-1 rounded-lg p-2">{rowMapped}</div>;
+  return (
+    <div className="contents">
+      {rowMapped}
+      <hr className="col-span-full border-border" />
+    </div>
+  );
 }

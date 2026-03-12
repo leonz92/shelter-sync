@@ -48,22 +48,6 @@ function RouteComponent() {
 
   const suppliesColumns = [
     {
-      accessorKey: 'item',
-      id: 'itemDescription',
-      header: 'Item Description',
-      sortable: true,
-      textSize: 'sm',
-      headClassName: 'min-w-[200px]',
-      cell: ({ row }) => row.original.item?.name ?? '—',
-    },
-    {
-      accessorKey: 'foster_user_id',
-      header: 'User ID',
-      sortable: true,
-      textSize: 'sm',
-      headClassName: 'min-w-[120px]',
-    },
-    {
       accessorKey: 'created_at',
       header: 'Loaned At',
       sortable: true,
@@ -72,20 +56,44 @@ function RouteComponent() {
       cell: ({ row }) => formatDate(row.original.created_at),
     },
     {
+      accessorKey: 'item',
+      id: 'itemBrand',
+      header: 'Brand',
+      sortable: true,
+      textSize: 'sm',
+      headClassName: 'min-w-[150px]',
+      cell: ({ row }) => row.original.item?.brand ?? '—',
+    },
+    {
+      accessorKey: 'item',
+      id: 'itemName',
+      header: 'Item Name',
+      sortable: true,
+      textSize: 'sm',
+      headClassName: 'min-w-[200px]',
+      cell: ({ row }) => row.original.item?.name ?? '—',
+    },
+    {
+      accessorKey: 'item',
+      id: 'itemDescription',
+      header: 'Description',
+      sortable: true,
+      textSize: 'sm',
+      headClassName: 'min-w-[200px]',
+      cell: ({ row }) => row.original.item?.description ?? '—',
+    },
+    {
       accessorKey: 'status',
       header: 'Loan Status',
       sortable: true,
       textSize: 'sm',
       headClassName: 'min-w-[120px]',
     },
-    {
-      accessorKey: 'id',
-      header: 'Inventory Transaction ID',
-      sortable: true,
-      textSize: 'sm',
-      headClassName: 'min-w-[180px]',
-    },
   ];
+
+  const fosterName = supplies[0]?.foster_user
+    ? `${supplies[0].foster_user.first_name} ${supplies[0].foster_user.last_name}`
+    : user?.email ?? '';
 
   const activeCount = supplies.filter((s) => s.status === 'ACTIVE').length;
   const completeCount = supplies.filter((s) => s.status === 'COMPLETE').length;
@@ -120,7 +128,7 @@ function RouteComponent() {
               My Supplies
             </h1>
             <p className="text-muted-foreground mt-1 text-sm sm:text-base">
-              User ID: {user?.id} — supplies assigned to your foster animals.
+              {fosterName} — supplies assigned to your foster animals.
             </p>
             <div className="flex items-center gap-3 mt-3 flex-wrap">
               <Badge variant="secondary" className="font-medium">

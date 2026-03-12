@@ -22,7 +22,7 @@ function RouteComponent() {
       (user) =>
         `${user.first_name} ${user.last_name}`.toLowerCase().includes(searchLower) ||
         user.email?.toLowerCase().includes(searchLower) ||
-        user.address?.toLowerCase().includes(searchLower)
+        user.address?.toLowerCase().includes(searchLower),
     );
   }, [users, search]);
 
@@ -96,7 +96,7 @@ function RouteComponent() {
         <div className="text-red-500 mb-4">{error}</div>
         <button
           onClick={handleRetry}
-          className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90"
+          className="px-4 py-2 bg-primary text-white rounded-md hover:bg-primary/90 cursor-pointer"
         >
           Retry
         </button>
@@ -144,6 +144,7 @@ function RouteComponent() {
         headerClassName="bg-secondary text-primary-foreground"
         tablebodyRowClassName="bg-white hover:bg-secondary/20"
         containerClassName="overflow-auto max-h-150 rounded-lg border border-pale-sky shadow-sm relative w-full"
+        enablePagination
       />
     </>
   );
