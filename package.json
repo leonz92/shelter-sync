@@ -2,11 +2,11 @@
   "name": "animal-shelter-foster-management",
   "private": true,
   "scripts": {
-    "lint": "eslint \"asfm-fe/**/*.{js,jsx}\" \"server/**/*.js\"",
+    "lint": "eslint \"frontend/**/*.{js,jsx}\" \"server/**/*.js\"",
     "lint:fix": "npm run lint -- --fix",
-    "format": "prettier --write \"asfm-fe/**/*.{js,jsx,css,html,json,md}\" \"server/**/*.js\" \"server/**/*.json\" \".github/workflows/*.{yml,yaml}\"",
-    "format:check": "prettier --check \"asfm-fe/**/*.{js,jsx,css,html,json,md}\" \"server/**/*.js\" \"server/**/*.json\" \".github/workflows/*.{yml,yaml}\"",
-    "build:frontend": "npm --prefix asfm-fe run build",
+    "format": "prettier --write \"frontend/**/*.{js,jsx,css,html,json,md}\" \"server/**/*.js\" \"server/**/*.json\" \".github/workflows/*.{yml,yaml}\"",
+    "format:check": "prettier --check \"frontend/**/*.{js,jsx,css,html,json,md}\" \"server/**/*.js\" \"server/**/*.json\" \".github/workflows/*.{yml,yaml}\"",
+    "build:frontend": "npm --prefix frontend run build",
     "mock:api": "json-server --watch mock-api/db.json --routes mock-api/routes.json --port 3001"
   },
   "devDependencies": {

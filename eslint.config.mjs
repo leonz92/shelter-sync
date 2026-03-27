@@ -5,7 +5,7 @@ import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import { defineConfig } from "eslint/config";
 
-const projectFiles = ["asfm-fe/**/*.{js,jsx}", "server/**/*.js"];
+const projectFiles = ["frontend/**/*.{js,jsx}", "server/**/*.js"];
 
 export default defineConfig([
   {
@@ -33,7 +33,7 @@ export default defineConfig([
     },
   },
   {
-    files: ["asfm-fe/**/*.{js,jsx}"],
+    files: ["frontend/**/*.{js,jsx}"],
     plugins: {
       "react-hooks": reactHooks,
       "react-refresh": reactRefresh,

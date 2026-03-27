@@ -3,7 +3,7 @@ name: Validation
 on:
   pull_request:
     paths:
-      - "asfm-fe/**"
+      - "frontend/**"
       - "server/**"
       - "package.json"
       - "package-lock.json"
@@ -15,7 +15,7 @@ on:
     branches:
       - main
     paths:
-      - "asfm-fe/**"
+      - "frontend/**"
       - "server/**"
       - "package.json"
       - "package-lock.json"
@@ -42,7 +42,7 @@ jobs:
           node-version: "22"
           cache: npm
           cache-dependency-path: |
-            asfm-fe/package-lock.json
+            frontend/package-lock.json
             server/package-lock.json
 
       - name: Install shared lint and format dependencies
@@ -52,7 +52,7 @@ jobs:
         run: npm run lint
 
       - name: Install frontend dependencies
-        run: npm ci --prefix asfm-fe
+        run: npm ci --prefix frontend
 
       - name: Build frontend
         run: npm run build:frontend

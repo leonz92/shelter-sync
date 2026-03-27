@@ -1,5 +1,5 @@
 node_modules
-asfm-fe/node_modules
+frontend/node_modules
 server/node_modules
 dist
 build

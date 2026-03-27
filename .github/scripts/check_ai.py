@@ -16,8 +16,8 @@ SKIP_PATHS = [
     "package-lock.json",
     "routeTree.gen.ts",
     "node_modules",
-    "asfm-fe/src/components/ui/",
-    "asfm-fe/src/lib/utils.js",
+    "frontend/src/components/ui/",
+    "frontend/src/lib/utils.js",
 ]
 
 

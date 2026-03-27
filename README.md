@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="asfm-fe/src/assets/logo.png" alt="Shelter Sync Logo" width="200" />
+  <img src="frontend/src/assets/logo.png" alt="Shelter Sync Logo" width="200" />
 </p>
 
 <h1 align="center">Shelter Sync</h1>
@@ -46,15 +46,15 @@ Running a shelter foster program means juggling a lot: which animals are availab
 ## Screenshots
 
 <p align="center">
-  <img src="asfm-fe/src/assets/admin-dash.png" alt="Admin Dash" width="200" />
+  <img src="frontend/src/assets/admin-dash.png" alt="Admin Dash" width="200" />
 </p>
 
 <p align="center">
-  <img src="asfm-fe/src/assets/home-page.png" alt="Home Page" width="200" />
+  <img src="frontend/src/assets/home-page.png" alt="Home Page" width="200" />
 </p>
 
 <p align="center">
-  <img src="asfm-fe/src/assets/transactions-page.png" alt="Transactions" width="200" />
+  <img src="frontend/src/assets/transactions-page.png" alt="Transactions" width="200" />
 </p>
 
 ---
@@ -137,11 +137,11 @@ GEMINI_API_KEY=your_gemini_api_key
 ### 4. Configure the frontend
 
 ```bash
-cd ../asfm-fe
+cd ../frontend
 npm install
 ```
 
-Create a `.env` file in the `asfm-fe/` directory:
+Create a `.env` file in the `frontend/` directory:
 
 ```env
 # Supabase Auth (same project as backend)
@@ -170,7 +170,7 @@ npm run dev
 **Terminal 2 — Frontend** (runs on `http://localhost:5173`):
 
 ```bash
-cd asfm-fe
+cd frontend
 npm run dev
 ```
 
@@ -203,7 +203,7 @@ This starts a JSON Server mock on `http://localhost:3001`.
 | `SUPABASE_PUBLISHABLE_KEY` | Supabase anon/public key                  | Supabase dashboard → Project Settings → API                           |
 | `GEMINI_API_KEY`           | Google Gemini API key                     | [Google AI Studio](https://aistudio.google.com/app/apikey)            |
 
-### Frontend (`asfm-fe/.env`)
+### Frontend (`frontend/.env`)
 
 | Variable                                | Description               | Where to find it                            |
 | --------------------------------------- | ------------------------- | ------------------------------------------- |

@@ -22,8 +22,8 @@ npm run lint
 Run frontend locally:
 
 ```bash
-npm --prefix asfm-fe install
-npm --prefix asfm-fe run dev
+npm --prefix frontend install
+npm --prefix frontend run dev
 ```
 
 Currently, two official plugins are available:
